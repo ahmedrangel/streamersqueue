@@ -1,0 +1,158 @@
+:root, [data-bs-theme="dark"] {
+  --bs-primary: #3a4052;
+  --bs-primary-rgb: 58, 64, 82;
+  --bs-dark: #091428;
+  --bs-dark-rgb: 9, 20, 40;
+  --bs-secondary: #29334a;
+  --bs-secondary-rgb: 41, 51, 74;
+  --bs-tertiary: #a3dd46;
+  --bs-tertiary-rgb: 163, 221, 70;
+  --positive: #9f9;
+  --negative: #ff7583;
+  --bs-body-font-family: "Mukta";
+  --bs-body-font-size: 1.12rem;
+  --bs-body-font-weight: 300;
+  --winner-first: #ffea00;
+  --winner-second: #e1e1e1;
+  --winner-third: #ff4d00;
+}
+
+nav .router-link-exact-active {
+  --bs-bg-opacity: 1;
+
+  background-color: rgba(var(--bs-tertiary-rgb),var(--bs-bg-opacity))!important;
+  color: var(--bs-dark);
+}
+
+nav .router-link-exact-active:hover, nav .router-link-exact-active:focus {
+  color: var(--bs-dark);
+}
+
+nav .router-link-exact-active:hover {
+  background-color: rgba(212, 255, 144, var(--bs-bg-opacity))!important; 
+}
+
+.text-positive {
+  color: var(--positive);
+}
+
+.text-negative {
+  color: var(--negative)!important;
+}
+
+.bg-positive {
+  background-color: var(--positive);
+}
+
+.bg-negative {
+  background-color: var(--negative);
+}
+
+.live {
+  color: #ff2b2b;
+}
+
+.not-live, .not-ingame {
+  color: #5d5d5d;
+}
+
+.ingame {
+  color: #2de3ff;
+}
+
+.not-ingame {
+  border: none;
+}
+
+.twitch {
+  color: #bf94ff;
+}
+
+.bg-instagram {
+  background-color: #C13584;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background-color: var(--bs-primary);
+}
+
+main ::-webkit-scrollbar {
+  height: 10px;
+}
+
+main ::-webkit-scrollbar-track {
+  border-radius: 8px;
+}
+
+*::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  border: 0 solid transparent;
+  background-clip: content-box;
+  background-color: var(--bs-tertiary);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--bs-tertiary);
+}
+
+.bg-footer {
+  background-color: #0c1018;
+}
+
+.available-update {
+  text-decoration-style: dotted!important;
+  text-decoration-color: var(--negative)!important;
+  text-decoration-thickness: 2px!important;
+  text-underline-offset: 5px!important;
+}
+
+.is-banned td, .is-banned th {
+  background-color: #2c2c2c;
+}
+
+
+.crown-1, .crown-2, .crown-3 {
+  font-size: 24px;
+}
+
+.crown-1 {
+  color: var(--winner-first);
+}
+
+.crown-2 {
+  color: var(--winner-second);
+}
+
+.crown-3 {
+  color: var(--winner-third);
+}
+
+.border-winner-1, .border-winner-2, .border-winner-3 {
+  border: 2px solid;
+}
+
+.border-winner-1 {
+  border-color: var(--winner-first);
+}
+
+.border-winner-2 {
+  border-color: var(--winner-second);
+}
+
+.border-winner-3 {
+  border-color: var(--winner-third);
+}
+
+.bg-tertiary {
+  --bs-bg-opacity: 1;
+  background-color: rgba(var(--bs-tertiary-rgb),var(--bs-bg-opacity))!important;
+}
+
+.spinner-border {
+  --bs-spinner-width: 1rem;
+  --bs-spinner-height: 1rem;
+}

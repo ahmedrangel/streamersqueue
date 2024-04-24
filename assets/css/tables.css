@@ -1,0 +1,64 @@
+th.sortable {
+  position: relative;
+  cursor: pointer;
+}
+
+th.sortable .arrows {
+  width: 16px;
+  filter: invert(100%) sepia(0%) saturate(7474%) hue-rotate(57deg) brightness(109%) contrast(101%);
+  content: url("/images/sort-both.svg");
+}
+
+th.sortable:hover .arrows, th.sortable.asc .arrows, th.sortable.desc .arrows {
+  filter: invert(4%) sepia(41%) saturate(3713%) hue-rotate(209deg) brightness(99%) contrast(96%);
+}
+
+th.sortable.desc .arrows {
+  content: url("/images/sort-desc.svg");
+}
+
+th.sortable.asc .arrows {
+  content: url("/images/sort-asc.svg");
+}
+
+th.sortable:hover, th.sortable.asc, th.sortable.desc {
+  background-color: var(--bs-tertiary);
+  color: var(--bs-dark);
+}
+
+th.sortable.live_sort .arrows, th.sortable.ingame_sort .arrows {
+  filter: none;
+}
+
+th.sortable.live_sort .arrows {
+  content: url("/images/sort-live-both.svg");
+}
+
+th.sortable.live_sort.desc .arrows {
+  content: url("/images/sort-live-desc.svg");
+}
+
+th.sortable.live_sort.asc .arrows, th.sortable.ingame_sort.asc .arrows {
+  content: url("/images/sort-live-asc.svg");
+}
+
+th.sortable.ingame_sort .arrows {
+  content: url("/images/sort-ingame-both.svg");
+}
+
+th.sortable.ingame_sort.desc .arrows {
+  content: url("/images/sort-ingame-desc.svg");
+}
+
+.table {
+  --bs-table-bg: var(--bs-primary);
+  --bs-table-striped-bg: var(--bs-secondary);
+}
+
+.table>:not(caption)>*>* {
+  padding: 0.1rem;
+}
+
+tbody tr>* {
+  height: 72px;
+}

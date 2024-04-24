@@ -1,0 +1,52 @@
+/* main.css */
+
+.logo-background {
+  background: linear-gradient(rgb(9 20 40 / 99%),rgb(9 20 40 / 99%)),url("");
+  background-position: 50%;
+  background-repeat: repeat;
+  background-size: 14%;
+  position: fixed;
+  z-index: -1;
+}
+
+a {
+  color: white;
+  text-decoration: none;
+}
+
+a:hover, a:hover span {
+  text-decoration: underline;
+}
+
+table a:hover, table a:hover span {
+  color: var(--bs-tertiary)!important;
+}
+
+.img-profile {
+  height: 46px;
+}
+
+img {
+  pointer-events: none;
+  user-select: none;
+}
+
+.icon {
+  width: 1.1em;
+  height: 1.1em;
+}
+
+@media only screen and (width <= 767px) {
+  .img-profile {
+    height: 36px;
+  }
+
+  .small, small {
+    font-size: .7em
+  }
+}
+
+.winrate-progress {
+  width: 78px;
+  height: 8px;
+}

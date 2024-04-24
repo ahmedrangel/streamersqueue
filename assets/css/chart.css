@@ -1,0 +1,49 @@
+.p-chart .center {
+  transform: translate(-50%, 0);
+}
+
+.p-chart .left {
+  transform: translate(-100%, 0);
+}
+
+.p-chart .right {
+  transform: translate(0%, 0);
+}
+
+.p-chart .top.left {
+  transform: translate(-100%, -100%);
+}
+
+.p-chart .top.center {
+  transform: translate(-50%, -100%);
+}
+
+.p-chart .top.right {
+  transform: translate(0%, -100%);
+}
+
+.p-chart .bottom.left {
+  transform: translate(-100%, 0%);
+}
+
+.p-chart .bottom.center {
+  transform: translate(-50%, 0%);
+}
+
+.p-chart .bottom.right {
+  transform: translate(0%, 0%);
+}
+
+.history-badge:hover {
+  background-color: var(--bs-primary)!important;
+}
+
+.history-badge:hover .remove-participant {
+  color: var(--negative)!important;
+}
+
+@media only screen and (width <= 767px) {
+  .chartjs-tooltip {
+    font-size: 16px;
+  }
+}

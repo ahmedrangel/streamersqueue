@@ -1,0 +1,8 @@
+name = "soloqchallenge"
+main = "src/index.js"
+compatibility_date = "2024-02-18"
+
+[[d1_databases]]
+binding = "PARTICIPANTS"
+database_name = "soloqchallenge2"
+database_id = "495a2766-c808-422e-8c64-1ece1418d0f3"

@@ -1,0 +1,40 @@
+{
+  "name": "streamers-ladder",
+  "version": "1.0.0",
+  "description": "streamers-ladder",
+  "author": "Ahmed Rangel",
+  "type": "module",
+  "homepage": "https://github.com/ahmedrangel/streamers-ladder",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ahmedrangel/streamers-ladder"
+  },
+  "bugs": {
+    "url": "https://github.com/ahmedrangel/streamers-ladder/issues"
+  },
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev --port=5173 --host",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "lint": "npm run lint:eslint && npm run lint:stylelint",
+    "lint:eslint": "eslint --fix .",
+    "lint:stylelint": "stylelint \"**/*.css\" --fix"
+  },
+  "devDependencies": {
+    "@nuxt/eslint": "^0.3.8",
+    "@nuxtjs/sitemap": "^5.1.4",
+    "@types/bootstrap": "^5.2.10",
+    "eslint": "^9.1.0",
+    "nuxt": "^3.11.2",
+    "nuxt-icon": "^0.6.10",
+    "stylelint-config-standard": "^36.0.0"
+  },
+  "dependencies": {
+    "@nuxtjs/google-fonts": "^3.2.0",
+    "bootstrap": "^5.3.3",
+    "chart.js": "^4.4.2",
+    "primevue": "^3.51.0"
+  }
+}
