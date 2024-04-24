@@ -9,5 +9,5 @@ export const SITE = {
   ],
   banner: "",
   icon: "",
-  worker: "https://soloqchallenge.yizack.workers.dev"
+  worker: "https://api-streamers-ladder.ahmedrangel.com"
 };
