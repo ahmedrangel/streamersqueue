@@ -1,4 +1,4 @@
-import { Router } from "itty-router";
+import { IttyRouter } from "itty-router";
 import JsResponse from "./response";
 import JsonResponse from "./jsonResponse";
 import twitchApi from "./apis/twitchApi";
@@ -6,7 +6,7 @@ import riotApi from "./apis/riotApi";
 import { updateGeneralData } from "./crons/update-general-data";
 import { updateLolIcons } from "./crons/update-lol-icons";
 
-const router = Router();
+const router = IttyRouter();
 
 router.post("/add", async (req, env) => {
   const _twitch = new twitchApi(env.TWITCH_CLIENT_ID, env.TWITCH_CLIENT_SECRET);
@@ -135,7 +135,7 @@ router.all("*", () => new JsResponse("Not Found.", { status: 404 }));
 
 export default {
   async fetch(req, env, ctx) {
-    return router.handle(req, env, ctx);
+    return router.fetch(req, env, ctx);
   },
   async scheduled(event, env) {
     switch (event.cron) {

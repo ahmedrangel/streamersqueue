@@ -24,12 +24,12 @@
     "db:migrate": "drizzle-kit generate:sqlite"
   },
   "devDependencies": {
-    "@nuxt/eslint": "^0.3.8",
+    "@nuxt/eslint": "^0.3.9",
     "@nuxtjs/sitemap": "^5.1.4",
     "@types/bootstrap": "^5.2.10",
     "drizzle-kit": "^0.20.17",
     "drizzle-orm": "^0.30.9",
-    "eslint": "^9.1.0",
+    "eslint": "^9.1.1",
     "nuxt": "^3.11.2",
     "nuxt-icon": "^0.6.10",
     "stylelint-config-standard": "^36.0.0"
