@@ -13,6 +13,12 @@ export default defineEventHandler(async () => {
     return { ...p, ...socials_participants };
   });
 
+  // remove puuid and summoner_id
+  for (const p of results) {
+    delete p.puuid;
+    delete p.summoner_id;
+  }
+
   const control = await DB.prepare("SELECT last_updated FROM control WHERE id = ?").bind(1).first();
 
   const sorted = results.sort((a: Record<string, number>, b: Record<string, number>) => {
