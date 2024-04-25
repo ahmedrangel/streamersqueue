@@ -75,7 +75,7 @@ router.get("/renewal", async (req, env) => {
     return new JsonResponse({ status: "Renewed", status_code: 200, control: 1 });
   } catch (err) {
     await env.PARTICIPANTS.prepare("UPDATE control SET renewing = ? WHERE id = ? AND renewing = ?").bind(0, 1, 1).run();
-    return new JsonResponse({ status: err, status_code: 400, control: 1 });
+    return new JsonResponse({ status: String(err), status_code: 400, control: 1 });
   }
 });
 

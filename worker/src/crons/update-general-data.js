@@ -36,6 +36,11 @@ const updateLolIngameStatus = async(env, p) => {
   const ingame_data = await _riot.getSpectatorByPuuid(p.puuid, route);
 
   if (ingame_data?.participants) {
+    const lol_picture = ingame_data?.participants.filter(item => item.puuid === p.puuid)[0].profileIconId;
+    if (lol_picture && lol_picture !== p.lol_picture) {
+      console.info("LoL Icon Updated");
+      await env.PARTICIPANTS.prepare("UPDATE participants SET lol_picture = ? WHERE puuid = ?").bind(lol_picture, p.puuid).run();
+    }
     if (p.is_ingame !== 1) {
       updater_ingame.push({ puuid: p.puuid, is_ingame: 1 });
     }
@@ -117,7 +122,7 @@ const updateTwitchData = async(env, twitch_ids) => {
 
 // Export
 export const updateGeneralData = async(env) => {
-  const participants_results = await env.PARTICIPANTS.prepare("SELECT puuid, summoner_id, position, position_change, wins, losses, lp, is_ingame, lol_region from participants").all();
+  const participants_results = await env.PARTICIPANTS.prepare("SELECT puuid, summoner_id, position, position_change, wins, losses, lp, is_ingame, lol_region, lol_picture from participants").all();
   const socials_results = await env.PARTICIPANTS.prepare("SELECT puuid, twitch_id, twitch_login, twitch_display, twitch_picture, twitch_is_live from socials").all();
   if (!participants_results.results[0] || !socials_results.results[0]) return null;
 
@@ -125,8 +130,6 @@ export const updateGeneralData = async(env) => {
     const socials_participants = socials_results.results.filter(s => s.puuid === p.puuid)[0];
     return { ...p, ...socials_participants };
   });
-
-  console.info(results);
 
   participants = [];
   twitch_data = [];
@@ -139,13 +142,12 @@ export const updateGeneralData = async(env) => {
   // Update ranked data
   for (const p of results) {
     if (index === 250) {
-      await new Promise(resolve => setTimeout(resolve, 10000));
+      await new Promise(resolve => setTimeout(resolve, 11000));
       index = 0;
     }
     twitch_ids.push(p.twitch_id);
     await updateRankedData(env, p);
     await updateLolIngameStatus(env, p);
-    await new Promise(resolve => setTimeout(resolve, 50));
     twitch_data.push({ twitch_id: p.twitch_id, twitch_login: p.twitch_login, twitch_display: p.twitch_display, twitch_picture: p.twitch_picture, twitch_is_live: p.twitch_is_live });
     index++;
   }
