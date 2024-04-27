@@ -57,7 +57,6 @@ const checkRenewal = async () => {
 const renew = async() => {
   const { renewing, last_updated } = await $fetch("/api/renewal-status").catch(() => null) as Record<string, any>;
   renewal_last_updated.value = last_updated;
-  console.log("Remaining: " + remaining.value);
   if (!renewing && remaining.value < 0) {
     remaining.value >= 0 ? is_renewing.value = false : is_renewing.value = true;
     const update = await $fetch(SITE.worker + "/renewal").catch(() => null) as Record<string, any>;
