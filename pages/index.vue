@@ -55,6 +55,7 @@ const checkRenewal = async () => {
 };
 
 const renew = async() => {
+  is_renewing.value = true;
   const { renewing, last_updated } = await $fetch("/api/renewal-status").catch(() => null) as Record<string, any>;
   renewal_last_updated.value = last_updated;
   if (!renewing && remaining.value < 0) {
@@ -64,11 +65,14 @@ const renew = async() => {
       const data = await $fetch("/api/participants").catch(() => null) as Record<string, any>;
       participants.value = data?.participants;
       participants_last_updated.value = data?.last_updated;
+      cooldown.value = true;
       is_renewing.value = false;
       remainingForRenew();
     } else if (update?.status_code === 429) {
       is_renewing.value = false;
     }
+  } else {
+    is_renewing.value = false;
   }
 
   if (remaining.value < 0) {
