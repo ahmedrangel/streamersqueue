@@ -55,8 +55,6 @@ class Bootstrap {
   initializeTooltip () {
     const tooltipList = document.querySelectorAll("[data-bs-toggle=\"tooltip\"]");
     [...tooltipList].map(e => new Tooltip(e, { trigger: "hover", placement: "top" }));
-    const tooltipList2 = document.querySelectorAll("[data-bs-toggle=\"tooltip-last-updated\"]");
-    [...tooltipList2].map(e => new Tooltip(e, { trigger: "manual", placement: "top", html: true }));
   }
 
   showOffcanvas (id: HTMLElement) {

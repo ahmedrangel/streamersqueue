@@ -49,9 +49,20 @@ const checkRenewal = async () => {
       participants_last_updated.value = data?.last_updated;
       is_renewing.value = false;
       remainingForRenew();
+      reinitializeTooltips();
       clearInterval(interval2.value);
     }
   }, 6000);
+};
+
+const reinitializeTooltips = () => {
+  const { $bootstrap, $Tooltip } = useNuxtApp();
+  const elements = document.querySelectorAll("[data-bs-toggle=\"tooltip\"]") as NodeListOf<HTMLElement>;
+  for (const e of elements) {
+    const instance = $Tooltip.getInstance(e);
+    instance?.dispose();
+  }
+  $bootstrap.initializeTooltip();
 };
 
 const renew = async() => {
@@ -68,6 +79,7 @@ const renew = async() => {
       cooldown.value = true;
       is_renewing.value = false;
       remainingForRenew();
+      reinitializeTooltips();
     } else if (update?.status_code === 429) {
       is_renewing.value = false;
     }
