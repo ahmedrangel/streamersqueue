@@ -14,19 +14,34 @@ let updated_data = {};
 const updateRankedData = async(env, p) => {
   const _riot = new riotApi(env.RIOT_KEY);
   const route = _riot.route(p.lol_region);
+  const cluster = _riot.cluster(p.lol_region);
   const ranked_data = await _riot.getRankedDataBySummonerId(p.summoner_id, route);
-  if (ranked_data[0]) {
-    const soloq = ranked_data.filter(item => item.queueType === "RANKED_SOLO_5x5")[0];
-
-    if (soloq) {
-      participants.push({ puuid: p.puuid, summoner_id: p.summoner_id, wins: soloq.wins, losses: soloq.losses, lp: soloq.leaguePoints, elo: soloq.tier, tier: soloq.rank, position: p.position, position_change: p.position_change });
-      if (p.wins !== soloq.wins || p.losses !== soloq.losses || p.lp !== soloq.leaguePoints) {
-        updater_participants.push({ puuid: p.puuid, wins: soloq.wins, losses: soloq.losses, lp: soloq.leaguePoints, elo: soloq.tier.toLowerCase(), tier: fixRank(soloq.tier, soloq.rank) });
+  const soloq = ranked_data?.filter(item => item?.queueType === "RANKED_SOLO_5x5")[0];
+  if (ranked_data[0] && soloq) {
+    participants.push({ puuid: p.puuid, summoner_id: p.summoner_id, wins: soloq.wins, losses: soloq.losses, lp: soloq.leaguePoints, elo: soloq.tier, tier: soloq.rank, position: p.position, position_change: p.position_change });
+    if (p.wins !== soloq.wins || p.losses !== soloq.losses || p.lp !== soloq.leaguePoints) {
+      updater_participants.push({ puuid: p.puuid, wins: soloq.wins, losses: soloq.losses, lp: soloq.leaguePoints, elo: soloq.tier.toLowerCase(), tier: fixRank(soloq.tier, soloq.rank) });
+    }
+  } else {
+    const start_split1_2024_time = 1704844800;
+    const matches = await _riot.getMatchesByPuuid(p.puuid, cluster, 20, 420, start_split1_2024_time);
+    let wins = 0;
+    let losses = 0;
+    if (matches.length) {
+      for (const m of matches) {
+        const match_data = await _riot.getMatchById(m, cluster);
+        const participant_data = match_data.info.participants.filter(item => item.puuid === p.puuid)[0];
+        if (participant_data.win && !participant_data.gameEndedInEarlySurrender)
+          wins = wins + 1;
+        if (!participant_data.win && !participant_data.gameEndedInEarlySurrender)
+          losses = losses + 1;
       }
     }
-    updated_data.ranked = true;
-    return participants;
+    participants.push({ puuid: p.puuid, summoner_id: p.summoner_id, wins, losses, lp: p.lp, elo: null, tier: null, position: p.position, position_change: p.position_change });
+    updater_participants.push({ puuid: p.puuid, wins, losses, lp: null, elo: null, tier: null });
   }
+  updated_data.ranked = true;
+  return participants;
 };
 
 // Iterated fetch
@@ -58,12 +73,18 @@ const sortRankedData = () => {
 
   // Sort participants by elo and lp
   const sorted = participants.sort((a, b) => {
-    const eloComparison = eloValues[`${b.elo} ${b.tier}`] - eloValues[`${a.elo} ${a.tier}`];
-    if (eloComparison !== 0) {
-      return eloComparison;
+    if (a.elo && b.elo && a.lp && b.lp) {
+      const eloComparison = eloValues[`${b.elo} ${b.tier}`] - eloValues[`${a.elo} ${a.tier}`];
+      if (eloComparison !== 0) {
+        return eloComparison;
+      }
+      return b.lp - a.lp;
+    } else {
+      return b.wins - a.wins;
     }
-    return b.lp - a.lp;
   });
+
+  console.log(sorted);
 
   // Update participants position and position_change
   let index = 0;

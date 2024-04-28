@@ -57,8 +57,13 @@ class riotApi {
     return data;
   }
 
-  async getMatchesByPuuid(puuid, cluster, count, queueId) {
-    const data = await fetch(`https://${cluster}.${this.domain}/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=${count}&api_key=${this.RIOT_KEY}&queue=${queueId ? queueId : ""}`).catch(() => null);
+  async getMatchesByPuuid(puuid, cluster, count, queueId, startTime) {
+    const data = await ofetch(`https://${cluster}.${this.domain}/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=${count}&api_key=${this.RIOT_KEY}&queue=${queueId ? queueId : ""}&startTime=${startTime ? startTime : ""}`).catch(() => null);
+    return data;
+  }
+
+  async getMatchById(matchId, cluster) {
+    const data = await ofetch(`https://${cluster}.${this.domain}/lol/match/v5/matches/${matchId}?api_key=${this.RIOT_KEY}`);
     return data;
   }
 }
