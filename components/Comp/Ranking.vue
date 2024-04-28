@@ -5,10 +5,6 @@ const props = defineProps({
 
 const participants = ref(props.data);
 
-watchEffect(() => {
-  participants.value = props.data;
-});
-
 const sort = (type: string, order: string) => {
   const sorters: Record<string, (a: any, b: any) => number> = {
     rank: (a, b) => order === "desc" ? b.position - a.position : a.position - b.position,
@@ -80,8 +76,18 @@ const sorterHandler = (type: string) => {
   }
 };
 
+const { $Tooltip } = useNuxtApp();
+
 onMounted(async() => {
   sorterHandler("add");
+  watchEffect(() => {
+    participants.value = props.data;
+
+    const new_elements = document.querySelectorAll("[data-bs-toggle=\"tooltip\"]") as NodeListOf<HTMLElement>;
+    [...new_elements].map(e => {
+      new $Tooltip(e, { trigger: "hover", placement: "top", html: true });
+    });
+  });
 });
 
 onBeforeUnmount(() => {
@@ -138,7 +144,7 @@ const remainMatchesToday = (total: number) => {
             </div>
           </th>
           <td scope="row" style="width: 30px;">
-            <span class="d-flex align-items-center justify-content-center" :class="`${ p.twitch_is_live ? 'live' : 'not-live'}`" data-bs-toggle="tooltip" :title="`${p.twitch_is_live ? '¡En directo!' : ''}`">
+            <span class="d-flex align-items-center justify-content-center" :class="`${ p.twitch_is_live ? 'live' : 'not-live'}`" data-bs-toggle="tooltip" :data-bs-original-title="p.twitch_is_live ? '¡En directo!' : ''">
               <Icon name="ph:circle-fill" />
             </span>
           </td>
@@ -160,7 +166,7 @@ const remainMatchesToday = (total: number) => {
             <a v-if="p.twitter" target="_blank" :href="`https://x.com/${p.twitter}`" class="p-2 bg-black rounded d-inline-flex align-items-center text-white"><Icon name="simple-icons:x" /></a>
           </td>
           <td scope="row" style="width: 30px;">
-            <span class="d-flex align-items-center justify-content-center" :class="`${p.is_ingame ? 'ingame' : 'not-ingame'}`" data-bs-toggle="tooltip" :title="`${p.is_ingame ? '¡En partida!' : ''}`">
+            <span class="d-flex align-items-center justify-content-center" :class="`${p.is_ingame ? 'ingame' : 'not-ingame'}`" data-bs-toggle="tooltip" :data-bs-original-title="p.is_ingame ? '¡En partida!' : ''">
               <Icon name="ph:circle-fill" />
             </span>
           </td>

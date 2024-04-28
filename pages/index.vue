@@ -8,6 +8,7 @@ const cooldown = ref(true);
 const remaining = ref();
 const interval = ref();
 const interval2 = ref();
+const tooltipInstances = [] as any[];
 
 useSeoMeta({
   title: SITE.title,
@@ -38,6 +39,16 @@ const remainingForRenew = () => {
   remaining.value = Math.ceil((120000 - (now - date)) / 1000);
 };
 
+const { $Tooltip } = useNuxtApp();
+
+const initializeTooltips = () => {
+  const new_elements = document.querySelectorAll("[data-bs-toggle=\"tooltip\"]") as NodeListOf<HTMLElement>;
+  [...new_elements].map(e => {
+    const instance = new $Tooltip(e, { trigger: "hover", placement: "top", html: true });
+    tooltipInstances.push(instance);
+  });
+};
+
 const checkRenewal = async () => {
   interval2.value = setInterval(async() => {
     if (participants_last_updated.value === renewal_last_updated.value) {
@@ -49,23 +60,16 @@ const checkRenewal = async () => {
       participants_last_updated.value = data?.last_updated;
       is_renewing.value = false;
       remainingForRenew();
-      reinitializeTooltips();
       clearInterval(interval2.value);
     }
   }, 6000);
 };
 
-const reinitializeTooltips = () => {
-  const { $bootstrap, $Tooltip } = useNuxtApp();
-  const elements = document.querySelectorAll("[data-bs-toggle=\"tooltip\"]") as NodeListOf<HTMLElement>;
-  for (const e of elements) {
-    const instance = $Tooltip.getInstance(e);
-    instance?.dispose();
-  }
-  $bootstrap.initializeTooltip();
-};
 
 const renew = async() => {
+  for (const i of tooltipInstances) {
+    i.dispose();
+  }
   is_renewing.value = true;
   const { renewing, last_updated } = await $fetch("/api/renewal-status").catch(() => null) as Record<string, any>;
   renewal_last_updated.value = last_updated;
@@ -79,7 +83,6 @@ const renew = async() => {
       cooldown.value = true;
       is_renewing.value = false;
       remainingForRenew();
-      reinitializeTooltips();
     } else if (update?.status_code === 429) {
       is_renewing.value = false;
     }
@@ -95,6 +98,7 @@ const renew = async() => {
 };
 
 onMounted(async() => {
+  initializeTooltips();
   remainingForRenew();
   await renew();
   interval.value = setInterval(() => {

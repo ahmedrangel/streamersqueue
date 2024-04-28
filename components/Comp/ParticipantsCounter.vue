@@ -16,7 +16,6 @@ watchEffect(() => {
 const serverTime = ref(getServerTime());
 */
 const last_updated_time = ref(getTimeUnitsFromISODate(last_updated.value));
-const outdated_message = ref(false);
 const interval = ref();
 
 onMounted(() => {
@@ -45,12 +44,12 @@ onBeforeUnmount(() => {
     <div class="d-lg-flex d-block align-items-center justify-content-between gap-3">
       <div class="d-flex gap-1 align-items-center text-nowrap">
         <Icon name="fa6-solid:user-group" />
-        <span>{{ props.data ? props.data.length : 0 }} participantes</span>
+        <span>{{ data.length ? data.length : 0 }} participantes</span>
       </div>
       <div v-if="props.lastUpdated" class="d-flex gap-1 align-items-center text-nowrap">
         <Icon name="ph:clock-clockwise-bold" />
         <span>Actualizado:</span>
-        <span :class="`${outdated_message ? 'text-negative text-decoration-underline available-update' : ''}`" data-bs-toggle="tooltip-last-updated" title="<span class='text-dark fw-bold'>¡Resultados actualizados!</span><br><span>Refresca la página para ver los últimos resultados.</span>">hace {{ last_updated_time.result }}</span>
+        <span>hace {{ last_updated_time.result }}</span>
       </div>
     </div>
   </div>
