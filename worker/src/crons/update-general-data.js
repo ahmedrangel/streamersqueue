@@ -16,8 +16,9 @@ const updateRankedData = async(env, p) => {
   const route = _riot.route(p.lol_region);
   const cluster = _riot.cluster(p.lol_region);
   const ranked_data = await _riot.getRankedDataBySummonerId(p.summoner_id, route);
-  const soloq = ranked_data?.filter(item => item?.queueType === "RANKED_SOLO_5x5")[0];
-  if (ranked_data[0] && soloq) {
+  const soloq = ranked_data?.filter(item => item?.queueType === "RANKED_SOLO_5x5")[0] ?? null;
+  console.log("Soloq", soloq);
+  if (soloq) {
     participants.push({ puuid: p.puuid, summoner_id: p.summoner_id, wins: soloq.wins, losses: soloq.losses, lp: soloq.leaguePoints, elo: soloq.tier, tier: soloq.rank, position: p.position, position_change: p.position_change });
     if (p.wins !== soloq.wins || p.losses !== soloq.losses || p.lp !== soloq.leaguePoints) {
       updater_participants.push({ puuid: p.puuid, wins: soloq.wins, losses: soloq.losses, lp: soloq.leaguePoints, elo: soloq.tier.toLowerCase(), tier: fixRank(soloq.tier, soloq.rank) });
@@ -36,9 +37,9 @@ const updateRankedData = async(env, p) => {
         if (!participant_data.win && !participant_data.gameEndedInEarlySurrender)
           losses = losses + 1;
       }
+      participants.push({ puuid: p.puuid, summoner_id: p.summoner_id, wins, losses, lp: p.lp, elo: null, tier: null, position: p.position, position_change: p.position_change });
+      updater_participants.push({ puuid: p.puuid, wins, losses, lp: null, elo: null, tier: null });
     }
-    participants.push({ puuid: p.puuid, summoner_id: p.summoner_id, wins, losses, lp: p.lp, elo: null, tier: null, position: p.position, position_change: p.position_change });
-    updater_participants.push({ puuid: p.puuid, wins, losses, lp: null, elo: null, tier: null });
   }
   updated_data.ranked = true;
   return participants;
@@ -70,10 +71,9 @@ const updateLolIngameStatus = async(env, p) => {
 
 const sortRankedData = () => {
   if (!participants[0]) return null;
-
   // Sort participants by elo and lp
   const sorted = participants.sort((a, b) => {
-    if (a.elo && b.elo && a.lp && b.lp) {
+    if (a.elo && b.elo) {
       const eloComparison = eloValues[`${b.elo} ${b.tier}`] - eloValues[`${a.elo} ${a.tier}`];
       if (eloComparison !== 0) {
         return eloComparison;
@@ -84,7 +84,7 @@ const sortRankedData = () => {
     }
   });
 
-  console.log(sorted);
+  console.log("Sorted", sorted);
 
   // Update participants position and position_change
   let index = 0;
@@ -152,6 +152,8 @@ export const updateGeneralData = async(env) => {
     return { ...p, ...socials_participants };
   });
 
+  console.log("Results", results);
+
   participants = [];
   twitch_data = [];
   updater_participants = [];
@@ -179,7 +181,7 @@ export const updateGeneralData = async(env) => {
   const updater_twitch_live = await updateTwitchLiveStatus(env, twitch_ids);
 
   console.info(updater_participants);
-  console.info(updater_position_change);
+  //console.info(updater_position_change);
   console.info(updater_ingame);
   console.info(updater_twitch_data);
   console.info(updater_twitch_live);

@@ -126,6 +126,11 @@ router.get("/participants", async (req, env) => {
     return a.position - b.position;
   });
 
+  let i = 0;
+  for (const participant of sorted) {
+    participant.raw_position = ++i;
+  }
+
   const data = { participants: sorted, last_updated: control.last_updated };
 
   return new JsonResponse(data);
