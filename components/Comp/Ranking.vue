@@ -203,8 +203,8 @@ const remainMatchesToday = (total: number) => {
                 <span class="text-muted">&nbsp;D</span>
               </small>
               <div class="progress mt-2 rounded-1 winrate-progress">
-                <div class="progress-bar bg-positive" role="progressbar" :style="{'width': (p.wins/(p.wins + p.losses) * 100) + '%' }" />
-                <div class="progress-bar bg-negative" role="progressbar" :style="{'width': (p.losses/(p.wins + p.losses) * 100) + '%' }" />
+                <div class="progress-bar bg-positive" role="progressbar" :style="{'width':  (p.wins || p.losses ? p.wins/(p.wins + p.losses) * 100 : 0) + '%' }" />
+                <div class="progress-bar bg-negative" role="progressbar" :style="{'width':  (p.wins || p.losses ? p.losses/(p.wins + p.losses) * 100 : 0) + '%' }" />
               </div>
             </div>
           </td>
