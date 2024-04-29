@@ -177,13 +177,13 @@ const remainMatchesToday = (total: number) => {
           </td>
           <td>
             <div v-if="p.elo" class="py-1">
-              <small class="text-nowrap" data-bs-toggle="tooltip" :title="`${`${capitalizeFirst(p.elo)} ${p.tier} · ${p.lp} LP`}`"><img :src="`/images/lol/${p.elo}.png`" height="36px"> {{ p.tier }}</small>
+              <small class="text-nowrap" data-bs-toggle="tooltip" :data-bs-original-title="`${capitalizeFirst(p.elo)} ${p.tier} · ${p.lp} LP`"><img :src="`/images/lol/${p.elo}.png`" height="36px"> {{ p.tier }}</small>
               <small class="d-block text-nowrap">
                 <strong>{{ p.lp }} LP</strong>
               </small>
             </div>
             <div v-else>
-              <small class="text-nowrap" data-bs-toggle="tooltip" title="Unranked"><img :src="`/images/lol/unranked.png`" height="30px"></small>
+              <small class="text-nowrap" data-bs-toggle="tooltip" data-bs-original-title="Unranked"><img :src="`/images/lol/unranked.png`" height="30px"></small>
             </div>
           </td>
           <td>
