@@ -3,7 +3,11 @@ const props = defineProps({
   data: { type: Object, required: true }
 });
 
-const participants = ref(props.data);
+const participants = ref(props.data) as Ref<Record<string, any>>;
+
+watchEffect(() => {
+  participants.value = props.data;
+});
 
 const sort = (type: string, order: string) => {
   const sorters: Record<string, (a: any, b: any) => number> = {
@@ -76,18 +80,8 @@ const sorterHandler = (type: string) => {
   }
 };
 
-const { $Tooltip } = useNuxtApp();
-
 onMounted(async() => {
   sorterHandler("add");
-  watchEffect(() => {
-    participants.value = props.data;
-
-    const new_elements = document.querySelectorAll("[data-bs-toggle=\"tooltip\"]") as NodeListOf<HTMLElement>;
-    [...new_elements].map(e => {
-      new $Tooltip(e, { trigger: "hover", placement: "top", html: true });
-    });
-  });
 });
 
 onBeforeUnmount(() => {

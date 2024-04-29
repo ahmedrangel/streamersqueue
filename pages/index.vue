@@ -1,14 +1,15 @@
 <script setup lang="ts">
+import type { Tooltip } from "bootstrap";
 const { data: data } = await useFetch("/api/participants") as Record<string, any>;
 const participants = ref(data.value?.participants) as Ref<Record<string, any>>;
 const participants_last_updated = ref(data.value?.last_updated) as Ref<string>;
-const renewal_last_updated = ref();
-const is_renewing = ref();
-const cooldown = ref(true);
-const remaining = ref();
-const interval = ref();
-const interval2 = ref();
-const tooltipInstances = [] as any[];
+const renewal_last_updated = ref() as Ref<string>;
+const is_renewing = ref(false) as Ref<boolean>;
+const cooldown = ref(true) as Ref<boolean>;
+const remaining = ref() as Ref<number>;
+const interval = ref() as Ref<NodeJS.Timeout>;
+const interval2 = ref() as Ref<NodeJS.Timeout>;
+let tooltipInstances = [] as Tooltip[];
 
 useSeoMeta({
   title: SITE.title,
@@ -41,10 +42,14 @@ const remainingForRenew = () => {
 
 const { $Tooltip } = useNuxtApp();
 
-const initializeTooltips = () => {
+const reinitializeTooltips = () => {
+  const showingTooltips = document.querySelectorAll(".tooltip.bs-tooltip-auto.show") as NodeListOf<HTMLElement>;
+  for (const t of showingTooltips) t.remove();
+  for (const i of tooltipInstances) i.dispose();
+  tooltipInstances = [];
   const new_elements = document.querySelectorAll("[data-bs-toggle=\"tooltip\"]") as NodeListOf<HTMLElement>;
   [...new_elements].map(e => {
-    const instance = new $Tooltip(e, { trigger: "hover", placement: "top", html: true });
+    const instance = new $Tooltip(e, { trigger: "hover", placement: "top" });
     tooltipInstances.push(instance);
   });
 };
@@ -67,9 +72,6 @@ const checkRenewal = async () => {
 
 
 const renew = async() => {
-  for (const i of tooltipInstances) {
-    i.dispose();
-  }
   is_renewing.value = true;
   const { renewing, last_updated } = await $fetch("/api/renewal-status").catch(() => null) as Record<string, any>;
   renewal_last_updated.value = last_updated;
@@ -95,12 +97,12 @@ const renew = async() => {
     is_renewing.value = true;
     await checkRenewal();
   }
+  reinitializeTooltips();
 };
 
 onMounted(async() => {
-  initializeTooltips();
   remainingForRenew();
-  await renew();
+  // await renew();
   interval.value = setInterval(() => {
     if (remaining.value >= 0) {
       cooldown.value = true;
