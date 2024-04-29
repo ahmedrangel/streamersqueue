@@ -17,7 +17,7 @@ const updateRankedData = async(env, p) => {
   const cluster = _riot.cluster(p.lol_region);
   const ranked_data = await _riot.getRankedDataBySummonerId(p.summoner_id, route);
   const soloq = ranked_data?.filter(item => item?.queueType === "RANKED_SOLO_5x5")[0] ?? null;
-  console.log("Soloq", soloq);
+
   if (soloq) {
     participants.push({ puuid: p.puuid, summoner_id: p.summoner_id, wins: soloq.wins, losses: soloq.losses, lp: soloq.leaguePoints, elo: soloq.tier, tier: soloq.rank, position: p.position, position_change: p.position_change });
     if (p.wins !== soloq.wins || p.losses !== soloq.losses || p.lp !== soloq.leaguePoints) {
@@ -55,7 +55,7 @@ const updateLolIngameStatus = async(env, p) => {
     const lol_picture = ingame_data?.participants.filter(item => item.puuid === p.puuid)[0].profileIconId;
     if (lol_picture && lol_picture !== p.lol_picture) {
       console.info("LoL Icon Updated");
-      await env.PARTICIPANTS.prepare("UPDATE participants SET lol_picture = ? WHERE puuid = ?").bind(lol_picture, p.puuid).run();
+      await env.PARTICIPANTS.prepare("UPDATE OR IGNORE participants SET lol_picture = ? WHERE puuid = ?").bind(lol_picture, p.puuid).run();
     }
     if (p.is_ingame !== 1) {
       updater_ingame.push({ puuid: p.puuid, is_ingame: 1 });
@@ -84,7 +84,6 @@ const sortRankedData = () => {
     }
   });
 
-  console.log("Sorted", sorted);
 
   // Update participants position and position_change
   let index = 0;
@@ -111,13 +110,13 @@ const updateTwitchLiveStatus = async(env, twitch_ids) => {
     if (live_ids.includes(String(p.twitch_id))) {
       if (p.twitch_is_live !== 1) {
         data.push({ twitch_id: p.twitch_id, twitch_is_live: 1 });
-        await env.PARTICIPANTS.prepare("UPDATE socials SET twitch_is_live = ? WHERE twitch_id = ?")
+        await env.PARTICIPANTS.prepare("UPDATE OR IGNORE socials SET twitch_is_live = ? WHERE twitch_id = ?")
           .bind(1, p.twitch_id).run();
       }
     } else {
       if (p.twitch_is_live !== 0) {
         data.push({ twitch_id: p.twitch_id, twitch_is_live: 0 });
-        await env.PARTICIPANTS.prepare("UPDATE socials SET twitch_is_live = ? WHERE twitch_id = ?")
+        await env.PARTICIPANTS.prepare("UPDATE OR IGNORE socials SET twitch_is_live = ? WHERE twitch_id = ?")
           .bind(0, p.twitch_id).run();
       }
     }
@@ -134,7 +133,7 @@ const updateTwitchData = async(env, twitch_ids) => {
     const match_participant = twitch_data.filter(p => p.twitch_id == u.id)[0];
     if (u.login !== match_participant.twitch_login || u.display_name !== match_participant.twitch_display || u.profile_image_url.replace("https://static-cdn.jtvnw.net/","") !== match_participant.twitch_picture) {
       data.push(u);
-      await env.PARTICIPANTS.prepare("UPDATE socials SET twitch_login = ?, twitch_display = ?, twitch_picture = ? WHERE twitch_id = ?")
+      await env.PARTICIPANTS.prepare("UPDATE OR IGNORE socials SET twitch_login = ?, twitch_display = ?, twitch_picture = ? WHERE twitch_id = ?")
         .bind(u.login, u.display_name, u.profile_image_url.replace("https://static-cdn.jtvnw.net/",""), u.id).run();
     }
   }
@@ -151,8 +150,6 @@ export const updateGeneralData = async(env) => {
     const socials_participants = socials_results.results.filter(s => s.puuid === p.puuid)[0];
     return { ...p, ...socials_participants };
   });
-
-  console.log("Results", results);
 
   participants = [];
   twitch_data = [];
@@ -181,7 +178,7 @@ export const updateGeneralData = async(env) => {
   const updater_twitch_live = await updateTwitchLiveStatus(env, twitch_ids);
 
   console.info(updater_participants);
-  //console.info(updater_position_change);
+  console.info(updater_position_change);
   console.info(updater_ingame);
   console.info(updater_twitch_data);
   console.info(updater_twitch_live);
@@ -189,19 +186,19 @@ export const updateGeneralData = async(env) => {
 
   // Ranked update
   for (const p of updater_participants) {
-    await env.PARTICIPANTS.prepare("UPDATE participants SET wins = ?, losses = ?, lp = ?, elo = ?, tier = ? WHERE puuid = ?")
+    await env.PARTICIPANTS.prepare("UPDATE OR IGNORE participants SET wins = ?, losses = ?, lp = ?, elo = ?, tier = ? WHERE puuid = ?")
       .bind(p.wins, p.losses, p.lp, p.elo, p.tier, p.puuid).run();
   }
 
   // Position change update
   for (const p of updater_position_change) {
-    await env.PARTICIPANTS.prepare("UPDATE participants SET position = ?, position_change = ? WHERE puuid = ?")
+    await env.PARTICIPANTS.prepare("UPDATE OR IGNORE participants SET position = ?, position_change = ? WHERE puuid = ?")
       .bind(p.position, p.position_change, p.puuid).run();
   }
 
   // Ingame update
   for (const p of updater_ingame) {
-    await env.PARTICIPANTS.prepare("UPDATE participants SET is_ingame = ? WHERE puuid = ?")
+    await env.PARTICIPANTS.prepare("UPDATE OR IGNORE participants SET is_ingame = ? WHERE puuid = ?")
       .bind(p.is_ingame, p.puuid).run();
   }
 
@@ -210,7 +207,7 @@ export const updateGeneralData = async(env) => {
   console.info("Updaters check: " + updated_data.ranked, updated_data.ingame, updated_data.sorted);
   // Update last_updated
   if (updated_data.ranked && updated_data.ingame && updated_data.sorted) {
-    await env.PARTICIPANTS.prepare("UPDATE control SET last_updated = ? WHERE id = ?")
+    await env.PARTICIPANTS.prepare("UPDATE OR IGNORE control SET last_updated = ? WHERE id = ?")
       .bind(new Date().toISOString(), 1).run();
   }
 
