@@ -57,15 +57,16 @@ const reinitializeTooltips = () => {
 const checkRenewal = async () => {
   interval2.value = setInterval(async() => {
     if (participants_last_updated.value === renewal_last_updated.value) {
-      const { last_updated } = await $fetch("/api/renewal-status").catch(() => null) as Record<string, any>;
+      const { last_updated, renewing } = await $fetch("/api/renewal-status").catch(() => null) as Record<string, any>;
       renewal_last_updated.value = last_updated;
-    } else {
-      const data = await $fetch("/api/participants").catch(() => null) as Record<string, any>;
-      participants.value = data?.participants;
-      participants_last_updated.value = data?.last_updated;
-      is_renewing.value = false;
-      remainingForRenew();
-      clearInterval(interval2.value);
+      if (!renewing) {
+        const data = await $fetch("/api/participants").catch(() => null) as Record<string, any>;
+        participants.value = data?.participants;
+        participants_last_updated.value = data?.last_updated;
+        is_renewing.value = false;
+        remainingForRenew();
+        clearInterval(interval2.value);
+      }
     }
   }, 6000);
 };
