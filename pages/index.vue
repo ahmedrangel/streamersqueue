@@ -40,7 +40,7 @@ const remainingForRenew = () => {
   remaining.value = Math.ceil((120000 - (now - date)) / 1000);
 };
 
-const { $Tooltip } = useNuxtApp();
+const { $Tooltip, $bootstrap } = useNuxtApp();
 
 const reinitializeTooltips = () => {
   const showingTooltips = document.querySelectorAll(".tooltip.bs-tooltip-auto.show") as NodeListOf<HTMLElement>;
@@ -73,6 +73,8 @@ const checkRenewal = async () => {
 
 
 const renew = async() => {
+  const updatingToast = document.querySelector("#updatingToast") as HTMLElement;
+  $bootstrap.showToast(updatingToast);
   is_renewing.value = true;
   const { renewing, last_updated } = await $fetch("/api/renewal-status").catch(() => null) as Record<string, any>;
   renewal_last_updated.value = last_updated;
@@ -99,6 +101,7 @@ const renew = async() => {
     await checkRenewal();
   }
   reinitializeTooltips();
+  $bootstrap.hideToast(updatingToast);
 };
 
 onMounted(async() => {
@@ -147,5 +150,16 @@ onBeforeUnmount(() => {
     <!--
     <CompChart />
     -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+      <div id="updatingToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
+        <div class="toast-header py-4 border-0 bg-tertiary text-dark px-3 rounded">
+          <CompLoadingSpinner class="me-2 h6 mb-0" />
+          <h6 class="me-auto mb-0">Actualizando los datos...</h6>
+          <button type="button" class="btn p-0 text-dark" data-bs-dismiss="toast" aria-label="Close">
+            <Icon name="ph:x-bold" />
+          </button>
+        </div>
+      </div>
+    </div>
   </main>
 </template>

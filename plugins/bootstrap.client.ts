@@ -39,6 +39,12 @@ class Bootstrap {
     return id;
   }
 
+  hideToast (id: HTMLElement) {
+    const instance = Toast.getInstance(id);
+    instance?.hide();
+    return id;
+  }
+
   startAllCarousel () {
     const carousels = document.querySelectorAll(".carousel");
     for (const carousel of carousels) {
