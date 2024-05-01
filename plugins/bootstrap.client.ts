@@ -33,7 +33,10 @@ class Bootstrap {
 
   showToast (id: HTMLElement) {
     const instance = Toast.getInstance(id);
-    if (instance) return;
+    if (instance) {
+      instance.show();
+      return id;
+    }
     const toast = new Toast(id);
     toast.show();
     return id;
