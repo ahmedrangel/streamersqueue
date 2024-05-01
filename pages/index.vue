@@ -103,7 +103,7 @@ const renew = async() => {
 
 onMounted(async() => {
   remainingForRenew();
-  // await renew();
+  await renew();
   interval.value = setInterval(() => {
     if (remaining.value >= 0) {
       cooldown.value = true;
