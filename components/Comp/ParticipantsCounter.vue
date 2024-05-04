@@ -44,7 +44,7 @@ onBeforeUnmount(() => {
     <div class="d-lg-flex d-block align-items-center justify-content-between gap-3">
       <div class="d-flex gap-1 align-items-center text-nowrap">
         <Icon name="fa6-solid:user-group" />
-        <span>{{ data.length ? data.length : 0 }} participantes</span>
+        <span>{{ data.length ? data.length : 0 }} cuentas</span>
       </div>
       <div v-if="props.lastUpdated" class="d-flex gap-1 align-items-center text-nowrap">
         <Icon name="ph:clock-clockwise-bold" />
