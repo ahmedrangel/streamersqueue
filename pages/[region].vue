@@ -2,6 +2,15 @@
 import type { Tooltip } from "bootstrap";
 const { params } = useRoute();
 const region = params.region.toLowerCase();
+
+if (!controls[region]) {
+  throw createError({
+    statusCode: 404,
+    message: `Region not found: '${region}'`,
+    fatal: true
+  });
+}
+
 const { data: data } = await useFetch(`/api/${region}/participants`) as Record<string, any>;
 const participants = ref(data.value?.participants) as Ref<Record<string, any>>;
 const participants_last_updated = ref(data.value?.last_updated) as Ref<string>;
@@ -12,6 +21,7 @@ const remaining = ref() as Ref<number>;
 const interval = ref() as Ref<NodeJS.Timeout>;
 const interval2 = ref() as Ref<NodeJS.Timeout>;
 let tooltipInstances = [] as Tooltip[];
+const controller = ref(new AbortController()) as Ref<AbortController>;
 
 useSeoMeta({
   title: SITE.title,
@@ -92,7 +102,8 @@ const renew = async() => {
   const dif = Math.ceil((last_last_updated - first_last_updated) / 1000);
   if (!renewing && remaining.value < 0 && dif === 0) {
     remaining.value >= 0 ? is_renewing.value = false : is_renewing.value = true;
-    const update = await $fetch(`${SITE.worker}/${region}/renewal`).catch(() => null) as Record<string, any>;
+    const signal = controller.value.signal;
+    const update = await $fetch(`${SITE.worker}/${region}/renewal`, { signal }).catch(() => null) as Record<string, any>;
     if (update?.status_code === 200) {
       const data = await $fetch(`/api/${region}/participants`).catch(() => null) as Record<string, any>;
       participants.value = data?.participants;
@@ -131,6 +142,7 @@ onMounted(async() => {
 
 onBeforeUnmount(() => {
   clearInterval(interval.value);
+  controller.value.abort();
 });
 </script>
 
