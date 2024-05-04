@@ -1,4 +1,4 @@
 User-agent: *
 Disallow:
 
-Sitemap: https://muelitaschallenge.com/sitemap.xml
+Sitemap: https://streamers-ladder.pages.dev/sitemap.xml
