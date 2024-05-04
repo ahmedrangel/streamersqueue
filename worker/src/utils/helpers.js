@@ -5,3 +5,10 @@ export const fixRank = (elo, rank) => {
   }
   return rank;
 };
+
+export const controls = {
+  lan: 1,
+  las: 2,
+  na: 3,
+  euw: 4,
+};

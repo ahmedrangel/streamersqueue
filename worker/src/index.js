@@ -5,6 +5,7 @@ import twitchApi from "./apis/twitchApi";
 import riotApi from "./apis/riotApi";
 import { updateGeneralData } from "./crons/update-general-data";
 import { resetPositionChange } from "./crons/reset-position-change";
+import { controls } from "./utils/helpers";
 
 const router = IttyRouter();
 
@@ -13,6 +14,7 @@ router.post("/add", async (req, env) => {
   const _riot = new riotApi(env.RIOT_KEY);
   try {
     const { riot_name, riot_tag, region, key, twitch, twitter, instagram } = await req.json();
+    const control = controls[region.toLowerCase()];
     const route = _riot.route(region);
     const cluster = _riot.cluster(region);
     console.info(riot_name, riot_tag, region, key, twitch, twitter, instagram);
@@ -29,16 +31,16 @@ router.post("/add", async (req, env) => {
     const twitch_login = twitch_data.login;
     const twitch_display = twitch_data.display_name;
     const twitch_picture = twitch_data.profile_image_url.replace("https://static-cdn.jtvnw.net/","");
-    const account = { puuid, summoner_id, riot_name, riot_tag, lol_picture, control: 1 };
+    const account = { puuid, summoner_id, riot_name, riot_tag, lol_picture, control };
     const socials = { twitch_login, twitch_display, twitch_picture, twitter, instagram, twitch_id };
-    const { count } = await env.PARTICIPANTS.prepare("SELECT COUNT(*) as count FROM participants").first();
+    const { count } = await env.PARTICIPANTS.prepare("SELECT COUNT(*) as count FROM participants WHERE control = ? ").bind(control).first();
     // Add DB
     await env.PARTICIPANTS.prepare(
       `
         INSERT OR IGNORE INTO participants (puuid, summoner_id, riot_name, riot_tag, lol_picture, control, lol_region, position)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         `
-    ).bind(puuid, summoner_id, riot_name, riot_tag, lol_picture, 1, region.toLowerCase(), count + 1).run();
+    ).bind(puuid, summoner_id, riot_name, riot_tag, lol_picture, control, region.toLowerCase(), count + 1).run();
     await env.PARTICIPANTS.prepare(
       `
         INSERT OR IGNORE INTO socials (puuid, twitch_login, twitch_display, twitch_picture, twitter, instagram, twitch_id)
@@ -56,25 +58,27 @@ router.post("/add", async (req, env) => {
   }
 });
 
-router.get("/renewal", async (req, env) => {
+router.get("/:region/renewal", async (req, env) => {
+  const region = req.params.region.toLowerCase();
+  const control = controls[region];
   // Start renewing
   try {
-    await env.PARTICIPANTS.prepare("UPDATE control SET renewing = ? WHERE id = ? AND renewing = ?").bind(1, 1, 0).run();
-    const { last_updated } = await env.PARTICIPANTS.prepare("SELECT last_updated FROM control WHERE id = ?").bind(1).first();
+    await env.PARTICIPANTS.prepare("UPDATE control SET renewing = ? WHERE id = ? AND renewing = ?").bind(1, control, 0).run();
+    const { last_updated } = await env.PARTICIPANTS.prepare("SELECT last_updated FROM control WHERE id = ?").bind(control).first();
     const date = new Date(last_updated);
     const now = new Date();
     const remaining = Math.ceil((120000 - (now - date)) / 1000);
     // Error if not passed 2 minutes from last updated
     if (now - date < 120000) {
-      await env.PARTICIPANTS.prepare("UPDATE control SET renewing = ? WHERE id = ? AND renewing = ?").bind(0, 1, 1).run();
+      await env.PARTICIPANTS.prepare("UPDATE control SET renewing = ? WHERE id = ? AND renewing = ?").bind(0, control, 1).run();
       return new JsonResponse({ status: `Try again in ${remaining} seconds.`, status_code: 429, control: 1 });
     };
-    await updateGeneralData(env);
+    await updateGeneralData(env, control);
     // End renewing
-    await env.PARTICIPANTS.prepare("UPDATE control SET renewing = ? WHERE id = ? AND renewing = ?").bind(0, 1, 1).run();
+    await env.PARTICIPANTS.prepare("UPDATE control SET renewing = ? WHERE id = ? AND renewing = ?").bind(0, control, 1).run();
     return new JsonResponse({ status: "Renewed", status_code: 200, control: 1 });
   } catch (err) {
-    await env.PARTICIPANTS.prepare("UPDATE control SET renewing = ? WHERE id = ? AND renewing = ?").bind(0, 1, 1).run();
+    await env.PARTICIPANTS.prepare("UPDATE control SET renewing = ? WHERE id = ? AND renewing = ?").bind(0, control, 1).run();
     return new JsonResponse({ status: String(err), status_code: 400, control: 1 });
   }
 });
@@ -91,22 +95,13 @@ router.post("/reset-position-change", async (req, env) => {
   }
 });
 
-router.get("/participants", async (req, env) => {
+router.get("/:region/participants", async (req, env) => {
+  const region = req.params.region.toLowerCase();
   const DB = env.PARTICIPANTS;
-  const participants = await DB.prepare("SELECT * FROM participants").all();
-  const socials = await DB.prepare("SELECT * FROM socials").all();
-  const results = participants.results.map(p => {
-    const socials_participants = socials.results.filter(s => s.puuid === p.puuid)[0];
-    return { ...p, ...socials_participants };
-  });
+  const { results } = await DB.prepare("SELECT p.riot_name, p.riot_tag, p.is_ingame, p.wins, p.losses, p.lp, p.elo, p.tier, p.lol_picture, p.lol_region, p.position, p.position_change, s.twitch_login, s.twitch_display, s.twitch_is_live, s.twitch_picture, s.instagram, s.twitter FROM participants as p INNER JOIN socials as s ON p.puuid = s.puuid WHERE p.lol_region = ?")
+    .bind(region).all();
 
-  // remove puuid and summoner_id
-  for (const p of results) {
-    delete p.puuid;
-    delete p.summoner_id;
-  }
-
-  const control = await DB.prepare("SELECT last_updated FROM control WHERE id = ?").bind(1).first();
+  const control = await DB.prepare("SELECT last_updated FROM control WHERE id = ?").bind(controls[region]).first();
 
   const sorted = results.sort((a, b) => {
     if (!a.position || !b.position) {
@@ -126,9 +121,11 @@ router.get("/participants", async (req, env) => {
   return new JsonResponse(data);
 });
 
-router.get("/renewal-status", async (req, env) => {
-  const { renewing, last_updated } = await env.PARTICIPANTS.prepare("SELECT renewing, last_updated FROM control WHERE id = ?").bind(1).first();
-  return new JsonResponse({ renewing: Boolean(renewing), last_updated, status_code: 200, status: "Renewal status", control_id: 1 });
+router.get("/:region/renewal-status", async (req, env) => {
+  const region = req.params.region.toLowerCase();
+  const control = controls[region];
+  const { renewing, last_updated } = await env.PARTICIPANTS.prepare("SELECT renewing, last_updated FROM control WHERE id = ?").bind(control).first();
+  return new JsonResponse({ renewing: Boolean(renewing), last_updated, status_code: 200, status: "Renewal status", control: control });
 });
 
 router.post("/reset-position-change", async (req, env) => {

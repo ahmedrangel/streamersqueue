@@ -1,12 +1,36 @@
 <script setup lang="ts">
 const tabs: Record<string, any> = [
   {
-    id: "tabla",
-    name: "Tabla",
+    id: "home",
+    name: "Inicio",
     type: "link",
     route: "/",
-    icon: "fa6-solid:trophy"
-  },/*
+    icon: "ph:house-bold"
+  },
+  {
+    id: "lan",
+    name: "LAN",
+    type: "link",
+    route: "/lan",
+  },
+  {
+    id: "las",
+    name: "LAS",
+    type: "link",
+    route: "/las",
+  },
+  {
+    id: "na",
+    name: "NA",
+    type: "link",
+    route: "/na",
+  },
+  {
+    id: "euw",
+    name: "EUW",
+    type: "link",
+    route: "/euw",
+  }/*
   {
     id: "evolucion",
     name: "Evolución Diaria",
@@ -56,11 +80,11 @@ beforeEach(({ name }) => {
             <template v-for="(tab, i) of tabs" :key="i">
               <li class="nav-item px-1" data-bs-dismiss="offcanvas">
                 <NuxtLink v-if="tab.type === 'link'" class="nav-link d-flex align-items-center gap-1 position-relative overflow-hidden rounded px-3" aria-current="page" :to="tab.route">
-                  <Icon :name="tab.icon" />
+                  <Icon v-if="tab.icon" :name="tab.icon" />
                   <span>{{ tab.name }}</span>
                 </NuxtLink>
                 <a v-else class="nav-link d-flex align-items-center gap-1 position-relative overflow-hidden rounded px-3 text-white" :href="tab.route">
-                  <Icon :name="tab.icon" />
+                  <Icon v-if="tab.icon" :name="tab.icon" />
                   <span>{{ tab.name }}</span>
                 </a>
               </li>

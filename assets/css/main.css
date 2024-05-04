@@ -31,11 +31,6 @@ img {
   user-select: none;
 }
 
-.icon {
-  width: 1.1em;
-  height: 1.1em;
-}
-
 @media only screen and (width <= 767px) {
   .img-profile {
     height: 36px;

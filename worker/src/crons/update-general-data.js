@@ -141,15 +141,18 @@ const updateTwitchData = async(env, twitch_ids) => {
 };
 
 // Export
-export const updateGeneralData = async(env) => {
-  const participants_results = await env.PARTICIPANTS.prepare("SELECT puuid, summoner_id, position, position_change, wins, losses, lp, is_ingame, lol_region, lol_picture from participants").all();
-  const socials_results = await env.PARTICIPANTS.prepare("SELECT puuid, twitch_id, twitch_login, twitch_display, twitch_picture, twitch_is_live from socials").all();
-  if (!participants_results.results[0] || !socials_results.results[0]) return null;
+export const updateGeneralData = async(env, control) => {
+  const { results } = await env.PARTICIPANTS.prepare(`
+    SELECT
+      p.puuid, p.summoner_id, p.position, p.position_change, p.wins, p.losses, p.lp, p.is_ingame, p.lol_region, p.lol_picture,
+      s.twitch_id, s.twitch_login, s.twitch_display, s.twitch_picture, s.twitch_is_live
+    FROM participants as p
+    INNER JOIN socials as s ON p.puuid = s.puuid
+    WHERE control = ?
+    `)
+    .bind(control).all();
 
-  const results = participants_results.results.map(p => {
-    const socials_participants = socials_results.results.filter(s => s.puuid === p.puuid)[0];
-    return { ...p, ...socials_participants };
-  });
+  if (!results[0]) return null;
 
   participants = [];
   twitch_data = [];
@@ -186,27 +189,27 @@ export const updateGeneralData = async(env) => {
 
   // Ranked update
   for (const p of updater_participants) {
-    await env.PARTICIPANTS.prepare("UPDATE OR IGNORE participants SET wins = ?, losses = ?, lp = ?, elo = ?, tier = ? WHERE puuid = ?")
-      .bind(p.wins, p.losses, p.lp, p.elo, p.tier, p.puuid).run();
+    await env.PARTICIPANTS.prepare("UPDATE OR IGNORE participants SET wins = ?, losses = ?, lp = ?, elo = ?, tier = ? WHERE puuid = ? AND control = ?")
+      .bind(p.wins, p.losses, p.lp, p.elo, p.tier, p.puuid, control).run();
   }
 
   // Position change update
   for (const p of updater_position_change) {
-    await env.PARTICIPANTS.prepare("UPDATE OR IGNORE participants SET position = ?, position_change = ? WHERE puuid = ?")
-      .bind(p.position, p.position_change, p.puuid).run();
+    await env.PARTICIPANTS.prepare("UPDATE OR IGNORE participants SET position = ?, position_change = ? WHERE puuid = ? AND control = ?")
+      .bind(p.position, p.position_change, p.puuid, control).run();
   }
 
   // Ingame update
   for (const p of updater_ingame) {
-    await env.PARTICIPANTS.prepare("UPDATE OR IGNORE participants SET is_ingame = ? WHERE puuid = ?")
-      .bind(p.is_ingame, p.puuid).run();
+    await env.PARTICIPANTS.prepare("UPDATE OR IGNORE participants SET is_ingame = ? WHERE puuid = ? AND control = ?")
+      .bind(p.is_ingame, p.puuid, control).run();
   }
 
   console.info("Updaters check: " + updated_data.ranked, updated_data.ingame, updated_data.sorted);
   // Update last_updated
   if (updated_data.ranked && updated_data.ingame && updated_data.sorted) {
     await env.PARTICIPANTS.prepare("UPDATE OR IGNORE control SET last_updated = ? WHERE id = ?")
-      .bind(new Date().toISOString(), 1).run();
+      .bind(new Date().toISOString(), control).run();
   }
 
   return { sorted };

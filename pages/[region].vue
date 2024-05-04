@@ -1,0 +1,177 @@
+<script setup lang="ts">
+import type { Tooltip } from "bootstrap";
+const { params } = useRoute();
+const region = params.region.toLowerCase();
+const { data: data } = await useFetch(`/api/${region}/participants`) as Record<string, any>;
+const participants = ref(data.value?.participants) as Ref<Record<string, any>>;
+const participants_last_updated = ref(data.value?.last_updated) as Ref<string>;
+const renewal_last_updated = ref() as Ref<string>;
+const is_renewing = ref(false) as Ref<boolean>;
+const cooldown = ref(true) as Ref<boolean>;
+const remaining = ref() as Ref<number>;
+const interval = ref() as Ref<NodeJS.Timeout>;
+const interval2 = ref() as Ref<NodeJS.Timeout>;
+let tooltipInstances = [] as Tooltip[];
+
+useSeoMeta({
+  title: SITE.title,
+  description: SITE.description,
+  keywords: SITE.keywords,
+  // Open Graph
+  ogType: "website",
+  ogTitle: SITE.title,
+  ogSiteName: SITE.name,
+  ogDescription: SITE.description,
+  ogUrl: SITE.host,
+  ogImage: SITE.host + "/" + SITE.banner,
+  // Twitter
+  twitterCard: "summary_large_image",
+  twitterTitle: SITE.title,
+  twitterDescription: SITE.description
+});
+
+useHead({
+  link: [
+    { rel: "canonical", href: SITE.host }
+  ]
+});
+
+const remainingForRenew = () => {
+  const date = Number(new Date(participants_last_updated.value) as Date);
+  const now = Number(new Date() as Date);
+  remaining.value = Math.ceil((120000 - (now - date)) / 1000);
+};
+
+const { $Tooltip, $bootstrap } = useNuxtApp();
+
+const reinitializeTooltips = () => {
+  const showingTooltips = document.querySelectorAll(".tooltip.bs-tooltip-auto.show") as NodeListOf<HTMLElement>;
+  for (const t of showingTooltips) t.remove();
+  for (const i of tooltipInstances) i.dispose();
+  tooltipInstances = [];
+  const new_elements = document.querySelectorAll("[data-bs-toggle=\"tooltip\"]") as NodeListOf<HTMLElement>;
+  [...new_elements].map(e => {
+    const instance = new $Tooltip(e, { trigger: "hover", placement: "top" });
+    tooltipInstances.push(instance);
+  });
+};
+
+const checkAndFetch = async () => {
+  const { last_updated, renewing } = await $fetch(`/api/${region}renewal-status`).catch(() => null) as Record<string, any>;
+  renewal_last_updated.value = last_updated;
+  if (!renewing) {
+    const data = await $fetch(`/api/${region}/participants`).catch(() => null) as Record<string, any>;
+    participants.value = data?.participants;
+    participants_last_updated.value = data?.last_updated;
+    is_renewing.value = false;
+    remainingForRenew();
+    if (interval2.value) clearInterval(interval2.value);
+    return true;
+  }
+  return false;
+};
+
+const checkRenewal = async () => {
+  const checked = await checkAndFetch();
+  if (!checked) {
+    interval2.value = setInterval(async() => {
+      await checkAndFetch();
+    }, 6000);
+  }
+};
+
+
+const renew = async() => {
+  const first_last_updated = Number(new Date(participants_last_updated.value) as Date);
+  const updatingToast = document.querySelector("#updatingToast") as HTMLElement;
+  $bootstrap.showToast(updatingToast);
+  is_renewing.value = true;
+  const { renewing, last_updated } = await $fetch(`/api/${region}/renewal-status`).catch(() => null) as Record<string, any>;
+  renewal_last_updated.value = last_updated;
+  const last_last_updated = Number(new Date(last_updated) as Date);
+  const dif = Math.ceil((last_last_updated - first_last_updated) / 1000);
+  if (!renewing && remaining.value < 0 && dif === 0) {
+    remaining.value >= 0 ? is_renewing.value = false : is_renewing.value = true;
+    const update = await $fetch(`${SITE.worker}/${region}/renewal`).catch(() => null) as Record<string, any>;
+    if (update?.status_code === 200) {
+      const data = await $fetch(`/api/${region}/participants`).catch(() => null) as Record<string, any>;
+      participants.value = data?.participants;
+      participants_last_updated.value = data?.last_updated;
+      cooldown.value = true;
+      is_renewing.value = false;
+      remainingForRenew();
+    } else if (update?.status_code === 429) {
+      is_renewing.value = false;
+    }
+  } else {
+    is_renewing.value = false;
+  }
+
+  if (remaining.value < 0 && dif > 0 || renewing) {
+    console.info("checking latest renewal");
+    is_renewing.value = true;
+    await checkRenewal();
+  }
+  reinitializeTooltips();
+  $bootstrap.hideToast(updatingToast);
+};
+
+onMounted(async() => {
+  remainingForRenew();
+  await renew();
+  interval.value = setInterval(() => {
+    if (remaining.value >= 0) {
+      cooldown.value = true;
+      remainingForRenew();
+    } else {
+      cooldown.value = false;
+    }
+  }, 200);
+});
+
+onBeforeUnmount(() => {
+  clearInterval(interval.value);
+});
+</script>
+
+<template>
+  <!-- Pages: keep single root, everything goes inside 'main' -->
+  <main>
+    <div class="text-center my-3">
+      <h5 class="text-uppercase mb-0 fw-bold">{{ SITE.name }}</h5>
+    </div>
+    <div class="d-flex justify-content-end align-items-center mb-2">
+      <button class="btn bg-tertiary text-dark fw-bold d-flex align-items-center gap-1" :disabled="is_renewing || cooldown" @click="renew()">
+        <Icon v-if="!is_renewing" name="ph:arrows-clockwise-bold" />
+        <CompLoadingSpinner v-else />
+        <span>{{ is_renewing ? "Actualizando" : "Actualizar" }}</span>
+      </button>
+    </div>
+    <span v-if="cooldown && remaining >= 0" class="d-flex justify-content-end align-items-center text-muted"><i>Disponible en: {{ remaining }} segundos</i></span>
+    <!-- Cantidad de participantes -->
+    <CompParticipantsCounter :data="participants" :last-updated="participants_last_updated" />
+    <!-- Tabla de clasificación -->
+    <CompRanking v-if="participants" :data="participants" />
+    <div class="justify-content-start align-items-center d-flex gap-2 small mt-1">
+      <Icon name="ph:info-bold" class="h4 mb-0" />
+      <div>
+        <span>Los cambios de posición se restauran a las 00:00 GMT-6.</span>
+      </div>
+    </div>
+    <!--
+    <hr class="mt-5 mb-4">
+    <CompChart />
+    -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+      <div id="updatingToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
+        <div class="toast-header py-4 border-0 bg-tertiary text-dark px-3 rounded">
+          <CompLoadingSpinner class="me-2 h6 mb-0" />
+          <h6 class="me-auto mb-0">Actualizando los datos...</h6>
+          <button type="button" class="btn p-0 text-dark" data-bs-dismiss="toast" aria-label="Close">
+            <Icon name="ph:x-bold" />
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+</template>

@@ -119,3 +119,10 @@ export const getTimeUnitsFromISODate = (ISO: string) => {
 export const capitalizeFirst = (text: string) => {
   return text.charAt(0).toUpperCase() + text.slice(1);
 };
+
+export const controls = {
+  lan: 1,
+  las: 2,
+  na: 3,
+  euw: 4,
+} as Record<string, number>;
