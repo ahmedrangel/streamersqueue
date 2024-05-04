@@ -54,31 +54,41 @@ const reinitializeTooltips = () => {
   });
 };
 
+const checkAndFetch = async () => {
+  const { last_updated, renewing } = await $fetch("/api/renewal-status").catch(() => null) as Record<string, any>;
+  renewal_last_updated.value = last_updated;
+  if (!renewing) {
+    const data = await $fetch("/api/participants").catch(() => null) as Record<string, any>;
+    participants.value = data?.participants;
+    participants_last_updated.value = data?.last_updated;
+    is_renewing.value = false;
+    remainingForRenew();
+    if (interval2.value) clearInterval(interval2.value);
+    return true;
+  }
+  return false;
+};
+
 const checkRenewal = async () => {
-  interval2.value = setInterval(async() => {
-    if (participants_last_updated.value === renewal_last_updated.value) {
-      const { last_updated, renewing } = await $fetch("/api/renewal-status").catch(() => null) as Record<string, any>;
-      renewal_last_updated.value = last_updated;
-      if (!renewing) {
-        const data = await $fetch("/api/participants").catch(() => null) as Record<string, any>;
-        participants.value = data?.participants;
-        participants_last_updated.value = data?.last_updated;
-        is_renewing.value = false;
-        remainingForRenew();
-        clearInterval(interval2.value);
-      }
-    }
-  }, 6000);
+  const checked = await checkAndFetch();
+  if (!checked) {
+    interval2.value = setInterval(async() => {
+      await checkAndFetch();
+    }, 6000);
+  }
 };
 
 
 const renew = async() => {
+  const first_last_updated = Number(new Date(participants_last_updated.value) as Date);
   const updatingToast = document.querySelector("#updatingToast") as HTMLElement;
   $bootstrap.showToast(updatingToast);
   is_renewing.value = true;
   const { renewing, last_updated } = await $fetch("/api/renewal-status").catch(() => null) as Record<string, any>;
   renewal_last_updated.value = last_updated;
-  if (!renewing && remaining.value < 0) {
+  const last_last_updated = Number(new Date(last_updated) as Date);
+  const dif = Math.ceil((last_last_updated - first_last_updated) / 1000);
+  if (!renewing && remaining.value < 0 && dif === 0) {
     remaining.value >= 0 ? is_renewing.value = false : is_renewing.value = true;
     const update = await $fetch(SITE.worker + "/renewal").catch(() => null) as Record<string, any>;
     if (update?.status_code === 200) {
@@ -95,7 +105,7 @@ const renew = async() => {
     is_renewing.value = false;
   }
 
-  if (remaining.value < 0) {
+  if (remaining.value < 0 && dif > 0 || renewing) {
     console.info("checking latest renewal");
     is_renewing.value = true;
     await checkRenewal();
