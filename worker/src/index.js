@@ -4,7 +4,7 @@ import JsonResponse from "./jsonResponse";
 import twitchApi from "./apis/twitchApi";
 import riotApi from "./apis/riotApi";
 import { updateGeneralData } from "./crons/update-general-data";
-import { updateLolIcons } from "./crons/update-lol-icons";
+import { resetPositionChange } from "./crons/reset-position-change";
 
 const router = IttyRouter();
 
@@ -79,16 +79,6 @@ router.get("/renewal", async (req, env) => {
   }
 });
 
-router.post("/update-lol-icons", async (req, env) => {
-  try {
-    const { key } = await req.json();
-    if (key !== env.POST_KEY) return new JsonResponse({ status: "Forbidden", status_code: 403 });
-    return new JsonResponse(await updateLolIcons(env));
-  } catch {
-    return new JsonResponse({ status: "Bad Request", status_code: 400 });
-  }
-});
-
 router.post("/reset-position-change", async (req, env) => {
   try {
     const { key } = await req.json();
@@ -141,6 +131,18 @@ router.get("/renewal-status", async (req, env) => {
   return new JsonResponse({ renewing: Boolean(renewing), last_updated, status_code: 200, status: "Renewal status", control_id: 1 });
 });
 
+router.post("/reset-position-change", async (req, env) => {
+  try {
+    const { key } = await req.json();
+    if (key !== env.POST_KEY) return new JsonResponse({ status: "Forbidden", status_code: 403 });
+    await resetPositionChange(env);
+    return new JsResponse("Reseted");
+  } catch (err) {
+    console.info(err);
+    return new JsonResponse({ status: "Bad Request", status_code: 400 });
+  }
+});
+
 router.all("*", () => new JsResponse("Not Found.", { status: 404 }));
 
 export default {
@@ -149,8 +151,8 @@ export default {
   },
   async scheduled(event, env) {
     switch (event.cron) {
-      case "*/5 * * * *":
-        await updateGeneralData(env);
+      case "0 6 * * *":
+        await resetPositionChange(env);
         break;
     }
   }

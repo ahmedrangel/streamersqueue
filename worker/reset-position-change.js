@@ -7,6 +7,6 @@ const response = await fetch(process.env.WORKER + "/reset-position-change", {
   }),
 });
 
-const data = await response.json();
+const data = await response.text();
 
 console.info(data);

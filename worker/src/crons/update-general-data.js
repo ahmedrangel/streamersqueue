@@ -1,6 +1,6 @@
 import twitchApi from "../apis/twitchApi";
 import riotApi, { eloValues } from "../apis/riotApi";
-import { fixRank, resetPositionChange } from "../utils/helpers";
+import { fixRank } from "../utils/helpers";
 
 let participants = [];
 let twitch_data = [];
@@ -202,8 +202,6 @@ export const updateGeneralData = async(env) => {
       .bind(p.is_ingame, p.puuid).run();
   }
 
-  // Reset position_change if hour is 0 and minutes < 10
-  await resetPositionChange(env);
   console.info("Updaters check: " + updated_data.ranked, updated_data.ingame, updated_data.sorted);
   // Update last_updated
   if (updated_data.ranked && updated_data.ingame && updated_data.sorted) {
