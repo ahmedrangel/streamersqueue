@@ -24,19 +24,19 @@ let tooltipInstances = [] as Tooltip[];
 const controller = ref(new AbortController()) as Ref<AbortController>;
 
 useSeoMeta({
-  title: SITE.title,
+  title: `${SITE.title} (${region.toUpperCase()})`,
   description: SITE.description,
   keywords: SITE.keywords,
   // Open Graph
   ogType: "website",
-  ogTitle: SITE.title,
+  ogTitle: `${SITE.title} (${region.toUpperCase()})`,
   ogSiteName: SITE.name,
   ogDescription: SITE.description,
   ogUrl: SITE.host,
   ogImage: SITE.host + "/" + SITE.banner,
   // Twitter
   twitterCard: "summary_large_image",
-  twitterTitle: SITE.title,
+  twitterTitle: `${SITE.title} (${region.toUpperCase()})`,
   twitterDescription: SITE.description
 });
 
@@ -150,7 +150,7 @@ onBeforeUnmount(() => {
   <!-- Pages: keep single root, everything goes inside 'main' -->
   <main>
     <div class="text-center my-3">
-      <h5 class="text-uppercase mb-0 fw-bold">{{ SITE.name }}</h5>
+      <h5 class="text-uppercase mb-0 fw-bold">{{ SITE.name }} ({{ region }})</h5>
     </div>
     <div class="d-flex justify-content-end align-items-center mb-2">
       <button class="btn bg-tertiary text-dark fw-bold d-flex align-items-center gap-1" :disabled="is_renewing || cooldown" @click="renew()">
