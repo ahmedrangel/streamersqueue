@@ -71,15 +71,15 @@ router.get("/:region/renewal", async (req, env) => {
     // Error if not passed 2 minutes from last updated
     if (now - date < 120000) {
       await env.PARTICIPANTS.prepare("UPDATE control SET renewing = ? WHERE id = ? AND renewing = ?").bind(0, control, 1).run();
-      return new JsonResponse({ status: `Try again in ${remaining} seconds.`, status_code: 429, control: 1 });
+      return new JsonResponse({ status: `Try again in ${remaining} seconds.`, status_code: 429, control });
     };
     await updateGeneralData(env, control);
     // End renewing
     await env.PARTICIPANTS.prepare("UPDATE control SET renewing = ? WHERE id = ? AND renewing = ?").bind(0, control, 1).run();
-    return new JsonResponse({ status: "Renewed", status_code: 200, control: 1 });
+    return new JsonResponse({ status: "Renewed", status_code: 200, control });
   } catch (err) {
     await env.PARTICIPANTS.prepare("UPDATE control SET renewing = ? WHERE id = ? AND renewing = ?").bind(0, control, 1).run();
-    return new JsonResponse({ status: String(err), status_code: 400, control: 1 });
+    return new JsonResponse({ status: String(err), status_code: 400, control });
   }
 });
 
@@ -125,7 +125,7 @@ router.get("/:region/renewal-status", async (req, env) => {
   const region = req.params.region.toLowerCase();
   const control = controls[region];
   const { renewing, last_updated } = await env.PARTICIPANTS.prepare("SELECT renewing, last_updated FROM control WHERE id = ?").bind(control).first();
-  return new JsonResponse({ renewing: Boolean(renewing), last_updated, status_code: 200, status: "Renewal status", control: control });
+  return new JsonResponse({ renewing: Boolean(renewing), last_updated, status_code: 200, status: "Renewal status", control });
 });
 
 router.post("/reset-position-change", async (req, env) => {

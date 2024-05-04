@@ -57,7 +57,7 @@ const reinitializeTooltips = () => {
 };
 
 const checkAndFetch = async () => {
-  const { last_updated, renewing } = await $fetch(`/api/${region}renewal-status`).catch(() => null) as Record<string, any>;
+  const { last_updated, renewing } = await $fetch(`/api/${region}/renewal-status`).catch(() => null) as Record<string, any>;
   renewal_last_updated.value = last_updated;
   if (!renewing) {
     const data = await $fetch(`/api/${region}/participants`).catch(() => null) as Record<string, any>;
