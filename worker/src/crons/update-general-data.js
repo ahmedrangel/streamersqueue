@@ -2,16 +2,10 @@ import twitchApi from "../apis/twitchApi";
 import riotApi, { eloValues } from "../apis/riotApi";
 import { fixRank } from "../utils/helpers";
 
-let participants = [];
-let twitch_data = [];
-let updater_participants = [];
-let updater_ingame = [];
-let updater_position_change = [];
-
-let updated_data = {};
-
 // Iterated fetch
 const updateRankedData = async(env, p) => {
+  let participants;
+  let updater_participants;
   const _riot = new riotApi(env.RIOT_KEY);
   const route = _riot.route(p.lol_region);
   const cluster = _riot.cluster(p.lol_region);
@@ -19,10 +13,11 @@ const updateRankedData = async(env, p) => {
   const soloq = ranked_data?.filter(item => item?.queueType === "RANKED_SOLO_5x5")[0] ?? null;
 
   if (soloq) {
-    participants.push({ puuid: p.puuid, summoner_id: p.summoner_id, wins: soloq.wins, losses: soloq.losses, lp: soloq.leaguePoints, elo: soloq.tier, tier: soloq.rank, position: p.position, position_change: p.position_change });
+    participants = { puuid: p.puuid, summoner_id: p.summoner_id, wins: soloq.wins, losses: soloq.losses, lp: soloq.leaguePoints, elo: soloq.tier, tier: soloq.rank, position: p.position, position_change: p.position_change };
     if (p.wins !== soloq.wins || p.losses !== soloq.losses || p.lp !== soloq.leaguePoints) {
-      updater_participants.push({ puuid: p.puuid, wins: soloq.wins, losses: soloq.losses, lp: soloq.leaguePoints, elo: soloq.tier.toLowerCase(), tier: fixRank(soloq.tier, soloq.rank) });
+      updater_participants = { puuid: p.puuid, wins: soloq.wins, losses: soloq.losses, lp: soloq.leaguePoints, elo: soloq.tier.toLowerCase(), tier: fixRank(soloq.tier, soloq.rank) };
     }
+    return { participants, updater_participants, updated_data: true };
   } else {
     const start_split1_2024_time = 1704844800;
     const matches = await _riot.getMatchesByPuuid(p.puuid, cluster, 20, 420, start_split1_2024_time);
@@ -37,16 +32,17 @@ const updateRankedData = async(env, p) => {
         if (!participant_data.win && !participant_data.gameEndedInEarlySurrender)
           losses = losses + 1;
       }
-      participants.push({ puuid: p.puuid, summoner_id: p.summoner_id, wins, losses, lp: p.lp, elo: null, tier: null, position: p.position, position_change: p.position_change });
-      updater_participants.push({ puuid: p.puuid, wins, losses, lp: null, elo: null, tier: null });
+      participants = { puuid: p.puuid, summoner_id: p.summoner_id, wins, losses, lp: p.lp, elo: null, tier: null, position: p.position, position_change: p.position_change };
+      updater_participants = { puuid: p.puuid, wins, losses, lp: null, elo: null, tier: null };
+      return { participants, updater_participants, updated_data: true };
     }
   }
-  updated_data.ranked = true;
-  return participants;
 };
 
 // Iterated fetch
 const updateLolIngameStatus = async(env, p) => {
+  let updater_ingame;
+  let updated_data;
   const _riot = new riotApi(env.RIOT_KEY);
   const route = _riot.route(p.lol_region);
   const ingame_data = await _riot.getSpectatorByPuuid(p.puuid, route);
@@ -58,20 +54,24 @@ const updateLolIngameStatus = async(env, p) => {
       await env.PARTICIPANTS.prepare("UPDATE OR IGNORE participants SET lol_picture = ? WHERE puuid = ?").bind(lol_picture, p.puuid).run();
     }
     if (p.is_ingame !== 1) {
-      updater_ingame.push({ puuid: p.puuid, is_ingame: 1 });
+      updater_ingame = { puuid: p.puuid, is_ingame: 1 };
     }
-    updated_data.ingame = true;
+    updated_data = true;
   } else {
     if (p.is_ingame !== 0) {
-      updater_ingame.push({ puuid: p.puuid, is_ingame: 0 });
+      updater_ingame = { puuid: p.puuid, is_ingame: 0 };
     }
-    updated_data.ingame = true;
+    updated_data = true;
   }
+
+  return { updater_ingame, updated_data };
 };
 
-const sortRankedData = () => {
+const sortRankedData = (participants) => {
   if (!participants[0]) return null;
   // Sort participants by elo and lp
+  const updater_position_change = [];
+  let updated_data;
   const sorted = participants.sort((a, b) => {
     if (a.elo && b.elo) {
       const eloComparison = eloValues[`${b.elo} ${b.tier}`] - eloValues[`${a.elo} ${a.tier}`];
@@ -95,12 +95,12 @@ const sortRankedData = () => {
     }
     index++;
   }
-  updated_data.sorted = true;
-  return sorted;
+  updated_data = true;
+  return { sorted, updater_position_change, updated_data };
 };
 
 // Single fetch
-const updateTwitchLiveStatus = async(env, twitch_ids) => {
+const updateTwitchLiveStatus = async(env, twitch_ids, twitch_data) => {
   const _twitch = new twitchApi(env.TWITCH_CLIENT_ID, env.TWITCH_CLIENT_SECRET);
   // Update participants live status
   const data = [];
@@ -125,7 +125,7 @@ const updateTwitchLiveStatus = async(env, twitch_ids) => {
 };
 
 // Single fetch
-const updateTwitchData = async(env, twitch_ids) => {
+const updateTwitchData = async(env, twitch_ids, twitch_data) => {
   const _twitch = new twitchApi(env.TWITCH_CLIENT_ID, env.TWITCH_CLIENT_SECRET);
   const data = [];
   const users_data = await _twitch.getUsersById(twitch_ids);
@@ -154,11 +154,11 @@ export const updateGeneralData = async(env, control) => {
 
   if (!results[0]) return null;
 
-  participants = [];
-  twitch_data = [];
-  updater_participants = [];
-  updater_ingame = [];
-  updater_position_change = [];
+  const participants = [];
+  const twitch_data = [];
+  const updater_participants = [];
+  const updater_ingame = [];
+  const updated_data = {};
   const twitch_ids = [];
 
   let index = 0;
@@ -169,16 +169,25 @@ export const updateGeneralData = async(env, control) => {
       index = 0;
     }
     twitch_ids.push(p.twitch_id);
-    await updateRankedData(env, p);
-    await updateLolIngameStatus(env, p);
+    const ranked_data = await updateRankedData(env, p);
+    if (ranked_data.participants) participants.push(ranked_data.participants);
+    if (ranked_data.updater_participants) updater_participants.push(ranked_data.updater_participants);
+    if (ranked_data.updated_data) updated_data.ranked = ranked_data.updated_data;
+
+    const ingame_data = await updateLolIngameStatus(env, p);
+    if (ingame_data.updater_ingame) updater_ingame.push(ingame_data.updater_ingame);
+    if (ingame_data.updated_data) updated_data.ingame = ingame_data.updated_data;
+
     twitch_data.push({ twitch_id: p.twitch_id, twitch_login: p.twitch_login, twitch_display: p.twitch_display, twitch_picture: p.twitch_picture, twitch_is_live: p.twitch_is_live });
     index++;
   }
 
-  const sorted = sortRankedData();
+  const sorted_data = sortRankedData(participants);
+  const updater_position_change = sorted_data.updater_position_change;
+  updated_data.sorted = sorted_data.updated_data;
 
-  const updater_twitch_data = await updateTwitchData(env, twitch_ids);
-  const updater_twitch_live = await updateTwitchLiveStatus(env, twitch_ids);
+  const updater_twitch_data = await updateTwitchData(env, twitch_ids, twitch_data);
+  const updater_twitch_live = await updateTwitchLiveStatus(env, twitch_ids, twitch_data);
 
   console.info(updater_participants);
   console.info(updater_position_change);
@@ -212,7 +221,7 @@ export const updateGeneralData = async(env, control) => {
       .bind(new Date().toISOString(), control).run();
   }
 
-  return { sorted };
+  return { sorted: sorted_data.sorted };
 };
 
 /*
