@@ -22,6 +22,13 @@ export default defineEventHandler(async (event) => {
     return a.position - b.position;
   });
 
+  let i = 0;
+  for (const participant of sorted) {
+    participant.raw_position = ++i;
+    participant.is_ingame = Boolean(participant.is_ingame);
+    participant.twitch_is_live = Boolean(participant.twitch_is_live);
+  }
+
   const data = { participants: sorted, last_updated: control.last_updated };
   return data;
 });
