@@ -1,7 +1,7 @@
 export const SITE = {
   name: "Streamers SoloQ Ladder",
   title: "Streamers SoloQ Ladder",
-  host: "",
+  host: "https://streamers-ladder.pages.dev",
   description: "League of Legends Streamers Ladder",
   keywords: "ladder, challenge, soloq, league of legends, riot, lol, elo, twitch, streamers",
   developers: [
