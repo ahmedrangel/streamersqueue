@@ -146,8 +146,8 @@ onBeforeUnmount(() => {
         <span>Los cambios de posición se restauran a las 00:00 GMT-6.</span>
       </div>
     </div>
-    <hr class="mt-5 mb-4">
     <!--
+    <hr class="mt-5 mb-4">
     <CompChart />
     -->
     <div class="toast-container position-fixed bottom-0 end-0 p-3">
