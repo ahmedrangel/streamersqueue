@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Tooltip } from "bootstrap";
 const { params } = useRoute();
-const region = params.region.toLowerCase();
+const region = String(params.region).toLowerCase();
 
 if (!controls[region]) {
   throw createError({
