@@ -56,8 +56,8 @@ const { $Tooltip, $bootstrap } = useNuxtApp();
 
 const reinitializeTooltips = () => {
   const showingTooltips = document.querySelectorAll(".tooltip.bs-tooltip-auto.show") as NodeListOf<HTMLElement>;
-  for (const t of showingTooltips) t.remove();
-  for (const i of tooltipInstances) i.dispose();
+  for (const t of showingTooltips) t?.remove();
+  for (const i of tooltipInstances) i?.dispose();
   tooltipInstances = [];
   const new_elements = document.querySelectorAll("[data-bs-toggle=\"tooltip\"]") as NodeListOf<HTMLElement>;
   [...new_elements].map(e => {
@@ -128,6 +128,7 @@ const renew = async() => {
 };
 
 onMounted(async() => {
+  reinitializeTooltips();
   remainingForRenew();
   await renew();
   interval.value = setInterval(() => {
