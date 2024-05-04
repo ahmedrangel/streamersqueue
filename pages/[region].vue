@@ -3,7 +3,7 @@ import type { Tooltip } from "bootstrap";
 const { params } = useRoute();
 const region = String(params.region).toLowerCase();
 
-if (!controls[region]) {
+if (!Object.keys(controls).includes(region)) {
   throw createError({
     statusCode: 404,
     message: `Region not found: '${region}'`,
