@@ -13,8 +13,11 @@
   --bs-body-font-size: 1.12rem;
   --bs-body-font-weight: 300;
   --winner-first: #ffea00;
+  --winner-first-rgb: 255, 234, 0;
   --winner-second: #e1e1e1;
+  --winner-second-rgb: 225, 225, 225;
   --winner-third: #ff4d00;
+  --winner-third-rgb: 255, 77, 0;
 }
 
 nav .router-link-exact-active {
@@ -155,4 +158,20 @@ main ::-webkit-scrollbar-track {
 .spinner-border {
   --bs-spinner-width: 1rem;
   --bs-spinner-height: 1rem;
+}
+
+.p-row-1, .p-row-2, .p-row-3 {
+  border-bottom: 1px solid;
+}
+
+.p-row-1 {
+  border-color: rgba(var(--winner-first-rgb), 0.5);
+}
+
+.p-row-2 {
+  border-color: rgba(var(--winner-second-rgb), 0.5);
+}
+
+.p-row-3 {
+  border-color: rgba(var(--winner-third-rgb), 0.5);
 }

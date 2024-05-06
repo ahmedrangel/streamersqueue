@@ -130,7 +130,7 @@ const remainMatchesToday = (total: number) => {
         </tr>
       </thead>
       <tbody class="border">
-        <tr v-for="p of participants" :key="p.raw_position" class="text-center align-middle" :class="`${p.is_banned ? 'is-banned' : ''}`">
+        <tr v-for="p of participants" :key="p.raw_position" class="text-center align-middle" :class="`p-row-${p.raw_position}`">
           <th scope="row"><small>{{ p.position }}</small></th>
           <th scope="row" style="width: 40px;">
             <div class="d-flex align-items-center justify-content-center gap-1 px-1" :class="`${p.position_change > 0 ? 'text-positive' : p.position_change < 0 ? 'text-negative' : 'text-muted'}`">
@@ -140,11 +140,11 @@ const remainMatchesToday = (total: number) => {
               </small>
             </div>
           </th>
-          <td scope="row" style="width: 30px;">
+          <th scope="row" style="width: 30px;">
             <span class="d-flex align-items-center justify-content-center" :class="`${ p.twitch_is_live ? 'live' : 'not-live'}`" data-bs-toggle="tooltip" :data-bs-original-title="p.twitch_is_live ? '¡En directo!' : ''">
               <Icon name="ph:circle-fill" />
             </span>
-          </td>
+          </th>
           <td class="text-start">
             <div class="d-flex align-items-center gap-2 px-1">
               <div class="position-relative">
@@ -157,17 +157,17 @@ const remainMatchesToday = (total: number) => {
               <a target="_blank" class="small" :href="`https://twitch.tv/${p.twitch_login}`">{{ p.twitch_display }}</a>
             </div>
           </td>
-          <td scope="row" style="width: 40px;">
+          <th scope="row" style="width: 40px;">
             <a v-if="p.instagram" target="_blank" :href="`https://instagram.com/${p.instagram}`" class="p-2 bg-instagram rounded d-inline-flex align-items-center text-white"><Icon name="simple-icons:instagram" /></a>
-          </td>
-          <td scope="row" style="width: 40px;">
+          </th>
+          <th scope="row" style="width: 40px;">
             <a v-if="p.twitter" target="_blank" :href="`https://x.com/${p.twitter}`" class="p-2 bg-black rounded d-inline-flex align-items-center text-white"><Icon name="simple-icons:x" /></a>
-          </td>
-          <td scope="row" style="width: 30px;">
+          </th>
+          <th scope="row" style="width: 30px;">
             <span class="d-flex align-items-center justify-content-center" :class="`${p.is_ingame ? 'ingame' : 'not-ingame'}`" data-bs-toggle="tooltip" :data-bs-original-title="p.is_ingame ? '¡En partida!' : ''">
               <Icon name="ph:circle-fill" />
             </span>
-          </td>
+          </th>
           <td class="text-start">
             <div class="d-flex align-items-center gap-2">
               <img class="rounded-circle img-profile" :src="`https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/${p.lol_picture}.jpg`">
