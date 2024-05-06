@@ -49,7 +49,7 @@ useHead({
 const remainingForRenew = () => {
   const date = Number(new Date(participants_last_updated.value) as Date);
   const now = Number(new Date() as Date);
-  remaining.value = Math.ceil((120000 - (now - date)) / 1000);
+  remaining.value = Math.ceil((240000 - (now - date)) / 1000);
 };
 
 const { $Tooltip, $bootstrap } = useNuxtApp();

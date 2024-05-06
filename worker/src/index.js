@@ -67,9 +67,9 @@ router.get("/:region/renewal", async (req, env) => {
     const { last_updated } = await env.PARTICIPANTS.prepare("SELECT last_updated FROM control WHERE id = ?").bind(control).first();
     const date = new Date(last_updated);
     const now = new Date();
-    const remaining = Math.ceil((120000 - (now - date)) / 1000);
+    const remaining = Math.ceil((240000 - (now - date)) / 1000);
     // Error if not passed 2 minutes from last updated
-    if (now - date < 120000) {
+    if (now - date < 240000) {
       await env.PARTICIPANTS.prepare("UPDATE control SET renewing = ? WHERE id = ? AND renewing = ?").bind(0, control, 1).run();
       return new JsonResponse({ status: `Try again in ${remaining} seconds.`, status_code: 429, control });
     };
