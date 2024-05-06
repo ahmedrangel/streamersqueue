@@ -121,6 +121,9 @@ const remainMatchesToday = (total: number) => {
                 <span v-if="h.icon">
                   <Icon :name="h.icon" />
                 </span>
+                <div v-if="h.title" class="d-flex align-items-center justify-content-evenly">
+                  <small>{{ h.title }}</small>
+                </div>
               </div>
             </th>
           </template>
@@ -174,7 +177,7 @@ const remainMatchesToday = (total: number) => {
             </div>
           </td>
           <td scope="row" style="width: 90px;">
-            <strong class="text-uppercase text-nowrap">{{ p.lol_region }}</strong>
+            <strong class="text-uppercase text-nowrap small">{{ p.lol_region }}</strong>
           </td>
           <td>
             <div v-if="p.elo" class="py-1">

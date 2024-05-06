@@ -56,7 +56,7 @@ export const table_head = [
     id: "region",
     name: "Región",
     title: "Región",
-    sortable: true
+    sortable: false
   },
   {
     id: "elo",
