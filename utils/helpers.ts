@@ -1,3 +1,5 @@
+import countries_json from "../content/countries.json";
+
 export const getPercentage = (wins: number, losses: number) => {
   if (!wins && !losses) return 0;
   const winrate = wins / (wins + losses) * 100;
@@ -126,3 +128,8 @@ export const controls = {
   na: 3,
   euw: 4,
 } as Record<string, number>;
+
+export const getCountryName = (emoji: string) => {
+  const countries = countries_json.countries;
+  return countries.find(country => country.emoji === emoji)?.name_en;
+};
