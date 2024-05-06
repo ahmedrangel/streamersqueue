@@ -13,7 +13,7 @@ router.post("/add", async (req, env) => {
   const _twitch = new twitchApi(env.TWITCH_CLIENT_ID, env.TWITCH_CLIENT_SECRET);
   const _riot = new riotApi(env.RIOT_KEY);
   try {
-    const { riot_name, riot_tag, region, key, twitch, twitter, instagram } = await req.json();
+    const { riot_name, riot_tag, region, key, twitch, twitter, instagram, country_flag } = await req.json();
     const control = controls[region.toLowerCase()];
     const route = _riot.route(region);
     const cluster = _riot.cluster(region);
@@ -32,7 +32,7 @@ router.post("/add", async (req, env) => {
     const twitch_display = twitch_data.display_name;
     const twitch_picture = twitch_data.profile_image_url.replace("https://static-cdn.jtvnw.net/","");
     const account = { puuid, summoner_id, riot_name, riot_tag, lol_picture, control };
-    const socials = { twitch_login, twitch_display, twitch_picture, twitter, instagram, twitch_id };
+    const socials = { twitch_login, twitch_display, twitch_picture, twitter, instagram, twitch_id, country_flag };
     const { count } = await env.PARTICIPANTS.prepare("SELECT COUNT(*) as count FROM participants WHERE control = ? ").bind(control).first();
     // Add DB
     await env.PARTICIPANTS.prepare(
@@ -43,10 +43,10 @@ router.post("/add", async (req, env) => {
     ).bind(puuid, summoner_id, riot_name, riot_tag, lol_picture, control, region.toLowerCase(), count + 1).run();
     await env.PARTICIPANTS.prepare(
       `
-        INSERT OR IGNORE INTO socials (puuid, twitch_login, twitch_display, twitch_picture, twitter, instagram, twitch_id)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT OR IGNORE INTO socials (puuid, twitch_login, twitch_display, twitch_picture, twitter, instagram, twitch_id, country_flag)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         `
-    ).bind(puuid, twitch_login, twitch_display, twitch_picture, twitter ? twitter : "", instagram ? instagram : "", twitch_id).run();
+    ).bind(puuid, twitch_login, twitch_display, twitch_picture, twitter ? twitter : "", instagram ? instagram : "", twitch_id, country_flag ? country_flag : "").run();
     return new JsonResponse({
       participant: { ...account, ...socials },
       status: "Added",
