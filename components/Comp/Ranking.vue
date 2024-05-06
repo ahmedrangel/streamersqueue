@@ -150,8 +150,8 @@ const remainMatchesToday = (total: number) => {
                 <Icon v-if="p.position === 2" class="position-absolute top-0 start-50 translate-middle crown-2" name="ph:crown-fill" />
                 <Icon v-if="p.position === 3" class="position-absolute top-0 start-50 translate-middle crown-3" name="ph:crown-fill" />
               </div>
-              <a target="_blank" class="small" :href="`https://twitch.tv/${p.twitch_login}`">{{ p.twitch_display }}</a>
               <Twemoji v-if="p.country_flag" :emoji="p.country_flag" size="1.2em" />
+              <a target="_blank" class="small" :href="`https://twitch.tv/${p.twitch_login}`">{{ p.twitch_display }}</a>
             </div>
           </td>
           <td scope="row" style="width: 40px;">
