@@ -32,6 +32,7 @@
     "eslint": "^9.2.0",
     "nuxt": "^3.11.2",
     "nuxt-icon": "^0.6.10",
+    "nuxt-twemoji": "^3.5.0",
     "stylelint-config-standard": "^36.0.0"
   },
   "dependencies": {

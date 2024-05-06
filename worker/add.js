@@ -9,6 +9,7 @@ const response = await fetch(process.env.WORKER + "/add", {
     twitch: "lolmechs",
     instagram: "mechslol",
     twitter: "MechsLOL",
+    country_flag: "🇨🇴",
     key: process.env.POST_KEY
   }),
 });

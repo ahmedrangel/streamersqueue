@@ -33,7 +33,13 @@ export default defineNuxtConfig({
     "~/assets/css/popover.css",
     "~/assets/css/chart.css"
   ],
-  modules: ["nuxt-icon", "@nuxtjs/sitemap", "@nuxtjs/google-fonts", "@nuxt/eslint"],
+  modules: [
+    "nuxt-icon",
+    "@nuxtjs/sitemap",
+    "@nuxtjs/google-fonts",
+    "@nuxt/eslint",
+    "nuxt-twemoji"
+  ],
   runtimeConfig: {},
   features: {
     inlineStyles: false

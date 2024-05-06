@@ -98,7 +98,7 @@ router.post("/reset-position-change", async (req, env) => {
 router.get("/:region/participants", async (req, env) => {
   const region = req.params.region.toLowerCase();
   const DB = env.PARTICIPANTS;
-  const { results } = await DB.prepare("SELECT p.riot_name, p.riot_tag, p.is_ingame, p.wins, p.losses, p.lp, p.elo, p.tier, p.lol_picture, p.lol_region, p.position, p.position_change, s.twitch_login, s.twitch_display, s.twitch_is_live, s.twitch_picture, s.instagram, s.twitter FROM participants as p INNER JOIN socials as s ON p.puuid = s.puuid WHERE p.lol_region = ?")
+  const { results } = await DB.prepare("SELECT p.riot_name, p.riot_tag, p.is_ingame, p.wins, p.losses, p.lp, p.elo, p.tier, p.lol_picture, p.lol_region, p.position, p.position_change, s.twitch_login, s.twitch_display, s.twitch_is_live, s.twitch_picture, s.instagram, s.twitter, s.country_flag FROM participants as p INNER JOIN socials as s ON p.puuid = s.puuid WHERE p.lol_region = ?")
     .bind(region).all();
 
   const control = await DB.prepare("SELECT last_updated FROM control WHERE id = ?").bind(controls[region]).first();
