@@ -49,10 +49,26 @@ const updateLolIngameStatus = async(env, p) => {
 
   if (ingame_data?.participants) {
     const lol_picture = ingame_data?.participants.filter(item => item.puuid === p.puuid)[0].profileIconId;
+    const riotId = ingame_data?.participants.filter(item => item.puuid === p.puuid)[0].riotId;
+    const riotIdSplitted = riotId.split("#");
+    const riot_name = riotIdSplitted[0];
+    const riot_tag = riotIdSplitted[1];
+
     if (lol_picture && lol_picture !== p.lol_picture) {
-      console.info("LoL Icon Updated");
+      console.info("LoL Icon Updated:" + lol_picture);
       await env.PARTICIPANTS.prepare("UPDATE OR IGNORE participants SET lol_picture = ? WHERE puuid = ?").bind(lol_picture, p.puuid).run();
     }
+
+    if (riot_name && riot_name !== p.riot_name) {
+      console.info("Riot Name Updated: " + riot_name);
+      await env.PARTICIPANTS.prepare("UPDATE OR IGNORE participants SET riot_name = ? WHERE puuid = ?").bind(riot_name, p.puuid).run();
+    }
+
+    if (riot_tag && riot_tag !== p.riot_tag) {
+      console.info("Riot Tag Updated: " + riot_tag);
+      await env.PARTICIPANTS.prepare("UPDATE OR IGNORE participants SET riot_tag = ? WHERE puuid = ?").bind(riot_tag, p.puuid).run();
+    }
+
     if (p.is_ingame !== 1) {
       updater_ingame = { puuid: p.puuid, is_ingame: 1 };
     }
@@ -144,7 +160,7 @@ const updateTwitchData = async(env, twitch_ids, twitch_data) => {
 export const updateGeneralData = async(env, control) => {
   const { results } = await env.PARTICIPANTS.prepare(`
     SELECT
-      p.puuid, p.summoner_id, p.position, p.position_change, p.wins, p.losses, p.lp, p.is_ingame, p.lol_region, p.lol_picture,
+      p.puuid, p.summoner_id, p.riot_name, p.riot_tag, p.position, p.position_change, p.wins, p.losses, p.lp, p.is_ingame, p.lol_region, p.lol_picture,
       s.twitch_id, s.twitch_login, s.twitch_display, s.twitch_picture, s.twitch_is_live
     FROM participants as p
     INNER JOIN socials as s ON p.puuid = s.puuid
