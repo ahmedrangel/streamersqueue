@@ -17,6 +17,7 @@ const participants_last_updated = ref(data.value?.last_updated) as Ref<string>;
 const renewal_last_updated = ref() as Ref<string>;
 const is_renewing = ref(false) as Ref<boolean>;
 const cooldown = ref(true) as Ref<boolean>;
+const api_error = ref(false) as Ref<boolean>;
 const remaining = ref() as Ref<number>;
 const interval = ref() as Ref<NodeJS.Timeout>;
 const interval2 = ref() as Ref<NodeJS.Timeout>;
@@ -93,6 +94,7 @@ const checkRenewal = async () => {
 
 
 const renew = async() => {
+  api_error.value = false;
   const updatingTable = document.querySelector("#participants-table tbody") as HTMLElement;
   const first_last_updated = Number(new Date(participants_last_updated.value) as Date);
   const updatingToast = document.querySelector("#updatingToast") as HTMLElement;
@@ -115,6 +117,9 @@ const renew = async() => {
       is_renewing.value = false;
       remainingForRenew();
     } else if (update?.status_code === 429) {
+      is_renewing.value = false;
+    } else if (update?.status_code === 400) {
+      api_error.value = true;
       is_renewing.value = false;
     }
   } else {
@@ -164,6 +169,7 @@ onBeforeUnmount(() => {
         <span>{{ is_renewing ? "Actualizando" : "Actualizar" }}</span>
       </button>
     </div>
+    <span v-if="api_error" class="d-flex justify-content-end align-items-center text-negative"><b>Error. No se ha podido actualizar debido a problemas con el API de Riot Games.</b></span>
     <span v-if="cooldown && remaining >= 0" class="d-flex justify-content-end align-items-center text-muted"><i>Disponible en: {{ remaining }} segundos</i></span>
     <!-- Cantidad de participantes -->
     <CompParticipantsCounter :data="participants" :last-updated="participants_last_updated" />
