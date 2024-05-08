@@ -85,6 +85,7 @@ tbody.updating::after {
   background-color: #ffffff;
   animation: progress 1.6s ease-in-out infinite;
   opacity: 0.1;
+  pointer-events: none;
 }
 
 @keyframes progress {
