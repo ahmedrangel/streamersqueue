@@ -103,7 +103,7 @@ const remainMatchesToday = (total: number) => {
 
 <template>
   <div class="overflow-auto">
-    <table class="table table-striped table-borderless overflow-hidden rounded mb-1">
+    <table id="participants-table" class="table table-striped table-borderless overflow-hidden rounded mb-1">
       <thead>
         <tr style="height: 40px;" class="align-middle text-center">
           <template v-for="(h, i) of table_head" :key="i">

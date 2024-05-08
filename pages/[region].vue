@@ -93,6 +93,7 @@ const checkRenewal = async () => {
 
 
 const renew = async() => {
+  const updatingTable = document.querySelector("#participants-table tbody") as HTMLElement;
   const first_last_updated = Number(new Date(participants_last_updated.value) as Date);
   const updatingToast = document.querySelector("#updatingToast") as HTMLElement;
   $bootstrap.showToast(updatingToast);
@@ -101,6 +102,7 @@ const renew = async() => {
   renewal_last_updated.value = last_updated;
   const last_last_updated = Number(new Date(last_updated) as Date);
   const dif = Math.ceil((last_last_updated - first_last_updated) / 1000);
+  updatingTable.classList.add("updating");
   if (!renewing && remaining.value < 0 && dif === 0) {
     remaining.value >= 0 ? is_renewing.value = false : is_renewing.value = true;
     const signal = controller.value.signal;
@@ -126,6 +128,7 @@ const renew = async() => {
   }
   reinitializeTooltips();
   $bootstrap.hideToast(updatingToast);
+  updatingTable.classList.remove("updating");
 };
 
 onMounted(async() => {
