@@ -60,7 +60,7 @@ class riotApi {
   }
 
   async getRankedDataBySummonerId(summoner_id, route) {
-    return this.callRiotApi({ endpoint: `https://${route}.${this.domain}/lol/league/v4/entries/by-summoner/${summoner_id}?api_key=${this.RIOT_KEY}` });
+    return this.callRiotApi({ endpoint: `https://${route}.${this.domain}/lol/league/v4/entries/by-summoner/${summoner_id}` });
   }
 
   async getMatchesByPuuid(puuid, cluster, count, queueId, startTime) {
