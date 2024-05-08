@@ -75,6 +75,16 @@ nav .router-link-exact-active:hover {
   background-color: #C13584;
 }
 
+.bg-instagram:hover {
+  color: #C13584!important;
+  background-color: white!important;
+}
+
+.bg-black:hover {
+  color: black!important;
+  background-color: white!important;
+}
+
 *::-webkit-scrollbar {
   width: 8px;
 }
