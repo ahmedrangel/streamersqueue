@@ -3,12 +3,12 @@ import "dotenv/config";
 const response = await fetch(process.env.WORKER + "/add", {
   method: "POST",
   body: JSON.stringify({
-    riot_name: "Mechs",
-    riot_tag: "6969",
+    riot_name: "Fallen IV",
+    riot_tag: "LAN",
     region: "lan",
-    twitch: "lolmechs",
-    instagram: "mechslol",
-    twitter: "MechsLOL",
+    twitch: "fallen_iv4",
+    instagram: "falleniv4",
+    twitter: "falleniv4",
     country_flag: "🇨🇴",
     key: process.env.POST_KEY
   }),

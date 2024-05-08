@@ -6,6 +6,16 @@ class riotApi {
     this.domain = "api.riotgames.com";
   }
 
+  async callRiotApi (options) {
+    const endpoint = options?.endpoint;
+    const method = options?.method ? options.method : "GET";
+    const apiKey = options?.apiKey ? options.apiKey : this.RIOT_KEY;
+    return await ofetch(endpoint, {
+      method,
+      headers: { "X-Riot-Token": apiKey }
+    }).catch((e) => { return e; });
+  };
+
   route(region) {
     region = region.toLowerCase();
     switch (region) {
@@ -38,33 +48,27 @@ class riotApi {
   }
 
   async getSummonerByPuuid(puuid, route) {
-    const data = await ofetch(`https://${route}.${this.domain}/lol/summoner/v4/summoners/by-puuid/${puuid}?api_key=${this.RIOT_KEY}`).catch(() => null);
-    return data;
+    return this.callRiotApi({ endpoint: `https://${route}.${this.domain}/lol/summoner/v4/summoners/by-puuid/${puuid}` });
   }
 
   async getAccountByRiotID(name, tag, cluster) {
-    const data = await ofetch(`https://${cluster}.${this.domain}/riot/account/v1/accounts/by-riot-id/${name}/${tag}?api_key=${this.RIOT_KEY}`).catch(() => null);
-    return data;
+    return this.callRiotApi({ endpoint: `https://${cluster}.${this.domain}/riot/account/v1/accounts/by-riot-id/${name}/${tag}` });
   }
 
   async getSpectatorByPuuid(puuid, route) {
-    const data = await ofetch(`https://${route}.${this.domain}/lol/spectator/v5/active-games/by-summoner/${puuid}?api_key=${this.RIOT_KEY}`).catch(() => null);
-    return data;
+    return this.callRiotApi({ endpoint: `https://${route}.${this.domain}/lol/spectator/v5/active-games/by-summoner/${puuid}` });
   }
 
   async getRankedDataBySummonerId(summoner_id, route) {
-    const data = await ofetch(`https://${route}.${this.domain}/lol/league/v4/entries/by-summoner/${summoner_id}?api_key=${this.RIOT_KEY}`).catch(() => null);
-    return data;
+    return this.callRiotApi({ endpoint: `https://${route}.${this.domain}/lol/league/v4/entries/by-summoner/${summoner_id}?api_key=${this.RIOT_KEY}` });
   }
 
   async getMatchesByPuuid(puuid, cluster, count, queueId, startTime) {
-    const data = await ofetch(`https://${cluster}.${this.domain}/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=${count}&api_key=${this.RIOT_KEY}&queue=${queueId ? queueId : ""}&startTime=${startTime ? startTime : ""}`).catch(() => null);
-    return data;
+    return this.callRiotApi({ endpoint: `https://${cluster}.${this.domain}/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=${count}&queue=${queueId ? queueId : ""}&startTime=${startTime ? startTime : ""}` });
   }
 
   async getMatchById(matchId, cluster) {
-    const data = await ofetch(`https://${cluster}.${this.domain}/lol/match/v5/matches/${matchId}?api_key=${this.RIOT_KEY}`);
-    return data;
+    return this.callRiotApi({ endpoint: `https://${cluster}.${this.domain}/lol/match/v5/matches/${matchId}` });
   }
 }
 

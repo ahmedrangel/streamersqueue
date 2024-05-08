@@ -19,6 +19,7 @@ const updateRankedData = async(env, p) => {
     }
     return { participants, updater_participants, updated_data: true };
   } else {
+    console.info("fetching matches");
     const start_split1_2024_time = 1704844800;
     const matches = await _riot.getMatchesByPuuid(p.puuid, cluster, 20, 420, start_split1_2024_time);
     let wins = 0;
