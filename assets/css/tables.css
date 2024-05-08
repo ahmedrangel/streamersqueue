@@ -67,7 +67,7 @@ tbody {
   position: relative;
   overflow: hidden;
   opacity: 1;
-  transition: opacity 0.5s ease;
+  transition: opacity 0.5s ease-in-out;
 }
 
 tbody.updating {
@@ -83,7 +83,7 @@ tbody.updating::after {
   width: 50%;
   height: 100%;
   background-color: #ffffff;
-  animation: progress 1.6s linear infinite;
+  animation: progress 1.6s ease-in-out infinite;
   opacity: 0.1;
 }
 
