@@ -205,10 +205,10 @@ const remainMatchesToday = (total: number) => {
             <div class="d-flex flex-column align-items-center">
               <small class="text-nowrap fw-bold">
                 <span class="text-positive">{{ p.wins }}</span>
-                <span class="text-muted">&nbsp;V</span>
+                <span class="text-muted">&nbsp;{{ t("w") }}</span>
                 <span class="text-muted">&nbsp;|&nbsp;</span>
                 <span class="text-negative">{{ p.losses }}</span>
-                <span class="text-muted">&nbsp;D</span>
+                <span class="text-muted">&nbsp;{{ t("l") }}</span>
               </small>
               <div class="progress mt-2 rounded-1 winrate-progress">
                 <div class="progress-bar bg-positive" role="progressbar" :style="{'width':  (p.wins || p.losses ? p.wins/(p.wins + p.losses) * 100 : 0) + '%' }" />

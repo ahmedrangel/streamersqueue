@@ -40,4 +40,6 @@ export default {
   hours: "horas",
   developed_by: "Desarrollado por",
   home: "Inicio",
+  w: "V",
+  l: "D"
 };

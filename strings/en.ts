@@ -40,4 +40,6 @@ export default {
   hours: "hours",
   developed_by: "Developed by",
   home: "Home",
+  w: "W",
+  l: "L"
 };
