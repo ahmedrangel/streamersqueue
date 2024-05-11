@@ -69,7 +69,7 @@ const reinitializeTooltips = () => {
   });
 };
 
-const checkAndFetch = async () => {
+const checkAndFetch = async (updatingToast: HTMLElement, updatingTable: HTMLElement) => {
   const { last_updated, renewing } = await $fetch(`/api/${region}/renewal-status`).catch(() => null) as Record<string, any>;
   renewal_last_updated.value = last_updated;
   if (!renewing) {
@@ -79,16 +79,18 @@ const checkAndFetch = async () => {
     is_renewing.value = false;
     remainingForRenew();
     if (interval2.value) clearInterval(interval2.value);
+    $bootstrap.hideToast(updatingToast);
+    updatingTable.classList.remove("updating");
     return true;
   }
   return false;
 };
 
-const checkRenewal = async () => {
-  const checked = await checkAndFetch();
+const checkRenewal = async (updatingToast: HTMLElement, updatingTable: HTMLElement) => {
+  const checked = await checkAndFetch(updatingToast, updatingTable);
   if (!checked) {
     interval2.value = setInterval(async() => {
-      await checkAndFetch();
+      await checkAndFetch(updatingToast, updatingTable);
     }, 6000);
   }
 };
@@ -99,14 +101,14 @@ const renew = async() => {
   const updatingTable = document.querySelector("#participants-table tbody") as HTMLElement;
   const first_last_updated = Number(new Date(participants_last_updated.value) as Date);
   const updatingToast = document.querySelector("#updatingToast") as HTMLElement;
-  $bootstrap.showToast(updatingToast);
   is_renewing.value = true;
   const { renewing, last_updated } = await $fetch(`/api/${region}/renewal-status`).catch(() => null) as Record<string, any>;
   renewal_last_updated.value = last_updated;
   const last_last_updated = Number(new Date(last_updated) as Date);
   const dif = Math.ceil((last_last_updated - first_last_updated) / 1000);
-  updatingTable.classList.add("updating");
   if (!renewing && remaining.value < 0 && dif === 0) {
+    $bootstrap.showToast(updatingToast);
+    updatingTable.classList.add("updating");
     remaining.value >= 0 ? is_renewing.value = false : is_renewing.value = true;
     const signal = controller.value.signal;
     const update = await $fetch(`${SITE.worker}/${region}/renewal`, { signal }).catch(() => null) as Record<string, any>;
@@ -117,11 +119,18 @@ const renew = async() => {
       cooldown.value = true;
       is_renewing.value = false;
       remainingForRenew();
+      $bootstrap.hideToast(updatingToast);
+      updatingTable.classList.remove("updating");
+      reinitializeTooltips();
     } else if (update?.status_code === 429) {
       is_renewing.value = false;
+      $bootstrap.hideToast(updatingToast);
+      updatingTable.classList.remove("updating");
     } else if (update?.status_code === 400) {
       api_error.value = true;
       is_renewing.value = false;
+      $bootstrap.hideToast(updatingToast);
+      updatingTable.classList.remove("updating");
     }
   } else {
     is_renewing.value = false;
@@ -130,11 +139,10 @@ const renew = async() => {
   if (remaining.value < 0 && dif > 0 || renewing) {
     console.info("checking latest renewal");
     is_renewing.value = true;
-    await checkRenewal();
+    $bootstrap.showToast(updatingToast);
+    updatingTable.classList.add("updating");
+    await checkRenewal(updatingToast, updatingTable);
   }
-  reinitializeTooltips();
-  $bootstrap.hideToast(updatingToast);
-  updatingTable.classList.remove("updating");
 };
 
 onMounted(async() => {
