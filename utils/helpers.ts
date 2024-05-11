@@ -134,7 +134,10 @@ export const controls = {
 
 export const getCountryName = (emoji: string) => {
   const countries = countries_json.countries;
-  return countries.find(country => country.emoji === emoji)?.name_en;
+  const lang = locale.getLanguage();
+  const country_obj = countries.find(country => country.emoji === emoji) as Record<string, any>;
+  if (country_obj) return country_obj[`name_${lang}`];
+  else return country_obj["name_en"];
 };
 
 export const available_languages = [
