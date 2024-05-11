@@ -9,5 +9,6 @@ export const SITE = {
   ],
   banner: "",
   icon: "",
-  worker: "https://api-streamers-ladder.ahmedrangel.com"
+  worker: "https://api-streamers-ladder.ahmedrangel.com",
+  lang: "en"
 };

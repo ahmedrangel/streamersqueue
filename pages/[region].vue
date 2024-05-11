@@ -23,6 +23,7 @@ const interval = ref() as Ref<NodeJS.Timeout>;
 const interval2 = ref() as Ref<NodeJS.Timeout>;
 let tooltipInstances = [] as Tooltip[];
 const controller = ref(new AbortController()) as Ref<AbortController>;
+const lang = ref(locale.getLanguage()) as Ref<string>;
 
 useSeoMeta({
   title: `${SITE.title} (${region.toUpperCase()})`,
@@ -158,7 +159,7 @@ onBeforeUnmount(() => {
 
 <template>
   <!-- Pages: keep single root, everything goes inside 'main' -->
-  <main>
+  <main :lang="lang">
     <div class="text-center my-3">
       <h5 class="text-uppercase mb-0 fw-bold">{{ SITE.name }} ({{ region }})</h5>
     </div>
@@ -166,11 +167,11 @@ onBeforeUnmount(() => {
       <button class="btn bg-tertiary text-dark fw-bold d-flex align-items-center gap-1" :disabled="is_renewing || cooldown" @click="renew()">
         <Icon v-if="!is_renewing" name="ph:arrows-clockwise-bold" />
         <CompLoadingSpinner v-else />
-        <span>{{ is_renewing ? "Actualizando" : "Actualizar" }}</span>
+        <span>{{ is_renewing ? t("updating") : t("update") }}</span>
       </button>
     </div>
-    <span v-if="api_error" class="d-flex justify-content-end align-items-center text-negative"><b>Error. No se ha podido actualizar debido a problemas con el API de Riot Games.</b></span>
-    <span v-if="cooldown && remaining >= 0" class="d-flex justify-content-end align-items-center text-muted"><i>Disponible en: {{ remaining }} segundos</i></span>
+    <span v-if="api_error" class="d-flex justify-content-end align-items-center text-negative"><b>{{ t("api_error_message") }}</b></span>
+    <span v-if="cooldown && remaining >= 0" class="d-flex justify-content-end align-items-center text-muted"><i>{{ t("available_in") }}: {{ remaining }} {{ t("seconds")}}</i></span>
     <!-- Cantidad de participantes -->
     <CompParticipantsCounter :data="participants" :last-updated="participants_last_updated" />
     <!-- Tabla de clasificación -->
@@ -178,7 +179,7 @@ onBeforeUnmount(() => {
     <div class="justify-content-start align-items-center d-flex gap-2 small mt-1">
       <Icon name="ph:info-bold" class="h4 mb-0" />
       <div>
-        <span>Los cambios de posición se restauran a las 00:00 GMT-6.</span>
+        <span>{{ t("info_message_1") }}</span>
       </div>
     </div>
     <!--
@@ -189,7 +190,7 @@ onBeforeUnmount(() => {
       <div id="updatingToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
         <div class="toast-header py-4 border-0 bg-tertiary text-dark px-3 rounded">
           <CompLoadingSpinner class="me-2 h6 mb-0" />
-          <h6 class="me-auto mb-0">Actualizando los datos...</h6>
+          <h6 class="me-auto mb-0">{{ t("updating_data") }}...</h6>
           <button type="button" class="btn p-0 text-dark" data-bs-dismiss="toast" aria-label="Close">
             <Icon name="ph:x-bold" />
           </button>

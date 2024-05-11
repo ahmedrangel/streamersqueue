@@ -14,6 +14,7 @@ export const table_head = [
     sortable: true
   },
   {
+    id: "position_change",
     name: "Cambio de posición",
     sortable: false
   },
@@ -32,11 +33,13 @@ export const table_head = [
     sortable: true
   },
   {
+    id: "instagram",
     name: "Instagram",
     icon: "simple-icons:instagram",
     sortable: false
   },
   {
+    id: "twitter",
     name: "Twitter X",
     icon: "simple-icons:x",
     sortable: false
@@ -107,12 +110,12 @@ export const getTimeUnitsFromISODate = (ISO: string) => {
   const segundos = Math.floor(msdiff % unMinuto / 1000);
   const unidades = [];
 
-  if (anios > 0) unidades.push(`${anios} año${anios !== 1 ? "s" : ""}`);
-  if (meses > 0) unidades.push(`${meses} mes${meses !== 1 ? "es" : ""}`);
-  if (dias > 0) unidades.push(`${dias} día${dias !== 1 ? "s" : ""}`);
-  if (horas > 0) unidades.push(`${horas} hora${horas !== 1 ? "s" : ""}`);
-  if (minutos > 0 && anios === 0) unidades.push(`${minutos} minuto${minutos !== 1 ? "s" : ""}`);
-  if (segundos >= 0 && anios === 0 && meses === 0 && dias === 0 && horas === 0 && minutos === 0) unidades.push(`${segundos} segundo${segundos !== 1 ? "s" : ""}`);
+  if (anios > 0) unidades.push(`${anios} ${t(`year${anios !== 1 ? "s" : ""}`)}`);
+  if (meses > 0) unidades.push(`${meses} ${t(`month${meses !== 1 ? "s" : ""}`)}`);
+  if (dias > 0) unidades.push(`${dias} ${t(`day${dias !== 1 ? "s" : ""}`)}`);
+  if (horas > 0) unidades.push(`${horas} ${t(`hour${horas !== 1 ? "s" : ""}`)}`);
+  if (minutos > 0 && anios === 0) unidades.push(`${minutos} ${t(`minute${minutos !== 1 ? "s" : ""}`)}`);
+  if (segundos >= 0 && anios === 0 && meses === 0 && dias === 0 && horas === 0 && minutos === 0) unidades.push(`${segundos} ${t(`second${segundos !== 1 ? "s" : ""}`)}`);
 
   const result = unidades.join(", ");
   return { result, outdated: msdiff >= 360000 ? true : false };
@@ -133,3 +136,14 @@ export const getCountryName = (emoji: string) => {
   const countries = countries_json.countries;
   return countries.find(country => country.emoji === emoji)?.name_en;
 };
+
+export const available_languages = [
+  {
+    name: "English",
+    code: "en"
+  },
+  {
+    name: "Spanish",
+    code: "es"
+  }
+];

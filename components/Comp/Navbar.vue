@@ -30,14 +30,15 @@ const tabs: Record<string, any> = [
     name: "EUW",
     type: "link",
     route: "/euw",
-  }/*
-  {
-    id: "evolucion",
-    name: "Evolución Diaria",
-    type: "id",
-    route: "/#evolucion-diaria",
-    icon: "fa6-solid:chart-line"
   },
+  {
+    id: "lang",
+    name: "Language",
+    type: "dropdown",
+    icon: "ph:globe-simple-duotone",
+    subtabs: available_languages
+  },
+  /*
   {
     id: "premios",
     name: "Premios",
@@ -78,15 +79,24 @@ beforeEach(({ name }) => {
         <div class="offcanvas-body">
           <ul class="navbar-nav justify-content-end flex-grow-1 gap-1 fw-bold">
             <template v-for="(tab, i) of tabs" :key="i">
-              <li class="nav-item px-1" data-bs-dismiss="offcanvas">
-                <NuxtLink v-if="tab.type === 'link'" class="nav-link d-flex align-items-center gap-1 position-relative overflow-hidden rounded px-3" aria-current="page" :to="tab.route">
+              <li v-if="tab.type === 'link'" class="nav-item px-1" data-bs-dismiss="offcanvas">
+                <NuxtLink  class="nav-link d-flex align-items-center gap-1 position-relative overflow-hidden rounded px-3" aria-current="page" :to="tab.route">
                   <Icon v-if="tab.icon" :name="tab.icon" />
                   <span>{{ tab.name }}</span>
                 </NuxtLink>
-                <a v-else class="nav-link d-flex align-items-center gap-1 position-relative overflow-hidden rounded px-3 text-white" :href="tab.route">
-                  <Icon v-if="tab.icon" :name="tab.icon" />
-                  <span>{{ tab.name }}</span>
+              </li>
+              <li v-else-if="tab.type === 'dropdown'" class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle d-flex align-items-center gap-1" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <Icon :name="tab.icon" />
+                  <span>{{ t(tab.id) }}: {{ locale.getLanguage().toUpperCase() }}</span>
                 </a>
+                <ul class="dropdown-menu bg-secondary">
+                  <template v-for="(subtab, j) of tab.subtabs" :key="j">
+                    <li data-bs-dismiss="offcanvas">
+                      <button v-if="tab.id === 'lang'" class="dropdown-item" @click="locale.setLanguage(subtab.code)">{{ t(subtab.name.toLowerCase()) }}</button>
+                    </li>
+                  </template>
+                </ul>
               </li>
             </template>
           </ul>

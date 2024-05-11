@@ -6,10 +6,12 @@ const props = defineProps({
 
 const last_updated = ref(props.lastUpdated);
 const data = ref(props.data);
+const lang = ref(locale.getLanguage());
 
 watchEffect(() => {
   last_updated.value = props.lastUpdated;
   data.value = props.data;
+  lang.value = locale.getLanguage();
 });
 
 /* const getServerTime = () => new Date().toLocaleString("es-MX", { timeZone: "America/Mexico_City", hour: "2-digit", hour12: false, minute: "2-digit", second: "2-digit" });
@@ -44,12 +46,13 @@ onBeforeUnmount(() => {
     <div class="d-lg-flex d-block align-items-center justify-content-between gap-3">
       <div class="d-flex gap-1 align-items-center text-nowrap">
         <Icon name="fa6-solid:user-group" />
-        <span>{{ data.length ? data.length : 0 }} cuentas</span>
+        <span>{{ data.length ? data.length : 0 }} {{ t("accounts") }}</span>
       </div>
       <div v-if="props.lastUpdated" class="d-flex gap-1 align-items-center text-nowrap">
         <Icon name="ph:clock-clockwise-bold" />
-        <span>Actualizado:</span>
-        <span>hace {{ last_updated_time.result }}</span>
+        <span>{{ t("updated") }}:</span>
+        <span v-if="lang === 'es'">{{ t("ago") }} {{ last_updated_time.result }}</span>
+        <span v-if="lang === 'en'">{{ last_updated_time.result }} {{ t("ago") }}</span>
       </div>
     </div>
   </div>

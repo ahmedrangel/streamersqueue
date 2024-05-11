@@ -4,9 +4,11 @@ const props = defineProps({
 });
 
 const participants = ref(props.data) as Ref<Record<string, any>>;
+const lang = ref(locale.getLanguage()) as Ref<string>;
 
 watchEffect(() => {
   participants.value = props.data;
+  lang.value = locale.getLanguage();
 });
 
 const sort = (type: string, order: string) => {
@@ -107,13 +109,13 @@ const remainMatchesToday = (total: number) => {
       <thead>
         <tr style="height: 40px;" class="align-middle text-center">
           <template v-for="(h, i) of table_head" :key="i">
-            <th :id="h.id" scope="col" :class="`${h.sortable ? 'sortable' : ''} ${h.custom_class ? h.custom_class : ''}`" class="user-select-none border" :title="h.name">
+            <th :id="h.id" scope="col" :class="`${h.sortable ? 'sortable' : ''} ${h.custom_class ? h.custom_class : ''}`" class="user-select-none border" :title="t(h.id)">
               <div v-if="h.sortable" class="d-flex align-items-center justify-content-evenly">
                 <div v-if="h.title" class="d-flex align-items-center">
                   <Icon v-if="h.icon" :class="`${h.icon_class ? h.icon_class : ''}`" :name="`${h.icon ? h.icon : ''}`" />
                   <img v-if="h.svg" :src="h.svg" width="20px">
                     &nbsp;&nbsp;
-                  <small>{{ h.title }}</small>
+                  <small>{{ t(h.id) }}</small>
                 </div>
                 <span class="arrows" />
               </div>
@@ -122,7 +124,7 @@ const remainMatchesToday = (total: number) => {
                   <Icon :name="h.icon" />
                 </span>
                 <div v-if="h.title" class="d-flex align-items-center justify-content-evenly">
-                  <small>{{ h.title }}</small>
+                  <small>{{ t(h.id) }}</small>
                 </div>
               </div>
             </th>
@@ -141,7 +143,7 @@ const remainMatchesToday = (total: number) => {
             </div>
           </th>
           <th scope="row" style="width: 30px;">
-            <span class="d-flex align-items-center justify-content-center" :class="`${ p.twitch_is_live ? 'live' : 'not-live'}`" data-bs-toggle="tooltip" :data-bs-original-title="p.twitch_is_live ? '¡En directo!' : ''">
+            <span class="d-flex align-items-center justify-content-center" :class="`${ p.twitch_is_live ? 'live' : 'not-live'}`" data-bs-toggle="tooltip" :data-bs-original-title="p.twitch_is_live ? t('live_em') : ''">
               <Icon name="ph:circle-fill" />
             </span>
           </th>
@@ -160,13 +162,13 @@ const remainMatchesToday = (total: number) => {
             </div>
           </td>
           <th scope="row" style="width: 40px;">
-            <a v-if="p.instagram" target="_blank" :href="`https://instagram.com/${p.instagram}`" class="p-2 bg-instagram rounded d-inline-flex align-items-center text-white"><Icon name="simple-icons:instagram" /></a>
+            <a v-if="p.instagram" target="_blank" :href="`https://instagram.com/${p.instagram}`" :title="p.instagram" class="p-2 bg-instagram rounded d-inline-flex align-items-center text-white"><Icon name="simple-icons:instagram" /></a>
           </th>
           <th scope="row" style="width: 40px;">
-            <a v-if="p.twitter" target="_blank" :href="`https://x.com/${p.twitter}`" class="p-2 bg-black rounded d-inline-flex align-items-center text-white"><Icon name="simple-icons:x" /></a>
+            <a v-if="p.twitter" target="_blank" :href="`https://x.com/${p.twitter}`" :title="p.twitter" class="p-2 bg-black rounded d-inline-flex align-items-center text-white"><Icon name="simple-icons:x" /></a>
           </th>
           <th scope="row" style="width: 30px;">
-            <span class="d-flex align-items-center justify-content-center" :class="`${p.is_ingame ? 'ingame' : 'not-ingame'}`" data-bs-toggle="tooltip" :data-bs-original-title="p.is_ingame ? '¡En partida!' : ''">
+            <span class="d-flex align-items-center justify-content-center" :class="`${p.is_ingame ? 'ingame' : 'not-ingame'}`" data-bs-toggle="tooltip" :data-bs-original-title="p.is_ingame ? t('ingame_em') : ''">
               <Icon name="ph:circle-fill" />
             </span>
           </th>

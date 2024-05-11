@@ -13,6 +13,7 @@ export default defineNuxtConfig({
       meta: [
         { name: "robots", content: "index, follow" }
       ],
+      /*
       link : [
         { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png" },
         { rel: "icon", type: "image/png", sizes: "512x512", href: "/android-chrome-512x512.png" },
@@ -21,7 +22,7 @@ export default defineNuxtConfig({
         { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16x16.png" },
         { rel: "manifest", href: "/site.webmanifest" },
         { rel: "mask-icon", href: "/safari-pinned-tab.svg", color: "#091428" },
-      ]
+      ]*/
     }
   },
   css: [
