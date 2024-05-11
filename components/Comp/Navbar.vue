@@ -82,7 +82,7 @@ beforeEach(({ name }) => {
               <li v-if="tab.type === 'link'" class="nav-item px-1" data-bs-dismiss="offcanvas">
                 <NuxtLink  class="nav-link d-flex align-items-center gap-1 position-relative overflow-hidden rounded px-3" aria-current="page" :to="tab.route">
                   <Icon v-if="tab.icon" :name="tab.icon" />
-                  <span>{{ tab.name }}</span>
+                  <span class="text-uppercase">{{ t(tab.id) }}</span>
                 </NuxtLink>
               </li>
               <li v-else-if="tab.type === 'dropdown'" class="nav-item dropdown">

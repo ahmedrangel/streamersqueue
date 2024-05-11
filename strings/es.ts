@@ -39,4 +39,5 @@ export default {
   hour: "hora",
   hours: "horas",
   developed_by: "Desarrollado por",
+  home: "Inicio",
 };
