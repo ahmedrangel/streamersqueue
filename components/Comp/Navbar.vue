@@ -60,6 +60,12 @@ useHead({
 beforeEach(({ name }) => {
   currentRoute.value.name = name;
 });
+
+const setLang = (code: string) => {
+  locale.setLanguage(code);
+  const lang_cookie = useCookie("lang");
+  lang_cookie.value = code;
+};
 </script>
 
 <template>
@@ -93,7 +99,7 @@ beforeEach(({ name }) => {
                 <ul class="dropdown-menu bg-secondary">
                   <template v-for="(subtab, j) of tab.subtabs" :key="j">
                     <li data-bs-dismiss="offcanvas">
-                      <button v-if="tab.id === 'lang'" class="dropdown-item" @click="locale.setLanguage(subtab.code)">{{ t(subtab.name.toLowerCase()) }}</button>
+                      <button v-if="tab.id === 'lang'" class="dropdown-item" @click="setLang(subtab.code)">{{ t(subtab.name.toLowerCase()) }}</button>
                     </li>
                   </template>
                 </ul>
