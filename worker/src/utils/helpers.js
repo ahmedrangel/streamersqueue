@@ -12,3 +12,5 @@ export const controls = {
   na: 3,
   euw: 4,
 };
+
+export const worker = "https://api-streamers-ladder.ahmedrangel.com";

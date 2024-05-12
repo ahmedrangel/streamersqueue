@@ -5,7 +5,7 @@ import twitchApi from "./apis/twitchApi";
 import riotApi from "./apis/riotApi";
 import { updateGeneralData } from "./crons/update-general-data";
 import { resetPositionChange } from "./crons/reset-position-change";
-import { controls } from "./utils/helpers";
+import { controls, worker } from "./utils/helpers";
 
 const router = IttyRouter();
 
@@ -143,6 +143,22 @@ router.post("/reset-position-change", async (req, env) => {
   }
 });
 
+router.post("/tails", async (req, env) => {
+  const data = await req.json();
+  const url = data.event.request.url;
+  const parts = new URL(url).pathname.split("/");
+  const lastPart = parts[parts.length - 1];
+  const control = controls[parts[parts.length - 2]];
+  try {
+    if (data.outcome === "canceled" && lastPart === "renewal") {
+      await env.PARTICIPANTS.prepare("UPDATE control SET renewing = ? WHERE id = ? AND renewing = ?").bind(0, control, 1).run();
+    }
+    return new JsonResponse(data);
+  } catch (err) {
+    return new JsResponse(err);
+  }
+});
+
 router.all("*", () => new JsResponse("Not Found.", { status: 404 }));
 
 export default {
@@ -154,6 +170,17 @@ export default {
       case "0 6 * * *":
         await resetPositionChange(env);
         break;
+    }
+  },
+  async tail(events, env, ctx) {
+    const url = events[0].event.request.url;
+    const parts = new URL(url).pathname.split("/");
+    const lastPart = parts[parts.length - 1];
+    if (lastPart === "renewal") {
+      ctx.waitUntil(fetch(worker + "/tails", {
+        method: "POST",
+        body: JSON.stringify(events[0]),
+      }));
     }
   }
 };
