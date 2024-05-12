@@ -150,3 +150,5 @@ export const available_languages = [
     code: "es"
   }
 ];
+
+export const cookieMaxAge = { maxAge: 365 * 24 * 60 * 60 };

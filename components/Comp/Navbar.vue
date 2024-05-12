@@ -63,7 +63,7 @@ beforeEach(({ name }) => {
 
 const setLang = (code: string) => {
   locale.setLanguage(code);
-  const lang_cookie = useCookie("lang");
+  const lang_cookie = useCookie("lang", { ...cookieMaxAge });
   lang_cookie.value = code;
 };
 </script>

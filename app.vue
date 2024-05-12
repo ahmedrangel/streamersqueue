@@ -1,6 +1,6 @@
 <script setup lang="ts">
 setScrollBehavior();
-const lang = useCookie("lang");
+const lang = useCookie("lang", { ...cookieMaxAge });
 lang.value = lang.value ? lang.value : locale.getLanguage();
 locale.setLanguage(lang.value);
 </script>
