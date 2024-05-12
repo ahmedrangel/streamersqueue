@@ -23,7 +23,7 @@ const interval = ref() as Ref<NodeJS.Timeout>;
 const interval2 = ref() as Ref<NodeJS.Timeout>;
 let tooltipInstances = [] as Tooltip[];
 const controller = ref(new AbortController()) as Ref<AbortController>;
-const lang = useCookie("lang", { ...cookieMaxAge }) as Ref<string>;
+const lang = ref(locale.getLanguage()) as Ref<string>;
 
 useSeoMeta({
   title: `${SITE.title} (${region.toUpperCase()})`,
