@@ -161,7 +161,6 @@ onMounted(async() => {
 
 onBeforeUnmount(() => {
   clearInterval(interval.value);
-  controller.value.abort();
 });
 </script>
 
