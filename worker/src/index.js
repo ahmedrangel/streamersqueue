@@ -143,7 +143,7 @@ router.post("/reset-position-change", async (req, env) => {
   }
 });
 
-router.post("/tails", async (req, env) => {
+router.post("/tails/revert-renewal", async (req, env) => {
   const data = await req.json();
   const url = data.event.request.url;
   const parts = new URL(url).pathname.split("/");
@@ -176,8 +176,8 @@ export default {
     const url = events[0].event.request.url;
     const parts = new URL(url).pathname.split("/");
     const lastPart = parts[parts.length - 1];
-    if (lastPart === "renewal") {
-      ctx.waitUntil(fetch(worker + "/tails", {
+    if (lastPart === "renewal" && events[0].outcome === "canceled") {
+      ctx.waitUntil(fetch(worker + "/tails/revert-renewal", {
         method: "POST",
         body: JSON.stringify(events[0]),
       }));
