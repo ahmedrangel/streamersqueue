@@ -7,7 +7,6 @@ export default defineNuxtConfig({
       viewport: "width=device-width, initial-scale=1",
       title: SITE.title,
       htmlAttrs: {
-        lang: "es",
         "data-bs-theme": "dark"
       },
       meta: [

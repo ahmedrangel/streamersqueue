@@ -65,6 +65,11 @@ const setLang = (code: string) => {
   locale.setLanguage(code);
   const lang_cookie = useCookie("lang", { ...cookieMaxAge });
   lang_cookie.value = code;
+  useHead({
+    htmlAttrs: {
+      lang: code
+    }
+  });
 };
 </script>
 
