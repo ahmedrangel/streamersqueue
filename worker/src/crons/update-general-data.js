@@ -6,35 +6,93 @@ import { fixRank } from "../utils/helpers";
 const updateRankedData = async(env, p) => {
   let participants;
   let updater_participants;
+  let updater_history = [];
+  const start_split2_2024_time = 1715731200;
   const _riot = new riotApi(env.RIOT_KEY);
   const route = _riot.route(p.lol_region);
   const cluster = _riot.cluster(p.lol_region);
   const ranked_data = await _riot.getRankedDataBySummonerId(p.summoner_id, route);
-  const soloq = ranked_data?.filter(item => item?.queueType === "RANKED_SOLO_5x5")[0] ?? null;
+  const soloq = ranked_data ? ranked_data?.filter(item => item?.queueType === "RANKED_SOLO_5x5")[0] : null;
 
   if (soloq) {
     participants = { puuid: p.puuid, summoner_id: p.summoner_id, wins: soloq.wins, losses: soloq.losses, lp: soloq.leaguePoints, elo: soloq.tier, tier: soloq.rank, position: p.position, position_change: p.position_change };
     if (p.wins !== soloq.wins || p.losses !== soloq.losses || p.lp !== soloq.leaguePoints) {
       updater_participants = { puuid: p.puuid, wins: soloq.wins, losses: soloq.losses, lp: soloq.leaguePoints, elo: soloq.tier.toLowerCase(), tier: fixRank(soloq.tier, soloq.rank) };
     }
-    return { participants, updater_participants, updated_data: true };
+    const matches = await _riot.getMatchesByPuuid(p.puuid, cluster, 100, 420, start_split2_2024_time);
+    const db_matches = await env.PARTICIPANTS.prepare("SELECT match_id FROM history WHERE puuid = ?")
+      .bind(p.puuid).all();
+    const db_matches_ids = db_matches.results?.map(item => item.match_id);
+    if (matches.length) {
+      console.info("saving recent matches");
+      for (const m of matches) {
+        if (!db_matches_ids.includes(m)) {
+          const match_data = await _riot.getMatchById(m, cluster);
+          const participant_data = match_data?.info?.participants?.filter(item => item?.puuid === p?.puuid)[0] || null;
+          updater_history.push({
+            puuid: p.puuid,
+            match_id: m,
+            kills: participant_data?.kills,
+            deaths: participant_data?.deaths,
+            assists: participant_data?.assists,
+            result: participant_data?.win,
+            is_remake: participant_data?.gameEndedInEarlySurrender,
+            date: match_data?.info?.gameCreation,
+            duration: match_data?.info?.gameDuration,
+          });
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+      }
+    }
+    return { participants, updater_participants, updater_history, updated_data: true };
   } else {
     console.info("fetching matches");
-    const start_split1_2024_time = 1704844800;
-    const matches = await _riot.getMatchesByPuuid(p.puuid, cluster, 20, 420, start_split1_2024_time);
+    let fetched_from_api = false;
+    const matches = await _riot.getMatchesByPuuid(p.puuid, cluster, 20, 420, start_split2_2024_time);
+    const db_matches = await env.PARTICIPANTS.prepare("SELECT match_id FROM history WHERE puuid = ?")
+      .bind(p.puuid).all();
+    const db_matches_ids = db_matches.results?.map(item => item.match_id);
     let wins = 0;
     let losses = 0;
     if (matches.length) {
       for (const m of matches) {
-        const match_data = await _riot.getMatchById(m, cluster);
-        const participant_data = match_data.info.participants.filter(item => item.puuid === p.puuid)[0];
-        if (participant_data.win && !participant_data.gameEndedInEarlySurrender)
-          wins = wins + 1;
-        if (!participant_data.win && !participant_data.gameEndedInEarlySurrender)
-          losses = losses + 1;
+        if (!db_matches_ids.includes(m)) {
+          fetched_from_api = true;
+          const match_data = await _riot.getMatchById(m, cluster);
+          const participant_data = match_data?.info?.participants?.filter(item => item?.puuid === p?.puuid)[0] || null;
+          if (participant_data?.win && !participant_data?.gameEndedInEarlySurrender)
+            wins = wins + 1;
+          if (!participant_data?.win && !participant_data?.gameEndedInEarlySurrender)
+            losses = losses + 1;
+          updater_history.push({
+            puuid: p.puuid,
+            match_id: m,
+            kills: participant_data?.kills,
+            deaths: participant_data?.deaths,
+            assists: participant_data?.assists,
+            result: participant_data?.win,
+            is_remake: participant_data?.gameEndedInEarlySurrender,
+            date: match_data?.info?.gameCreation,
+            duration: match_data?.info?.gameDuration,
+          });
+        }
+      }
+
+      if (!fetched_from_api) {
+        console.info("fetching from db");
+        const { db_wins } = await env.PARTICIPANTS.prepare("SELECT COUNT(result) AS db_wins FROM history WHERE result = ? AND is_remake = ? AND puuid = ?")
+          .bind(1, 0, p.puuid).first();
+        const { db_losses } = await env.PARTICIPANTS.prepare("SELECT COUNT(result) AS db_losses FROM history WHERE result = ? AND is_remake = ? AND puuid = ?")
+          .bind(0, 0, p.puuid).first();
+        wins = wins + db_wins;
+        losses = wins + db_losses;
       }
       participants = { puuid: p.puuid, summoner_id: p.summoner_id, wins, losses, lp: p.lp, elo: null, tier: null, position: p.position, position_change: p.position_change };
       updater_participants = { puuid: p.puuid, wins, losses, lp: null, elo: null, tier: null };
+      return { participants, updater_participants, updater_history, updated_data: true };
+    } else {
+      participants = { puuid: p.puuid, summoner_id: p.summoner_id, wins: 0, losses: 0, lp: null, elo: null, tier: null, position: p.position, position_change: p.position_change };
+      updater_participants = { puuid: p.puuid, wins: 0, losses: 0, lp: null, elo: null, tier: null };
       return { participants, updater_participants, updated_data: true };
     }
   }
@@ -97,7 +155,11 @@ const sortRankedData = (participants) => {
       }
       return b.lp - a.lp;
     } else {
-      return b.wins - a.wins;
+      if (b.wins !== a.wins) {
+        return b.wins - a.wins;
+      } else {
+        return a.losses - b.losses;
+      }
     }
   });
 
@@ -176,6 +238,7 @@ export const updateGeneralData = async(env, control) => {
   const updater_participants = [];
   const updater_ingame = [];
   const updated_data = {};
+  const updater_history = [];
   const twitch_ids = [];
 
   let index = 0;
@@ -187,9 +250,10 @@ export const updateGeneralData = async(env, control) => {
     }
     twitch_ids.push(p.twitch_id);
     const ranked_data = await updateRankedData(env, p);
-    if (ranked_data.participants) participants.push(ranked_data.participants);
-    if (ranked_data.updater_participants) updater_participants.push(ranked_data.updater_participants);
-    if (ranked_data.updated_data) updated_data.ranked = ranked_data.updated_data;
+    if (ranked_data?.participants) participants.push(ranked_data.participants);
+    if (ranked_data?.updater_participants) updater_participants.push(ranked_data.updater_participants);
+    if (ranked_data?.updated_data) updated_data.ranked = ranked_data.updated_data;
+    if (ranked_data?.updater_history) updater_history.push(...ranked_data.updater_history);
 
     const ingame_data = await updateLolIngameStatus(env, p);
     if (ingame_data.updater_ingame) updater_ingame.push(ingame_data.updater_ingame);
@@ -229,6 +293,20 @@ export const updateGeneralData = async(env, control) => {
   for (const p of updater_ingame) {
     await env.PARTICIPANTS.prepare("UPDATE OR IGNORE participants SET is_ingame = ? WHERE puuid = ? AND control = ?")
       .bind(p.is_ingame, p.puuid, control).run();
+  }
+
+  const matches = Array.from(new Set(updater_history.map(match => match.match_id))).map(matchId => updater_history.find(match => match.match_id === matchId));
+
+  // Matches Insert
+  for (const m of matches) {
+    await env.PARTICIPANTS.prepare("INSERT OR IGNORE INTO matches (match_id, date, duration) VALUES (?, ?, ?)")
+      .bind(m.match_id, String(m.date), String(m.duration)).run();
+  }
+
+  // History Insert
+  for (const m of updater_history) {
+    await env.PARTICIPANTS.prepare("INSERT OR IGNORE INTO history (match_id, puuid, kills, deaths, assists, is_remake, result) VALUES (?, ?, ?, ?, ?, ?, ?)")
+      .bind(m.match_id, m.puuid, m.kills, m.deaths, m.assists, m.is_remake, m.result).run();
   }
 
   console.info("Updaters check: " + updated_data.ranked, updated_data.ingame, updated_data.sorted);
