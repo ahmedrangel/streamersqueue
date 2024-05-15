@@ -13,7 +13,7 @@ class riotApi {
     return await ofetch(endpoint, {
       method,
       headers: { "X-Riot-Token": apiKey }
-    }).catch((e) => { return e; });
+    }).catch((error) => { return { error }; });
   };
 
   route(region) {
