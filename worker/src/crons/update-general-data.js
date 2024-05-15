@@ -7,7 +7,6 @@ const updateRankedData = async(env, p) => {
   let participants;
   let updater_participants;
   let updater_history = [];
-  const start_split2_2024_time = 1715731200;
   const _riot = new riotApi(env.RIOT_KEY);
   const route = _riot.route(p.lol_region);
   const cluster = _riot.cluster(p.lol_region);
@@ -19,7 +18,7 @@ const updateRankedData = async(env, p) => {
     if (p.wins !== soloq.wins || p.losses !== soloq.losses || p.lp !== soloq.leaguePoints) {
       updater_participants = { puuid: p.puuid, wins: soloq.wins, losses: soloq.losses, lp: soloq.leaguePoints, elo: soloq.tier.toLowerCase(), tier: fixRank(soloq.tier, soloq.rank) };
     }
-    const matches = await _riot.getMatchesByPuuid(p.puuid, cluster, 100, 420, start_split2_2024_time);
+    const matches = await _riot.getMatchesByPuuid(p.puuid, cluster, 100, 420, p.lol_region);
     const db_matches = await env.PARTICIPANTS.prepare("SELECT match_id FROM history WHERE puuid = ?")
       .bind(p.puuid).all();
     const db_matches_ids = db_matches.results?.map(item => item.match_id);
@@ -47,7 +46,7 @@ const updateRankedData = async(env, p) => {
     return { participants, updater_participants, updater_history, updated_data: true };
   } else {
     console.info("fetching matches");
-    const matches = await _riot.getMatchesByPuuid(p.puuid, cluster, 20, 420, start_split2_2024_time);
+    const matches = await _riot.getMatchesByPuuid(p.puuid, cluster, 20, 420, p.lol_region);
     const db_matches = await env.PARTICIPANTS.prepare("SELECT match_id FROM history WHERE puuid = ?")
       .bind(p.puuid).all();
     const db_matches_ids = db_matches.results?.map(item => item.match_id);
@@ -145,18 +144,22 @@ const sortRankedData = (participants) => {
   const updater_position_change = [];
   let updated_data;
   const sorted = participants.sort((a, b) => {
+    if (b.wins !== a.wins) {
+      return b.wins - a.wins;
+    } else {
+      return a.losses - b.losses;
+    }
+  }).sort((a, b) => {
     if (a.elo && b.elo) {
       const eloComparison = eloValues[`${b.elo} ${b.tier}`] - eloValues[`${a.elo} ${a.tier}`];
       if (eloComparison !== 0) {
         return eloComparison;
       }
       return b.lp - a.lp;
-    } else {
-      if (b.wins !== a.wins) {
-        return b.wins - a.wins;
-      } else {
-        return a.losses - b.losses;
-      }
+    } else if (a.elo) {
+      return -1;
+    } else if (b.elo) {
+      return 1;
     }
   });
 
@@ -241,7 +244,7 @@ export const updateGeneralData = async(env, control) => {
   let index = 0;
   // Update ranked data
   for (const p of results) {
-    if (index === 250) {
+    if (index === 166) {
       await new Promise(resolve => setTimeout(resolve, 11000));
       index = 0;
     }
@@ -258,6 +261,7 @@ export const updateGeneralData = async(env, control) => {
 
     twitch_data.push({ twitch_id: p.twitch_id, twitch_login: p.twitch_login, twitch_display: p.twitch_display, twitch_picture: p.twitch_picture, twitch_is_live: p.twitch_is_live });
     index++;
+    await new Promise(resolve => setTimeout(resolve, 100));
   }
 
   const sorted_data = sortRankedData(participants);
@@ -267,7 +271,7 @@ export const updateGeneralData = async(env, control) => {
   const updater_twitch_data = await updateTwitchData(env, twitch_ids, twitch_data);
   const updater_twitch_live = await updateTwitchLiveStatus(env, twitch_ids, twitch_data);
 
-  console.info(updater_participants);
+  // console.info(updater_participants);
   console.info(updater_position_change);
   console.info(updater_ingame);
   console.info(updater_twitch_data);

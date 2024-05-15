@@ -63,8 +63,14 @@ class riotApi {
     return this.callRiotApi({ endpoint: `https://${route}.${this.domain}/lol/league/v4/entries/by-summoner/${summoner_id}` });
   }
 
-  async getMatchesByPuuid(puuid, cluster, count, queueId, startTime) {
-    return this.callRiotApi({ endpoint: `https://${cluster}.${this.domain}/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=${count}&queue=${queueId ? queueId : ""}&startTime=${startTime ? startTime : ""}` });
+  async getMatchesByPuuid(puuid, cluster, count, queueId, region) {
+    let split2_2024_time;
+    if (region === "lan") split2_2024_time = 1715792400;
+    else if (region === "las") split2_2024_time = 1715785200;
+    else if (region === "na") split2_2024_time = 1715799600;
+    else if (region === "euw") split2_2024_time = 1715763600;
+    else split2_2024_time = 1715763600;
+    return this.callRiotApi({ endpoint: `https://${cluster}.${this.domain}/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=${count}&queue=${queueId ? queueId : ""}&startTime=${split2_2024_time}` });
   }
 
   async getMatchById(matchId, cluster) {
