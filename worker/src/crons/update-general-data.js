@@ -47,7 +47,6 @@ const updateRankedData = async(env, p) => {
     return { participants, updater_participants, updater_history, updated_data: true };
   } else {
     console.info("fetching matches");
-    let fetched_from_api = false;
     const matches = await _riot.getMatchesByPuuid(p.puuid, cluster, 20, 420, start_split2_2024_time);
     const db_matches = await env.PARTICIPANTS.prepare("SELECT match_id FROM history WHERE puuid = ?")
       .bind(p.puuid).all();
@@ -57,7 +56,6 @@ const updateRankedData = async(env, p) => {
     if (matches.length) {
       for (const m of matches) {
         if (!db_matches_ids.includes(m)) {
-          fetched_from_api = true;
           const match_data = await _riot.getMatchById(m, cluster);
           const participant_data = match_data?.info?.participants?.filter(item => item?.puuid === p?.puuid)[0] || null;
           if (participant_data?.win && !participant_data?.gameEndedInEarlySurrender)
@@ -78,15 +76,14 @@ const updateRankedData = async(env, p) => {
         }
       }
 
-      if (!fetched_from_api) {
-        console.info("fetching from db");
-        const { db_wins } = await env.PARTICIPANTS.prepare("SELECT COUNT(result) AS db_wins FROM history WHERE result = ? AND is_remake = ? AND puuid = ?")
-          .bind(1, 0, p.puuid).first();
-        const { db_losses } = await env.PARTICIPANTS.prepare("SELECT COUNT(result) AS db_losses FROM history WHERE result = ? AND is_remake = ? AND puuid = ?")
-          .bind(0, 0, p.puuid).first();
-        wins = wins + db_wins;
-        losses = wins + db_losses;
-      }
+      console.info("fetching from db");
+      const { db_wins } = await env.PARTICIPANTS.prepare("SELECT COUNT(result) AS db_wins FROM history WHERE result = ? AND is_remake = ? AND puuid = ?")
+        .bind(1, 0, p.puuid).first();
+      const { db_losses } = await env.PARTICIPANTS.prepare("SELECT COUNT(result) AS db_losses FROM history WHERE result = ? AND is_remake = ? AND puuid = ?")
+        .bind(0, 0, p.puuid).first();
+      wins = db_wins ? wins + db_wins : wins;
+      losses = db_losses ? losses + db_losses : losses;
+      console.log(wins, losses);
       participants = { puuid: p.puuid, summoner_id: p.summoner_id, wins, losses, lp: p.lp, elo: null, tier: null, position: p.position, position_change: p.position_change };
       updater_participants = { puuid: p.puuid, wins, losses, lp: null, elo: null, tier: null };
       return { participants, updater_participants, updater_history, updated_data: true };
@@ -321,5 +318,5 @@ export const updateGeneralData = async(env, control) => {
 
 /*
  * Requests amount:
- * Update Ranked Data (# DB length) + Update Twitch Live Status (1) + UpdateTwitchData (1)
+ * Update Ranked Data (# DB length) + Update Twitch Live Status (1) + UpdateTwitchData (1) + Match (#DB Length + Not saved match length)
  */
