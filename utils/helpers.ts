@@ -143,10 +143,12 @@ export const getCountryName = (emoji: string) => {
 export const available_languages = [
   {
     name: "English",
+    native: "English",
     code: "en"
   },
   {
     name: "Spanish",
+    native: "Español",
     code: "es"
   }
 ];

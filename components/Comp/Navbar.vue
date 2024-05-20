@@ -99,12 +99,12 @@ const setLang = (code: string) => {
               <li v-else-if="tab.type === 'dropdown'" class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle d-flex align-items-center gap-1" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                   <Icon :name="tab.icon" />
-                  <span>{{ t(tab.id) }}: {{ locale.getLanguage().toUpperCase() }}</span>
+                  <span>{{ locale.getLanguage().toUpperCase() }}</span>
                 </a>
                 <ul class="dropdown-menu bg-secondary">
                   <template v-for="(subtab, j) of tab.subtabs" :key="j">
                     <li data-bs-dismiss="offcanvas">
-                      <button v-if="tab.id === 'lang'" class="dropdown-item" @click="setLang(subtab.code)">{{ t(subtab.name.toLowerCase()) }}</button>
+                      <button v-if="tab.id === 'lang'" class="dropdown-item" @click="setLang(subtab.code)">{{ subtab.native }}</button>
                     </li>
                   </template>
                 </ul>
