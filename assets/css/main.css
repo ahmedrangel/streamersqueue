@@ -26,6 +26,10 @@ table a:hover, table a:hover span {
   height: 46px;
 }
 
+#index-table .img-profile {
+  height: 36px;
+}
+
 img {
   pointer-events: none;
   user-select: none;

@@ -41,5 +41,9 @@ export default {
   developed_by: "Developed by",
   home: "Home",
   w: "W",
-  l: "L"
+  l: "L",
+  best: "Best",
+  worst: "Worst",
+  with_at_least: "with at least",
+  games_played: "games played",
 };

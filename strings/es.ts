@@ -41,5 +41,9 @@ export default {
   developed_by: "Desarrollado por",
   home: "Inicio",
   w: "V",
-  l: "D"
+  l: "D",
+  best: "Mejor",
+  worst: "Peor",
+  with_at_least: "con al menos",
+  games_played: "partidas jugadas",
 };
