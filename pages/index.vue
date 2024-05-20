@@ -33,7 +33,7 @@ useHead({
 <template>
   <main>
     <div id="stats" class="row gx-4">
-      <div class="col-12 col-xl-6 text-center my-3">
+      <div class="col-12 col-xl-6 text-center my-3 overflow-auto">
         <h5 class="mb-3 fw-bold"><span class="text-positive">{{ t("best") }} KDA</span> ({{ t("with_at_least") }} 10 {{ t("games_played") }})</h5>
         <table class="table table-striped table-borderless overflow-hidden rounded mb-1">
           <thead>
@@ -90,7 +90,7 @@ useHead({
           </tbody>
         </table>
       </div>
-      <div class="col-12 col-xl-6 text-center my-3">
+      <div class="col-12 col-xl-6 text-center my-3 overflow-auto">
         <h5 class="mb-3 fw-bold"><span class="text-negative">{{ t("worst") }} KDA</span> ({{ t("with_at_least") }} 10 {{ t("games_played") }})</h5>
         <table  id="participants-table" class="table table-striped table-borderless overflow-hidden rounded mb-1">
           <thead>
