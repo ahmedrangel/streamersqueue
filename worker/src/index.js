@@ -163,11 +163,11 @@ router.get("/:region/stats", async (req, env) => {
   const region = req.params.region.toLowerCase();
   const control = region === "all" ? "all" : controls[region];
   const DB = env.PARTICIPANTS;
-  const games = "total_games > 5";
+  const games = "total_games >= 10";
   const kda_best = await DB.prepare(
     `
     SELECT
-      p.riot_name, p.riot_tag, p.lp, p.elo, p.tier, p.lol_picture, p.lol_region,
+      p.riot_name, p.riot_tag, p.lol_picture, p.lol_region,
       s.twitch_login, s.twitch_display, s.twitch_picture, s.country_flag,
       (p.wins + p.losses) AS total_games,
       ROUND(AVG(h.kills), 2) AS avg_kills,
@@ -188,7 +188,7 @@ router.get("/:region/stats", async (req, env) => {
   const kda_worst = await DB.prepare(
     `
       SELECT
-        p.riot_name, p.riot_tag, p.lp, p.elo, p.tier, p.lol_picture, p.lol_region,
+        p.riot_name, p.riot_tag, p.lol_picture, p.lol_region,
         s.twitch_login, s.twitch_display, s.twitch_picture, s.country_flag,
         (p.wins + p.losses) AS total_games,
         ROUND(AVG(h.kills), 2) AS avg_kills,

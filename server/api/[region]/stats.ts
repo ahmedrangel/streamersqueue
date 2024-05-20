@@ -10,11 +10,11 @@ export default defineEventHandler(async (event) => {
 
   const DB = process.env.PARTICIPANTS as any;
   const control = region === "all" ? "all" : controls[region] as string | number;
-  const games = "total_games > 5" as string;
+  const games = "total_games >= 10" as string;
   const kda_best = await DB.prepare(
     `
     SELECT
-      p.riot_name, p.riot_tag, p.lp, p.elo, p.tier, p.lol_picture, p.lol_region,
+      p.riot_name, p.riot_tag, p.lol_picture, p.lol_region,
       s.twitch_login, s.twitch_display, s.twitch_picture, s.country_flag,
       (p.wins + p.losses) AS total_games,
       ROUND(AVG(h.kills), 2) AS avg_kills,
@@ -35,7 +35,7 @@ export default defineEventHandler(async (event) => {
   const kda_worst = await DB.prepare(
     `
       SELECT
-        p.riot_name, p.riot_tag, p.lp, p.elo, p.tier, p.lol_picture, p.lol_region,
+        p.riot_name, p.riot_tag, p.lol_picture, p.lol_region,
         s.twitch_login, s.twitch_display, s.twitch_picture, s.country_flag,
         (p.wins + p.losses) AS total_games,
         ROUND(AVG(h.kills), 2) AS avg_kills,

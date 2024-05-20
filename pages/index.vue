@@ -34,7 +34,7 @@ useHead({
   <main>
     <div class="row gx-4">
       <div class="col-12 col-xl-6 text-center my-3">
-        <h5 class="mb-3 fw-bold"><span class="text-positive">{{ t("best") }} KDA</span> ({{ t("with_at_least") }} 5 {{ t("games_played") }})</h5>
+        <h5 class="mb-3 fw-bold"><span class="text-positive">{{ t("best") }} KDA</span> ({{ t("with_at_least") }} 10 {{ t("games_played") }})</h5>
         <table id="index-table" class="table table-striped table-borderless overflow-hidden rounded mb-1">
           <thead>
             <tr style="height: 40px;" class="align-middle text-center">
@@ -74,7 +74,9 @@ useHead({
                 </div>
               </td>
               <td scope="row" style="width: 90px;">
-                <strong class="text-uppercase text-nowrap small">{{ p.lol_region }}</strong>
+                <NuxtLink :to="p.lol_region">
+                  <strong class="text-uppercase text-nowrap small">{{ p.lol_region }}</strong>
+                </NuxtLink>
               </td>
               <td>
                 <div class="text-center">
@@ -89,7 +91,7 @@ useHead({
         </table>
       </div>
       <div class="col-12 col-xl-6 text-center my-3">
-        <h5 class="mb-3 fw-bold"><span class="text-negative">{{ t("worst") }} KDA</span> ({{ t("with_at_least") }} 5 {{ t("games_played") }})</h5>
+        <h5 class="mb-3 fw-bold"><span class="text-negative">{{ t("worst") }} KDA</span> ({{ t("with_at_least") }} 10 {{ t("games_played") }})</h5>
         <table  id="participants-table" class="table table-striped table-borderless overflow-hidden rounded mb-1">
           <thead>
             <tr style="height: 40px;" class="align-middle text-center">
@@ -129,7 +131,9 @@ useHead({
                 </div>
               </td>
               <td scope="row" style="width: 90px;">
-                <strong class="text-uppercase text-nowrap small">{{ p.lol_region }}</strong>
+                <NuxtLink :to="p.lol_region">
+                  <strong class="text-uppercase text-nowrap small">{{ p.lol_region }}</strong>
+                </NuxtLink>
               </td>
               <td>
                 <div class="text-center">
