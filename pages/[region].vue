@@ -43,7 +43,7 @@ useSeoMeta({
 
 useHead({
   link: [
-    { rel: "canonical", href: SITE.host }
+    { rel: "canonical", href: `${SITE.host}/${region}` }
   ]
 });
 
