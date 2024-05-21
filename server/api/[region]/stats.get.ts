@@ -53,7 +53,7 @@ export default defineEventHandler(async (event) => {
     SELECT
       sq.riot_name, sq.riot_tag, sq.lol_region, sq.champion, sq.wins, sq.losses, sq.lol_picture,
       sq.twitch_login, sq.twitch_display, sq.twitch_picture, sq.country_flag,
-      ROUND((CAST(sq.wins AS FLOAT) / (sq.wins + sq.losses) * 100), 2) AS winrate
+      ROUND((CAST(sq.wins AS FLOAT) / (sq.wins + sq.losses) * 100), 1) AS winrate
     FROM (
       SELECT
         p.riot_name, p.riot_tag, p.lol_region, p.lol_picture,
@@ -76,7 +76,7 @@ export default defineEventHandler(async (event) => {
     SELECT
       sq.riot_name, sq.riot_tag, sq.lol_region, sq.champion, sq.wins, sq.losses, sq.lol_picture,
       sq.twitch_login, sq.twitch_display, sq.twitch_picture, sq.country_flag,
-      ROUND((CAST(sq.wins AS FLOAT) / (sq.wins + sq.losses) * 100), 2) AS winrate
+      ROUND((CAST(sq.wins AS FLOAT) / (sq.wins + sq.losses) * 100), 1) AS winrate
     FROM (
       SELECT
         p.riot_name, p.riot_tag, p.lol_region, p.lol_picture,

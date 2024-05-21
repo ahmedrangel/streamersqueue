@@ -40,7 +40,7 @@ const updateRankedData = async(env, p) => {
             date: match_data?.info?.gameCreation,
             duration: match_data?.info?.gameDuration,
           });
-          await new Promise(resolve => setTimeout(resolve, 100));
+          await new Promise(resolve => setTimeout(resolve, 50));
         }
       }
     }
@@ -262,7 +262,7 @@ export const updateGeneralData = async(env, control) => {
 
     twitch_data.push({ twitch_id: p.twitch_id, twitch_login: p.twitch_login, twitch_display: p.twitch_display, twitch_picture: p.twitch_picture, twitch_is_live: p.twitch_is_live });
     index++;
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise(resolve => setTimeout(resolve, 50));
   }
 
   const sorted_data = sortRankedData(participants);
