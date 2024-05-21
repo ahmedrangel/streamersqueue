@@ -1,4 +1,5 @@
 import countries_json from "../content/countries.json";
+import { format } from "date-fns";
 
 export const getPercentage = (wins: number, losses: number) => {
   if (!wins && !losses) return 0;
@@ -154,3 +155,26 @@ export const available_languages = [
 ];
 
 export const cookieMaxAge = { maxAge: 365 * 24 * 60 * 60 };
+
+export const formatDuration = (s: number) => {
+  if (s > 0) {
+    const minutes = Math.floor(s / 60);
+    const seconds = s % 60;
+    const format = `${minutes.toString()}m ${seconds.toString()}s`;
+    return format;
+  }
+  return "00m 00s";
+};
+
+export const formatDate = (timestamp: number) => {
+  return format(timestamp, "dd-MM-yyyy");
+};
+
+export const getKda = (k: number, d: number, a: number) => {
+  const kda = (k + a) / d;
+  return kda % 1 === 0 ? kda.toFixed(0) : kda.toFixed(2);
+};
+
+export const getChampionName = (summary: Record<string, any>, id: number) => {
+  return summary.find((el: Record<string, any>) => el.id === id).name;
+};

@@ -136,7 +136,7 @@ main ::-webkit-scrollbar-track {
   font-size: 24px;
 }
 
-.crown-1 {
+.crown-1, .text-winner {
   color: var(--winner-first);
 }
 

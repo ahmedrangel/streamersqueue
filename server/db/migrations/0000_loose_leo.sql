@@ -12,6 +12,8 @@ CREATE TABLE `history` (
 	`assists` integer,
 	`is_remake` integer,
 	`result` integer,
+	`champion` integer,
+	`game_surrendered` integer,
 	PRIMARY KEY(`match_id`, `puuid`),
 	FOREIGN KEY (`puuid`) REFERENCES `participants`(`puuid`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`match_id`) REFERENCES `matches`(`match_id`) ON UPDATE no action ON DELETE no action
@@ -19,8 +21,8 @@ CREATE TABLE `history` (
 --> statement-breakpoint
 CREATE TABLE `matches` (
 	`match_id` text PRIMARY KEY NOT NULL,
-	`date` text,
-	`duration` text
+	`date` integer,
+	`duration` integer
 );
 --> statement-breakpoint
 CREATE TABLE `participants` (
@@ -51,5 +53,6 @@ CREATE TABLE `socials` (
 	`twitch_picture` text,
 	`instagram` text,
 	`twitter` text,
+	`country_flag` text,
 	FOREIGN KEY (`puuid`) REFERENCES `participants`(`puuid`) ON UPDATE no action ON DELETE no action
 );

@@ -37,6 +37,7 @@ const updateRankedData = async(env, p) => {
             result: participant_data?.win,
             is_remake: participant_data?.gameEndedInEarlySurrender,
             champion: participant_data?.championId,
+            game_surrendered: participant_data?.gameEndedInSurrender || participant_data?.gameEndedInEarlySurrender ? 1 : 0,
             date: match_data?.info?.gameCreation,
             duration: match_data?.info?.gameDuration,
           });
@@ -71,6 +72,7 @@ const updateRankedData = async(env, p) => {
             result: participant_data?.win,
             is_remake: participant_data?.gameEndedInEarlySurrender,
             champion: participant_data?.championId,
+            game_surrendered: participant_data?.gameEndedInSurrender || participant_data?.gameEndedInEarlySurrender ? 1 : 0,
             date: match_data?.info?.gameCreation,
             duration: match_data?.info?.gameDuration,
           });
@@ -302,13 +304,13 @@ export const updateGeneralData = async(env, control) => {
   // Matches Insert
   for (const m of matches) {
     await env.PARTICIPANTS.prepare("INSERT OR IGNORE INTO matches (match_id, date, duration) VALUES (?, ?, ?)")
-      .bind(m.match_id, String(m.date), String(m.duration)).run();
+      .bind(m.match_id, m.date, m.duration).run();
   }
 
   // History Insert
   for (const m of updater_history) {
-    await env.PARTICIPANTS.prepare("INSERT OR IGNORE INTO history (match_id, puuid, kills, deaths, assists, is_remake, result, champion) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
-      .bind(m.match_id, m.puuid, m.kills, m.deaths, m.assists, m.is_remake, m.result, m.champion).run();
+    await env.PARTICIPANTS.prepare("INSERT OR IGNORE INTO history (match_id, puuid, kills, deaths, assists, is_remake, result, champion, game_surrendered) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
+      .bind(m.match_id, m.puuid, m.kills, m.deaths, m.assists, m.is_remake, m.result, m.champion, m.game_surrendered).run();
   }
 
   console.info("Updaters check: " + updated_data.ranked, updated_data.ingame, updated_data.sorted);

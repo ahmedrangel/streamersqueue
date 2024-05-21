@@ -47,5 +47,10 @@ export default {
   kda_averages: "KDA Averages",
   highest: "Highest",
   lowest: "Lowest",
-  champion_winrates: "Champion Winrates"
+  champion_winrates: "Champion Winrates",
+  duration: "Duration",
+  games: "Games",
+  longest: "Longest",
+  shortest: "Shortest",
+  excluding_surrenders: "excluding surrenders"
 };

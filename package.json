@@ -39,6 +39,7 @@
     "@nuxtjs/google-fonts": "^3.2.0",
     "bootstrap": "^5.3.3",
     "chart.js": "^4.4.2",
+    "date-fns": "^3.6.0",
     "primevue": "^3.52.0"
   }
 }

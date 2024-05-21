@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "3c626408-1aaf-4ea4-a18d-0e759b2bcf9d",
+  "id": "6eb1890b-9bb0-4089-a4e8-6dd92ee8a04c",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "control": {
@@ -86,6 +86,20 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
+        },
+        "champion": {
+          "name": "champion",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "game_surrendered": {
+          "name": "game_surrendered",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -140,14 +154,14 @@
         },
         "date": {
           "name": "date",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
         "duration": {
           "name": "duration",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -345,6 +359,13 @@
         },
         "twitter": {
           "name": "twitter",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "country_flag": {
+          "name": "country_flag",
           "type": "text",
           "primaryKey": false,
           "notNull": false,

@@ -9,17 +9,18 @@ const head = [
   { id: "streamer" },
   { id: "account" },
   { id: "region" },
-  { id: "winrate" }
+  { id: "KDA" },
+  { id: "duration" }
 ];
 </script>
 
 <template>
   <h5 class="mb-2 fw-bold">
-    <span v-if="props.positive" class="text-positive">{{ t("highest") }}</span>
-    <span v-else class="text-negative">{{ t("lowest") }}</span>
-    {{ t("champion_winrates") }}
+    {{ t("games") }}:
+    <span v-if="props.positive" class="text-positive">{{ t("shortest") }}</span>
+    <span v-else class="text-negative">{{ t("longest") }}</span>
     <br>
-    <span class="text-muted">({{ t("at_least") }} 10 {{ t("games_played") }})</span>
+    <span class="text-muted">({{ t("excluding_surrenders") }})</span>
   </h5>
   <div class="overflow-auto">
     <table class="table table-striped table-borderless overflow-hidden rounded mb-1">
@@ -56,26 +57,35 @@ const head = [
               <strong class="text-uppercase text-nowrap small">{{ p.lol_region }}</strong>
             </NuxtLink>
           </td>
-          <td class="text-start">
+          <td>
             <div class="d-flex justify-content-center align-items-center gap-2">
               <div :title="getChampionName(props.championsSummary, p.champion)">
                 <img class="rounded img-profile" :src="`https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champion-icons/${p.champion}.png`">
               </div>
+              <strong class="text-nowrap small d-block">
+                <h5 class="mb-0">
+                  <strong class="text-nowrap small d-block">
+                    <span v-if="p.deaths">{{ getKda(p.kills, p.deaths, p.assists) }}</span>
+                    <span v-else class="text-winner">P</span>
+                  </strong>
+                </h5>
+                <span class="text-positive fw-bold">{{ p.kills }}</span> / <span class="text-negative fw-bold">{{ p.deaths }}</span> / <span class="text-warning fw-bold">{{ p.assists }}</span>
+              </strong>
+            </div>
+          </td>
+          <td class="text-start">
+            <a :href="`https://leagueofgraphs.com/match/${p.lol_region}/${p.match_id.split('_')[1]}`" target="_blank">
               <div class="d-flex flex-column justify-content-center align-items-center">
                 <h5 class="mb-0">
                   <strong class="text-nowrap small d-block">
-                    {{ p.winrate }}%
+                    {{ formatDuration(p.duration) }}
                   </strong>
                 </h5>
-                <small class="text-nowrap fw-bold h6 mb-0">
-                  <span class="text-positive">{{ p.wins }}</span>
-                  <span class="text-muted">&nbsp;{{ t("w") }}</span>
-                  <span class="text-muted">&nbsp;-&nbsp;</span>
-                  <span class="text-negative">{{ p.losses }}</span>
-                  <span class="text-muted">&nbsp;{{ t("l") }}</span>
+                <small class="text-nowrap h6 mb-0 text-muted">
+                  {{ formatDate(p.date) }}
                 </small>
               </div>
-            </div>
+            </a>
           </td>
         </tr>
       </tbody>

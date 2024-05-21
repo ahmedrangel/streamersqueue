@@ -32,13 +32,14 @@ export const socials = sqliteTable("socials", {
   twitch_is_live: integer("twitch_is_live").default(0),
   twitch_picture: text("twitch_picture"),
   instagram: text("instagram"),
-  twitter: text("twitter")
+  twitter: text("twitter"),
+  country_flag: text("country_flag"),
 });
 
 export const matches = sqliteTable("matches", {
   match_id: text("match_id").primaryKey(),
-  date: text("date"),
-  duration: text("duration")
+  date: integer("date"),
+  duration: integer("duration")
 });
 
 export const history = sqliteTable("history", {
@@ -49,6 +50,8 @@ export const history = sqliteTable("history", {
   assists: integer("assists"),
   is_remake: integer("is_remake"),
   result: integer("result"),
+  champion: integer("champion"),
+  game_surrendered: integer("game_surrendered")
 }, (table) => {
   return {
     pk: primaryKey({ columns: [table.puuid, table.match_id] })
