@@ -193,6 +193,7 @@ router.get("/:region/stats", async (req, env) => {
   return new JsonResponse(response);
 });
 
+/*
 router.get("/sync-history", async (req, env) => {
   const DB = env.PARTICIPANTS;
   const { results } = await DB.prepare("SELECT h.puuid, h.match_id, p.lol_region FROM history AS h INNER JOIN participants AS p ON h.puuid = p.puuid WHERE game_surrendered IS NULL LIMIT 400").all();
@@ -207,6 +208,7 @@ router.get("/sync-history", async (req, env) => {
   }
   return new JsonResponse(results);
 });
+*/
 
 router.all("*", () => new JsResponse("Not Found.", { status: 404 }));
 
