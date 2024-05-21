@@ -42,8 +42,9 @@ export default {
   home: "Home",
   w: "W",
   l: "L",
-  best: "Best",
-  worst: "Worst",
-  with_at_least: "with at least",
+  at_least: "at least",
   games_played: "games played",
+  kda_averages: "KDA Averages",
+  highest: "Highest",
+  lowest: "Lowest",
 };

@@ -42,8 +42,9 @@ export default {
   home: "Inicio",
   w: "V",
   l: "D",
-  best: "Mejor",
-  worst: "Peor",
-  with_at_least: "con al menos",
+  at_least: "al menos",
   games_played: "partidas jugadas",
+  kda_averages: "Promedios KDA",
+  highest: "Mejores",
+  lowest: "Peores",
 };
