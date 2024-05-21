@@ -8,15 +8,20 @@ const head = [
   { id: "streamer" },
   { id: "account" },
   { id: "region" },
-  { id: "KDA" }
+  { id: "winrate" }
 ];
+
+const { data: champions_summary } = await useFetch("/api/lol/champion-summary") as Record<string, any>;
+const getChampionName = (id: number) => {
+  return champions_summary.value.find((el: Record<string, any>) => el.id === id).name;
+};
 </script>
 
 <template>
   <h5 class="mb-2 fw-bold">
     <span v-if="props.positive" class="text-positive">{{ t("highest") }}</span>
     <span v-else class="text-negative">{{ t("lowest") }}</span>
-    {{ t("kda_averages") }}
+    {{ t("champion_winrates") }}
     <br>
     <span class="text-muted">({{ t("at_least") }} 10 {{ t("games_played") }})</span>
   </h5>
@@ -55,16 +60,25 @@ const head = [
               <strong class="text-uppercase text-nowrap small">{{ p.lol_region }}</strong>
             </NuxtLink>
           </td>
-          <td>
-            <div class="text-center">
-              <h5 class="mb-0">
-                <strong class="text-nowrap small d-block">
-                  {{ p.kda }} <span class="text-muted fw-normal">({{ p.total_games }})</span>
-                </strong>
-              </h5>
-              <strong class="text-uppercase text-nowrap small d-block text-muted">
-                <span class="text-positive fw-bold">{{ p.avg_kills }}</span> / <span class="text-negative fw-bold">{{ p.avg_deaths }}</span> / <span class="text-warning fw-bold">{{ p.avg_assists }}</span>
-              </strong>
+          <td class="text-start">
+            <div class="d-flex justify-content-center align-items-center gap-2">
+              <div :title="getChampionName(p.champion)">
+                <img class="rounded img-profile" :src="`https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champion-icons/${p.champion}.png`">
+              </div>
+              <div class="d-flex flex-column justify-content-center align-items-center">
+                <h5 class="mb-0">
+                  <strong class="text-nowrap small d-block">
+                    {{ p.winrate }}%
+                  </strong>
+                </h5>
+                <small class="text-nowrap fw-bold h6 mb-0">
+                  <span class="text-positive">{{ p.wins }}</span>
+                  <span class="text-muted">&nbsp;{{ t("w") }}</span>
+                  <span class="text-muted">&nbsp;-&nbsp;</span>
+                  <span class="text-negative">{{ p.losses }}</span>
+                  <span class="text-muted">&nbsp;{{ t("l") }}</span>
+                </small>
+              </div>
             </div>
           </td>
         </tr>

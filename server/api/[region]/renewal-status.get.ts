@@ -3,9 +3,7 @@ import { controls } from "~/utils/helpers";
 export default defineEventHandler(async (event) => {
   const region = (getRouterParams(event).region).toLowerCase() as string;
   if (import.meta.dev) {
-    return await $fetch(`${process.env.WORKER}/${region}/renewal-status`, {
-      parseResponse: JSON.parse
-    }).catch(() => null);
+    return await $fetch<Record<string, any>>(`${process.env.WORKER}/${region}/renewal-status`).catch(() => null);
   }
 
   const control = controls[region];

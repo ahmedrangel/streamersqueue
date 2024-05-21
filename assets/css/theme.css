@@ -43,6 +43,10 @@ nav .router-link-exact-active:hover {
   color: var(--negative)!important;
 }
 
+.text-tertiary {
+  color: var(--bs-tertiary);
+}
+
 .bg-positive {
   background-color: var(--positive);
 }

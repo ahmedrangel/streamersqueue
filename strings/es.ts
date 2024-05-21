@@ -47,4 +47,5 @@ export default {
   kda_averages: "Promedios KDA",
   highest: "Mejores",
   lowest: "Peores",
+  champion_winrates: "Winrates de campeón"
 };

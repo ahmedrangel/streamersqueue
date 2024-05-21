@@ -5,6 +5,8 @@ const worst = data.value.stats.worst;
 
 const best_kda = best.kda;
 const worst_kda = worst.kda;
+const best_pcwr = best.player_champion_wr;
+const worst_pcwr = worst.player_champion_wr;
 
 useSeoMeta({
   title: `${SITE.title}`,
@@ -38,6 +40,12 @@ useHead({
       </div>
       <div class="col-12 col-xl-6 text-center my-3">
         <TableKDA :body="worst_kda" :positive="false" />
+      </div>
+      <div class="col-12 col-xl-6 text-center my-3">
+        <TablePCWR :body="best_pcwr" :positive="true" />
+      </div>
+      <div class="col-12 col-xl-6 text-center my-3">
+        <TablePCWR :body="worst_pcwr" :positive="false" />
       </div>
     </div>
   </main>

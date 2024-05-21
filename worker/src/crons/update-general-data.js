@@ -36,6 +36,7 @@ const updateRankedData = async(env, p) => {
             assists: participant_data?.assists,
             result: participant_data?.win,
             is_remake: participant_data?.gameEndedInEarlySurrender,
+            champion: participant_data?.championId,
             date: match_data?.info?.gameCreation,
             duration: match_data?.info?.gameDuration,
           });
@@ -69,6 +70,7 @@ const updateRankedData = async(env, p) => {
             assists: participant_data?.assists,
             result: participant_data?.win,
             is_remake: participant_data?.gameEndedInEarlySurrender,
+            champion: participant_data?.championId,
             date: match_data?.info?.gameCreation,
             duration: match_data?.info?.gameDuration,
           });
@@ -82,7 +84,6 @@ const updateRankedData = async(env, p) => {
         .bind(0, 0, p.puuid).first();
       wins = db_wins ? wins + db_wins : wins;
       losses = db_losses ? losses + db_losses : losses;
-      console.log(wins, losses);
       participants = { puuid: p.puuid, summoner_id: p.summoner_id, wins, losses, lp: p.lp, elo: null, tier: null, position: p.position, position_change: p.position_change };
       updater_participants = { puuid: p.puuid, wins, losses, lp: null, elo: null, tier: null };
       return { participants, updater_participants, updater_history, updated_data: true };
@@ -306,8 +307,8 @@ export const updateGeneralData = async(env, control) => {
 
   // History Insert
   for (const m of updater_history) {
-    await env.PARTICIPANTS.prepare("INSERT OR IGNORE INTO history (match_id, puuid, kills, deaths, assists, is_remake, result) VALUES (?, ?, ?, ?, ?, ?, ?)")
-      .bind(m.match_id, m.puuid, m.kills, m.deaths, m.assists, m.is_remake, m.result).run();
+    await env.PARTICIPANTS.prepare("INSERT OR IGNORE INTO history (match_id, puuid, kills, deaths, assists, is_remake, result, champion) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+      .bind(m.match_id, m.puuid, m.kills, m.deaths, m.assists, m.is_remake, m.result, m.champion).run();
   }
 
   console.info("Updaters check: " + updated_data.ranked, updated_data.ingame, updated_data.sorted);
