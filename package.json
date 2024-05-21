@@ -24,12 +24,12 @@
     "db:migrate": "drizzle-kit generate:sqlite"
   },
   "devDependencies": {
-    "@nuxt/eslint": "^0.3.10",
-    "@nuxtjs/sitemap": "^5.1.4",
+    "@nuxt/eslint": "^0.3.13",
+    "@nuxtjs/sitemap": "^5.1.5",
     "@types/bootstrap": "^5.2.10",
-    "drizzle-kit": "^0.20.17",
+    "drizzle-kit": "^0.21.2",
     "drizzle-orm": "^0.30.10",
-    "eslint": "^9.2.0",
+    "eslint": "^9.3.0",
     "nuxt": "^3.11.2",
     "nuxt-icon": "^0.6.10",
     "nuxt-twemoji": "^3.5.0",
@@ -38,7 +38,7 @@
   "dependencies": {
     "@nuxtjs/google-fonts": "^3.2.0",
     "bootstrap": "^5.3.3",
-    "chart.js": "^4.4.2",
+    "chart.js": "^4.4.3",
     "date-fns": "^3.6.0",
     "primevue": "^3.52.0"
   }
