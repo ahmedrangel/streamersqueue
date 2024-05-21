@@ -1,9 +1,15 @@
 <script setup lang="ts">
 const props = defineProps({
-  head: { type: Object, required: true },
   body: { type: Object, required: true },
   positive: { type: Boolean, required: true}
 });
+
+const kda_head = [
+  { id: "streamer" },
+  { id: "account" },
+  { id: "region" },
+  { id: "KDA" }
+];
 </script>
 
 <template>
@@ -18,7 +24,7 @@ const props = defineProps({
     <table class="table table-striped table-borderless overflow-hidden rounded mb-1">
       <thead>
         <tr style="height: 40px;" class="align-middle text-center">
-          <th v-for="(h, i) of props.head" :key="i" class="user-select-none border">
+          <th v-for="(h, i) of kda_head" :key="i" class="user-select-none border">
             <small>{{ t(h.id) }}</small>
           </th>
         </tr>

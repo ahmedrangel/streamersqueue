@@ -6,13 +6,6 @@ const worst = data.value.stats.worst;
 const best_kda = best.kda;
 const worst_kda = worst.kda;
 
-const kda_head = [
-  { id: "streamer" },
-  { id: "account" },
-  { id: "region" },
-  { id: "KDA" }
-];
-
 useSeoMeta({
   title: `${SITE.title}`,
   description: SITE.description,
@@ -41,10 +34,10 @@ useHead({
   <main>
     <div id="stats" class="row gx-4">
       <div class="col-12 col-xl-6 text-center my-3">
-        <TableKDA :head="kda_head" :body="best_kda" :positive="true" />
+        <TableKDA :body="best_kda" :positive="true" />
       </div>
       <div class="col-12 col-xl-6 text-center my-3">
-        <TableKDA :head="kda_head" :body="worst_kda" :positive="false" />
+        <TableKDA :body="worst_kda" :positive="false" />
       </div>
     </div>
   </main>
