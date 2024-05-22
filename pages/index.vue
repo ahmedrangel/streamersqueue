@@ -38,16 +38,16 @@ useHead({
 <template>
   <main>
     <div id="stats" class="row gx-4">
-      <div class="col-12 col-xl-6 text-center my-3">
+      <div class="col-12 col-lg-6 text-center my-3">
         <TableKDA :body="best_kda" :positive="true" />
       </div>
-      <div class="col-12 col-xl-6 text-center my-3">
+      <div class="col-12 col-lg-6 text-center my-3">
         <TableKDA :body="worst_kda" :positive="false" />
       </div>
-      <div class="col-12 col-xl-6 text-center my-3">
+      <div class="col-12 col-lg-6 text-center my-3">
         <TablePCWR :body="best_pcwr" :champions-summary="champions_summary" :positive="true" />
       </div>
-      <div class="col-12 col-xl-6 text-center my-3">
+      <div class="col-12 col-lg-6 text-center my-3">
         <TablePCWR :body="worst_pcwr" :champions-summary="champions_summary" :positive="false" />
       </div>
       <div class="col-12 col-xl-6 text-center my-3">
