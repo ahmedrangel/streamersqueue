@@ -23,9 +23,9 @@ const updateRankedData = async(env, p) => {
       .bind(p.puuid).all();
     const db_matches_ids = db_matches.results?.map(item => item.match_id);
     if (matches.length) {
-      console.info("saving recent matches");
       for (const m of matches) {
         if (!db_matches_ids.includes(m)) {
+          console.info("fetching new match: " + m + ` by ${p.riot_name}#${p.riot_tag}`);
           const match_data = await _riot.getMatchById(m, cluster);
           const participant_data = match_data?.info?.participants?.filter(item => item?.puuid === p?.puuid)[0] || null;
           updater_history.push({
@@ -47,7 +47,7 @@ const updateRankedData = async(env, p) => {
     }
     return { participants, updater_participants, updater_history, updated_data: true };
   } else {
-    console.info("fetching matches");
+    console.info(`looking for ${p.riot_name}#${p.riot_tag} placement matches`);
     const matches = await _riot.getMatchesByPuuid(p.puuid, cluster, 20, 420, p.lol_region);
     const db_matches = await env.PARTICIPANTS.prepare("SELECT match_id FROM history WHERE puuid = ?")
       .bind(p.puuid).all();
@@ -57,6 +57,7 @@ const updateRankedData = async(env, p) => {
     if (matches.length) {
       for (const m of matches) {
         if (!db_matches_ids.includes(m)) {
+          console.info("fetching new placement match: " + m);
           const match_data = await _riot.getMatchById(m, cluster);
           const participant_data = match_data?.info?.participants?.filter(item => item?.puuid === p?.puuid)[0] || null;
           if (participant_data?.win && !participant_data?.gameEndedInEarlySurrender)
@@ -90,6 +91,7 @@ const updateRankedData = async(env, p) => {
       updater_participants = { puuid: p.puuid, wins, losses, lp: null, elo: null, tier: null };
       return { participants, updater_participants, updater_history, updated_data: true };
     } else {
+      console.info(`no placements found for ${p.riot_name}#${p.riot_tag}`);
       participants = { puuid: p.puuid, summoner_id: p.summoner_id, wins: 0, losses: 0, lp: null, elo: null, tier: null, position: p.position, position_change: p.position_change };
       updater_participants = { puuid: p.puuid, wins: 0, losses: 0, lp: null, elo: null, tier: null };
       return { participants, updater_participants, updated_data: true };
@@ -223,18 +225,18 @@ const updateTwitchData = async(env, twitch_ids, twitch_data) => {
 };
 
 // Export
-export const updateGeneralData = async(env, control) => {
-  const { results } = await env.PARTICIPANTS.prepare(`
+export const updateGeneralData = async(env, control, type) => {
+  const { results, meta } = await env.PARTICIPANTS.prepare(`
     SELECT
       p.puuid, p.summoner_id, p.riot_name, p.riot_tag, p.position, p.position_change, p.wins, p.losses, p.lp, p.is_ingame, p.lol_region, p.lol_picture,
-      s.twitch_id, s.twitch_login, s.twitch_display, s.twitch_picture, s.twitch_is_live
+      s.twitch_id, ${type === "cron" ? "s.twitch_login, s.twitch_display, s.twitch_picture," : ""} s.twitch_is_live
     FROM participants as p
     INNER JOIN socials as s ON p.puuid = s.puuid
     WHERE control = ?
     `)
     .bind(control).all();
-
   if (!results[0]) return null;
+  console.info({ rows_read: meta.rows_read });
 
   const participants = [];
   const twitch_data = [];
@@ -271,13 +273,13 @@ export const updateGeneralData = async(env, control) => {
   const updater_position_change = sorted_data.updater_position_change;
   updated_data.sorted = sorted_data.updated_data;
 
-  // const updater_twitch_data = await updateTwitchData(env, twitch_ids, twitch_data);
+  const updater_twitch_data = type === "cron" ? await updateTwitchData(env, twitch_ids, twitch_data) : null;
   const updater_twitch_live = await updateTwitchLiveStatus(env, twitch_ids, twitch_data);
 
   // console.info(updater_participants);
   console.info(updater_position_change);
   console.info(updater_ingame);
-  // console.info(updater_twitch_data);
+  console.info(updater_twitch_data);
   console.info(updater_twitch_live);
 
 

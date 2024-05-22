@@ -3,9 +3,8 @@ import JsResponse from "./response";
 import JsonResponse from "./jsonResponse";
 import twitchApi from "./apis/twitchApi";
 import riotApi from "./apis/riotApi";
-import { updateGeneralData } from "./crons/update-general-data";
 import { resetPositionChange } from "./crons/reset-position-change";
-import { controls, worker } from "./utils/helpers";
+import { controls, renewalHandler, worker } from "./utils/helpers";
 import { kda, matchDuration, playerChampionWR } from "./utils/queries";
 
 const router = IttyRouter();
@@ -61,28 +60,7 @@ router.post("/add", async (req, env) => {
 
 router.get("/:region/renewal", async (req, env) => {
   const region = req.params.region.toLowerCase();
-  const control = controls[region];
-  const defined_cooldown = 240; // in seconds
-  // Start renewing
-  try {
-    await env.PARTICIPANTS.prepare("UPDATE control SET renewing = ? WHERE id = ? AND renewing = ?").bind(1, control, 0).run();
-    const { last_updated } = await env.PARTICIPANTS.prepare("SELECT last_updated FROM control WHERE id = ?").bind(control).first();
-    const date = new Date(last_updated);
-    const now = new Date();
-    const remaining = Math.ceil(((defined_cooldown * 1000) - (now - date)) / 1000);
-    // Error if not passed 2 minutes from last updated
-    if (now - date < (defined_cooldown * 1000)) {
-      await env.PARTICIPANTS.prepare("UPDATE control SET renewing = ? WHERE id = ? AND renewing = ?").bind(0, control, 1).run();
-      return new JsonResponse({ status: `Try again in ${remaining} seconds.`, status_code: 429, control });
-    };
-    await updateGeneralData(env, control);
-    // End renewing
-    await env.PARTICIPANTS.prepare("UPDATE control SET renewing = ? WHERE id = ? AND renewing = ?").bind(0, control, 1).run();
-    return new JsonResponse({ status: "Renewed", status_code: 200, control });
-  } catch (err) {
-    await env.PARTICIPANTS.prepare("UPDATE control SET renewing = ? WHERE id = ? AND renewing = ?").bind(0, control, 1).run();
-    return new JsonResponse({ status: String(err), status_code: 400, control });
-  }
+  return new JsonResponse(await renewalHandler(env, region, "endpoint"));
 });
 
 router.post("/reset-position-change", async (req, env) => {
@@ -220,6 +198,18 @@ export default {
     switch (event.cron) {
       case "0 6 * * *":
         await resetPositionChange(env);
+        break;
+      case "0 5 * * *":
+        await renewalHandler(env, "las", "cron");
+        break;
+      case "0 4 * * *":
+        await renewalHandler(env, "na", "cron");
+        break;
+      case "0 3 * * *":
+        await renewalHandler(env, "euw", "cron");
+        break;
+      case "0 2 * * *":
+        await renewalHandler(env, "lan", "cron");
         break;
     }
   },

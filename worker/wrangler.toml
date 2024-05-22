@@ -10,4 +10,10 @@ database_name = "streamers-ladder"
 database_id = "f9bc299b-450d-437f-aa57-ea8934841989"
 
 [triggers]
-crons = ["0 6 * * *"]
+crons = [
+  "0 6 * * *", # reset position change
+  "0 5 * * *", #las
+  "0 4 * * *", #na
+  "0 3 * * *", #euw
+  "0 2 * * *", #lan
+]
