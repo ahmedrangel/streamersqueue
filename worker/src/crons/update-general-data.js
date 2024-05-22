@@ -271,13 +271,13 @@ export const updateGeneralData = async(env, control) => {
   const updater_position_change = sorted_data.updater_position_change;
   updated_data.sorted = sorted_data.updated_data;
 
-  const updater_twitch_data = await updateTwitchData(env, twitch_ids, twitch_data);
+  // const updater_twitch_data = await updateTwitchData(env, twitch_ids, twitch_data);
   const updater_twitch_live = await updateTwitchLiveStatus(env, twitch_ids, twitch_data);
 
   // console.info(updater_participants);
   console.info(updater_position_change);
   console.info(updater_ingame);
-  console.info(updater_twitch_data);
+  // console.info(updater_twitch_data);
   console.info(updater_twitch_live);
 
 
