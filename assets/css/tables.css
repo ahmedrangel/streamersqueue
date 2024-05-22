@@ -96,3 +96,13 @@ tbody.updating::after {
   0% { left: -50%; } /* Barra de progreso fuera de la vista a la izquierda */
   100% { left: 100%; } /* Barra de progreso completamente visible a la derecha */
 }
+
+.table-bg-win {
+  --bs-table-bg: var(--win)!important;
+  --bs-table-striped-bg: var(--win)!important;
+}
+
+.table-bg-loss {
+  --bs-table-bg: var(--loss)!important;
+  --bs-table-striped-bg: var(--loss)!important;
+}

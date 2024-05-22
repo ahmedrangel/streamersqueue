@@ -18,6 +18,8 @@
   --winner-second-rgb: 225, 225, 225;
   --winner-third: #ff4d00;
   --winner-third-rgb: 255, 77, 0;
+  --win: #132050;
+  --loss: #31142c;
 }
 
 nav .router-link-exact-active {

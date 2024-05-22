@@ -167,7 +167,7 @@ export const formatDuration = (s: number) => {
 };
 
 export const formatDate = (timestamp: number) => {
-  return format(timestamp, "dd-MM-yyyy");
+  return format(timestamp, "dd/MM/yyyy");
 };
 
 export const getKda = (k: number, d: number, a: number) => {

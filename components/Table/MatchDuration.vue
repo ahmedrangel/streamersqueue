@@ -6,9 +6,9 @@ const props = defineProps({
 });
 
 const head = [
-  { id: "streamer" },
-  { id: "account" },
+  { id: "player" },
   { id: "region" },
+  { id: "" },
   { id: "KDA" },
   { id: "duration" }
 ];
@@ -34,22 +34,22 @@ const head = [
       <tbody class="border">
         <tr v-for="(p, i) of props.body" :key="i" class="text-center align-middle">
           <td class="text-start">
-            <div class="d-flex align-items-center gap-2 px-1">
-              <div class="position-relative">
-                <img class="rounded img-profile" :src="`https://static-cdn.jtvnw.net/${p.twitch_picture.replace('300x300', '70x70')}`">
+            <div class="d-flex align-items-center">
+              <img class="rounded img-profile mx-1" :src="`https://static-cdn.jtvnw.net/${p.twitch_picture.replace('300x300', '70x70')}`">
+              <div>
+                <div class="d-flex align-items-center gap-2 px-1">
+                  <span v-if="p.country_flag" :title="getCountryName(p.country_flag)">
+                    <Twemoji :emoji="p.country_flag" size="1.2em" />
+                  </span>
+                  <a target="_blank" class="small" :href="`https://twitch.tv/${p.twitch_login}`">{{ p.twitch_display }}</a>
+                </div>
+                <div class="d-flex align-items-center gap-2 px-1">
+                  <img class="rounded img-profile" :src="`https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/${p.lol_picture}.jpg`" style="width: 21px; height: 100%;">
+                  <a target="_blank" class="small text-nowrap" :href="`https://op.gg/summoners/${p.lol_region}/${p.riot_name}-${p.riot_tag}`">
+                    <strong>{{ p.riot_name }} <span class="text-muted">#{{ p.riot_tag }}</span></strong>
+                  </a>
+                </div>
               </div>
-              <span v-if="p.country_flag" :title="getCountryName(p.country_flag)">
-                <Twemoji :emoji="p.country_flag" size="1.2em" />
-              </span>
-              <a target="_blank" class="small" :href="`https://twitch.tv/${p.twitch_login}`">{{ p.twitch_display }}</a>
-            </div>
-          </td>
-          <td class="text-start">
-            <div class="d-flex align-items-center gap-2">
-              <img class="rounded img-profile" :src="`https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/${p.lol_picture}.jpg`">
-              <a target="_blank" class="small text-nowrap" :href="`https://op.gg/summoners/${p.lol_region}/${p.riot_name}-${p.riot_tag}`">
-                <strong>{{ p.riot_name }} <span class="text-muted"><br>#{{ p.riot_tag }}</span></strong>
-              </a>
             </div>
           </td>
           <td scope="row" style="width: 90px;">
@@ -57,11 +57,13 @@ const head = [
               <strong class="text-uppercase text-nowrap small">{{ p.lol_region }}</strong>
             </NuxtLink>
           </td>
-          <td>
-            <div class="d-flex justify-content-center align-items-center gap-2">
-              <div :title="getChampionName(props.championsSummary, p.champion)">
-                <img class="rounded img-profile" :src="`https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champion-icons/${p.champion}.png`">
-              </div>
+          <td :class="p.result ? 'table-bg-win' : 'table-bg-loss'">
+            <div :title="getChampionName(props.championsSummary, p.champion)" class="mx-1">
+              <img class="rounded img-profile" :src="`https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champion-icons/${p.champion}.png`">
+            </div>
+          </td>
+          <td :class="p.result ? 'table-bg-win' : 'table-bg-loss'">
+            <div class="d-flex justify-content-center align-items-center gap-1">
               <strong class="text-nowrap small d-block">
                 <h5 class="mb-0">
                   <strong class="text-nowrap small d-block">
@@ -73,16 +75,16 @@ const head = [
               </strong>
             </div>
           </td>
-          <td class="text-start">
+          <td class="text-start" :class="p.result ? 'table-bg-win' : 'table-bg-loss'">
             <a :href="`https://leagueofgraphs.com/match/${p.lol_region}/${p.match_id.split('_')[1]}`" target="_blank">
-              <div class="d-flex flex-column justify-content-center align-items-center">
+              <div class="d-flex flex-column justify-content-center align-items-center mx-1">
                 <h5 class="mb-0">
                   <strong class="text-nowrap small d-block">
                     {{ formatDuration(p.duration) }}
                   </strong>
                 </h5>
                 <small class="text-nowrap h6 mb-0 text-muted">
-                  {{ formatDate(p.date) }}
+                  <small>{{ formatDate(p.date) }}</small>
                 </small>
               </div>
             </a>
