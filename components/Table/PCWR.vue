@@ -8,6 +8,7 @@ const props = defineProps({
 const head = [
   { id: "player" },
   { id: "region" },
+  { id: "" },
   { id: "winrate" }
 ];
 </script>
@@ -55,11 +56,13 @@ const head = [
               <strong class="text-uppercase text-nowrap small">{{ p.lol_region }}</strong>
             </NuxtLink>
           </td>
+          <td style="width: 40px;">
+            <div :title="getChampionName(props.championsSummary, p.champion)" class="mx-1">
+              <img class="rounded img-profile" :src="`https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champion-icons/${p.champion}.png`">
+            </div>
+          </td>
           <td class="text-start">
             <div class="d-flex justify-content-center align-items-center gap-2">
-              <div :title="getChampionName(props.championsSummary, p.champion)">
-                <img class="rounded img-profile" :src="`https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champion-icons/${p.champion}.png`">
-              </div>
               <div class="d-flex flex-column justify-content-center align-items-center">
                 <h5 class="mb-0">
                   <strong class="text-nowrap small d-block">
