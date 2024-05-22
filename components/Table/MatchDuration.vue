@@ -16,7 +16,7 @@ const head = [
 
 <template>
   <h5 class="mb-2 fw-bold">
-    {{ t("games") }}:
+    {{ t("games_duration") }}:
     <span v-if="props.positive" class="text-positive">{{ t("shortest") }}</span>
     <span v-else class="text-negative">{{ t("longest") }}</span>
     <br>

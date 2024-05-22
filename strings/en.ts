@@ -53,5 +53,6 @@ export default {
   longest: "Longest",
   shortest: "Shortest",
   excluding_surrenders: "excluding games ended in surrender",
-  player: "Player"
+  player: "Player",
+  games_duration: "Games Duration"
 };

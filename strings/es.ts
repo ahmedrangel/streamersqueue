@@ -53,5 +53,6 @@ export default {
   longest: "Más Largas",
   shortest: "Más Cortas",
   excluding_surrenders: "excluyendo partidas terminadas en surrender",
-  player: "Jugador"
+  player: "Jugador",
+  games_duration: "Duración de Partidas"
 };
