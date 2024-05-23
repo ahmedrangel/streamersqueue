@@ -171,11 +171,6 @@ main ::-webkit-scrollbar-track {
   background-color: rgba(var(--bs-tertiary-rgb),var(--bs-bg-opacity))!important;
 }
 
-.spinner-border {
-  --bs-spinner-width: 1rem;
-  --bs-spinner-height: 1rem;
-}
-
 .p-row-1, .p-row-2, .p-row-3 {
   border-bottom: 1px solid;
 }

@@ -172,7 +172,7 @@ onBeforeUnmount(() => {
     <div class="d-flex justify-content-end align-items-center mb-2">
       <button class="btn bg-tertiary text-dark fw-bold d-flex align-items-center gap-1" :disabled="is_renewing || cooldown" @click="renew()">
         <Icon v-if="!is_renewing" name="ph:arrows-clockwise-bold" />
-        <CompLoadingSpinner v-else />
+        <CompLoadingSpinner v-else size="1rem" />
         <span>{{ is_renewing ? t("updating") : t("update") }}</span>
       </button>
     </div>
@@ -195,7 +195,7 @@ onBeforeUnmount(() => {
     <div class="toast-container position-fixed bottom-0 end-0 p-3">
       <div id="updatingToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
         <div class="toast-header py-4 border-0 bg-tertiary text-dark px-3 rounded">
-          <CompLoadingSpinner class="me-2 h6 mb-0" />
+          <CompLoadingSpinner class="me-2 h6 mb-0" size="1rem" />
           <h6 class="me-auto mb-0">{{ t("updating_data") }}...</h6>
           <button type="button" class="btn p-0 text-dark" data-bs-dismiss="toast" aria-label="Close">
             <Icon name="ph:x-bold" />

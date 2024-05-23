@@ -14,14 +14,17 @@ const head = [
 
 const body = ref(props.body);
 const current_region = ref("all");
+const loading = ref(false);
 
 const table_name = `${props.positive ? "positive" : "negative"}-pcwr-table`;
 
 const updateTable = async (region: string) => {
   const table = document.querySelector("." + table_name) as HTMLElement;
   table.style.opacity = "0";
+  loading.value = true;
   const { stats } = await $fetch(`/api/${region}/stats/player-champion-winrate?order=${props.positive ? "desc" : "asc"}`).catch(() => null) as Record<string, any>;;
   await sleep(100);
+  loading.value = false;
   body.value = stats?.player_champion_wr;
   table.style.opacity = "1";
 };
@@ -44,7 +47,7 @@ const updateTable = async (region: string) => {
     </select>
   </div>
   <div class="overflow-auto">
-    <table class="table table-striped table-borderless overflow-hidden rounded mb-0 bg-primary">
+    <table class="table table-striped table-borderless overflow-hidden rounded mb-0 bg-primary position-relative">
       <thead>
         <tr style="height: 40px;" class="align-middle text-center">
           <th v-for="(h, i) of head" :key="i" class="user-select-none border">
@@ -103,6 +106,7 @@ const updateTable = async (region: string) => {
           </td>
         </tr>
       </tbody>
+      <CompLoadingSpinner v-if="loading" class="position-absolute top-50 start-50 translate-middle" size="3rem" />
     </table>
   </div>
   <div v-if="!body.length" class="text-start text-negative">
