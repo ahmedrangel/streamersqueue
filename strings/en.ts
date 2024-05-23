@@ -54,5 +54,6 @@ export default {
   shortest: "Shortest",
   excluding_surrenders: "excluding games ended in surrender",
   player: "Player",
-  games_duration: "Games Duration"
+  matches_duration: "Matches Duration",
+  there_is_not_enough_data_to_show_in_this_section: "There is not enough data to show in this section."
 };

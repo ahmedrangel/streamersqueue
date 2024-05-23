@@ -44,3 +44,10 @@
   50% { transform: scale(1.25);}
   100% {transform: scale(1);}
 }
+
+.positive-kda-table, .negative-kda-table,
+.positive-match-duration-table, .negative-match-duration-table,
+.positive-pcwr-table, .negative-pcwr-table {
+  transition: opacity 0.3s ease-in-out;
+  opacity: 1;
+}

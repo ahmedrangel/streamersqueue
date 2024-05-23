@@ -186,3 +186,7 @@ export const available_regions = [
   { name: "NA", value: "na" },
   { name: "EUW", value: "euw" }
 ];
+
+export const sleep = async (ms: number) => {
+  return await new Promise(resolve => setTimeout(resolve, ms));
+};

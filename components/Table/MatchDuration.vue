@@ -16,15 +16,21 @@ const head = [
 const body = ref(props.body);
 const current_region = ref("all");
 
+const table_name = `${props.positive ? "positive" : "negative"}-match-duration-table`;
+
 const updateTable = async (region: string) => {
+  const table = document.querySelector("." + table_name) as HTMLElement;
+  table.style.opacity = "0";
   const { stats } = await $fetch(`/api/${region}/stats/match-duration?order=${props.positive ? "asc" : "desc"}`).catch(() => null) as Record<string, any>;;
+  await sleep(100);
   body.value = stats?.match_duration;
+  table.style.opacity = "1";
 };
 </script>
 
 <template>
   <h5 class="mb-2 fw-bold">
-    {{ t("games_duration") }}:
+    {{ t("matches_duration") }}:
     <span v-if="props.positive" class="text-positive">{{ t("shortest") }}</span>
     <span v-else class="text-negative">{{ t("longest") }}</span>
     <br>
@@ -39,7 +45,7 @@ const updateTable = async (region: string) => {
     </select>
   </div>
   <div class="overflow-auto">
-    <table class="table table-striped table-borderless overflow-hidden rounded mb-1">
+    <table class="table table-striped table-borderless overflow-hidden rounded mb-0 bg-primary">
       <thead>
         <tr style="height: 40px;" class="align-middle text-center">
           <th v-for="(h, i) of head" :key="i" class="user-select-none border">
@@ -47,7 +53,7 @@ const updateTable = async (region: string) => {
           </th>
         </tr>
       </thead>
-      <tbody class="border">
+      <tbody class="border" :class="table_name">
         <tr v-for="(p, i) of body" :key="i" class="text-center align-middle">
           <td class="text-start">
             <div class="d-flex align-items-center">
@@ -108,5 +114,8 @@ const updateTable = async (region: string) => {
         </tr>
       </tbody>
     </table>
+  </div>
+  <div v-if="!body.length" class="text-start text-negative">
+    {{ t("there_is_not_enough_data_to_show_in_this_section") }}
   </div>
 </template>
