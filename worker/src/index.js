@@ -171,6 +171,62 @@ router.get("/:region/stats", async (req, env) => {
   return new JsonResponse(response);
 });
 
+router.get("/:region/stats/kda-avg", async (req, env) => {
+  const region = req.params.region.toLowerCase();
+  const order = req.query.order;
+  if (!order || order !== "desc" && order !== "asc") return new JsonResponse({ status: "Bad Request", status_code: 400 });
+
+  const control = region === "all" ? "all" : controls[region];
+  const DB = env.PARTICIPANTS;
+  const kda_result = await kda(DB, control, order.toUpperCase());
+
+  const response = {
+    stats: {
+      kda: kda_result.results,
+    },
+    status_code: 200,
+    status: `${order === "desc" ? "Highest" : "Lowest"} KDA Averages`,
+  };
+  return new JsonResponse(response);
+});
+
+router.get("/:region/stats/match-duration", async (req, env) => {
+  const region = req.params.region.toLowerCase();
+  const order = req.query.order;
+  if (!order || order !== "desc" && order !== "asc") return new JsonResponse({ status: "Bad Request", status_code: 400 });
+
+  const control = region === "all" ? "all" : controls[region];
+  const DB = env.PARTICIPANTS;
+  const match_duration = await matchDuration(DB, control, order.toUpperCase());
+
+  const response = {
+    stats: {
+      match_duration: match_duration.results,
+    },
+    status_code: 200,
+    status: `Match Duration: ${order === "asc" ? "Shortest" : "Longest"}`,
+  };
+  return new JsonResponse(response);
+});
+
+router.get("/:region/stats/player-champion-winrate", async (req, env) => {
+  const region = req.params.region.toLowerCase();
+  const order = req.query.order;
+  if (!order || order !== "desc" && order !== "asc") return new JsonResponse({ status: "Bad Request", status_code: 400 });
+
+  const control = region === "all" ? "all" : controls[region];
+  const DB = env.PARTICIPANTS;
+  const player_champion_wr = await playerChampionWR(DB, control, order.toUpperCase());
+
+  const response = {
+    stats: {
+      player_champion_wr: player_champion_wr.results,
+    },
+    status_code: 200,
+    status: `${order === "desc" ? "Highest" : "Lowest"} Champion Winrates`,
+  };
+  return new JsonResponse(response);
+});
 /*
 router.get("/sync-history", async (req, env) => {
   const DB = env.PARTICIPANTS;

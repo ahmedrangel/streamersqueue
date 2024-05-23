@@ -9,6 +9,14 @@ const head = [
   { id: "region" },
   { id: "KDA" }
 ];
+
+const body = ref(props.body);
+const current_region = ref("all");
+
+const updateTable = async (region: string) => {
+  const { stats } = await $fetch(`/api/${region}/stats/kda-avg?order=${props.positive ? "desc" : "asc"}`).catch(() => null) as Record<string, any>;;
+  body.value = stats?.kda;
+};
 </script>
 
 <template>
@@ -19,6 +27,14 @@ const head = [
     <br>
     <span class="text-muted">({{ t("at_least") }} 10 {{ t("games_played") }})</span>
   </h5>
+  <div class="input-group mb-2 justify-content-start mb-2">
+    <label class="input-group-text bg-primary">{{ t("region") }}</label>
+    <select v-model="current_region" class="form-select region-select bg-secondary" @change="updateTable(current_region)">
+      <option v-for="(r, i) of available_regions" :key="i" :value="r.value">
+        {{ r.name }}
+      </option>
+    </select>
+  </div>
   <div class="overflow-auto">
     <table class="table table-striped table-borderless overflow-hidden rounded mb-1">
       <thead>
@@ -29,7 +45,7 @@ const head = [
         </tr>
       </thead>
       <tbody class="border">
-        <tr v-for="(p, i) of props.body" :key="i" class="text-center align-middle">
+        <tr v-for="(p, i) of body" :key="i" class="text-center align-middle">
           <td class="text-start">
             <div class="d-flex align-items-center">
               <img class="rounded img-profile mx-1" :src="`https://static-cdn.jtvnw.net/${p.twitch_picture.replace('300x300', '70x70')}`">

@@ -178,3 +178,11 @@ export const getKda = (k: number, d: number, a: number) => {
 export const getChampionName = (summary: Record<string, any>, id: number) => {
   return summary.find((el: Record<string, any>) => el.id === id).name;
 };
+
+export const available_regions = [
+  { name: "GLOBAL", value: "all"},
+  { name: "LAN", value: "lan"},
+  { name: "LAS", value: "las" },
+  { name: "NA", value: "na" },
+  { name: "EUW", value: "euw" }
+];
