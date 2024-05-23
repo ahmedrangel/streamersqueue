@@ -21,7 +21,8 @@
     "lint": "npm run lint:eslint && npm run lint:stylelint",
     "lint:eslint": "eslint --fix .",
     "lint:stylelint": "stylelint \"**/*.css\" --fix",
-    "db:migrate": "drizzle-kit generate:sqlite"
+    "db:migrate": "drizzle-kit generate:sqlite",
+    "pages:tail": "wrangler pages deployment tail --project-name streamers-ladder --environment production"
   },
   "devDependencies": {
     "@nuxt/eslint": "^0.3.13",
