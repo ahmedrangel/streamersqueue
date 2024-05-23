@@ -11,9 +11,12 @@ database_id = "f9bc299b-450d-437f-aa57-ea8934841989"
 
 [triggers]
 crons = [
-  "0 6 * * *", # reset position change
-  "0 5 * * *", #las
-  "0 4 * * *", #na
-  "0 3 * * *", #euw
-  "0 2 * * *", #lan
+  "0 6 * * *", # reset position change (1 AM | GMT-5)
+  "0 5 * * *", #las (12 AM | GMT-5)
+  "0 4 * * *", #na (11 PM | GMT-5)
+  "0 3 * * *", #euw (10 PM | GMT-5)
+  "0 2 * * *", #lan (9 PM | GMT-5)
 ]
+
+[placement]
+mode = "smart"
