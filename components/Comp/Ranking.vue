@@ -175,7 +175,7 @@ const remainMatchesToday = (total: number) => {
           <td class="text-start">
             <div class="d-flex align-items-center gap-2">
               <img class="rounded img-profile" :src="`https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/${p.lol_picture}.jpg`">
-              <a target="_blank" class="small text-nowrap" :href="`https://op.gg/summoners/${p.lol_region}/${p.riot_name}-${p.riot_tag}`">
+              <a target="_blank" class="small text-wrap" :href="`https://op.gg/summoners/${p.lol_region}/${p.riot_name}-${p.riot_tag}`">
                 <strong>{{ p.riot_name }} <span class="text-muted">#{{ p.riot_tag }}</span></strong>
               </a>
             </div>
