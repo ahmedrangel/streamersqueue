@@ -32,9 +32,9 @@ const updateTable = async (region: string) => {
 
 <template>
   <h5 class="mb-2 fw-bold">
+    {{ t("champion_winrates") }}:
     <span v-if="props.positive" class="text-positive">{{ t("highest") }}</span>
     <span v-else class="text-negative">{{ t("lowest") }}</span>
-    {{ t("champion_winrates") }}
     <br>
     <span class="text-muted">({{ t("at_least") }} 10 {{ t("games_played") }})</span>
   </h5>
