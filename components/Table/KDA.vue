@@ -67,8 +67,11 @@ const updateTable = async (region: string) => {
                 </div>
                 <div class="d-flex align-items-center gap-2 px-1">
                   <img class="rounded img-profile" :src="`https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/${p.lol_picture}.jpg`" style="width: 21px; height: 100%;">
-                  <a target="_blank" class="small text-nowrap" :href="`https://op.gg/summoners/${p.lol_region}/${p.riot_name}-${p.riot_tag}`">
-                    <strong>{{ p.riot_name }} <span class="text-muted">#{{ p.riot_tag }}</span></strong>
+                  <a target="_blank" class="small" :href="`https://op.gg/summoners/${p.lol_region}/${p.riot_name}-${p.riot_tag}`">
+                    <strong>
+                      <span class="text-nowrap">{{ p.riot_name }}</span>&nbsp;
+                      <span class="text-muted">#{{ p.riot_tag }}</span>
+                    </strong>
                   </a>
                 </div>
               </div>
