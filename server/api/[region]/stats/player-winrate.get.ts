@@ -12,11 +12,11 @@ export default defineEventHandler(async (event) => {
 
   const DB = process.env.PARTICIPANTS as any;
   const control = region === "all" ? "all" : controls[region] as string | number;
-  const player_champion_wr = await playerWR(DB, control, order.toUpperCase());
+  const player_wr = await playerWR(DB, control, order.toUpperCase());
 
   const response = {
     stats: {
-      player_champion_wr:  player_champion_wr.results,
+      player_wr:  player_wr.results,
     },
     status_code: 200,
     status: `${order === "desc" ? "Highest" : "Lowest"} Player Winrates`,
