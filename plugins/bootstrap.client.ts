@@ -80,12 +80,7 @@ class Bootstrap {
 
 const bootstrap = new Bootstrap();
 
-export default defineNuxtPlugin((nuxtApp) => {
-  nuxtApp.hook("app:suspense:resolve", () => {
-    /*
-    bootstrap.initializePopover();*/
-    bootstrap.initializeTooltip();
-  });
+export default defineNuxtPlugin(() => {
   return {
     provide: { bootstrap, Tooltip }
   };

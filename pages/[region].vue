@@ -145,7 +145,7 @@ const renew = async() => {
 };
 
 onMounted(async() => {
-  reinitializeTooltips();
+  $bootstrap.initializeTooltip();
   remainingForRenew();
   await renew();
   interval.value = setInterval(() => {

@@ -35,6 +35,11 @@ useHead({
     { rel: "canonical", href: SITE.host }
   ]
 });
+
+const { $bootstrap } = useNuxtApp();
+onMounted(() => {
+  $bootstrap.initializeTooltip();
+});
 </script>
 
 <template>
