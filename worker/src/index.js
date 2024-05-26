@@ -254,11 +254,11 @@ router.get("/:region/stats/player-winrate", async (req, env) => {
 
   const control = region === "all" ? "all" : controls[region];
   const DB = env.PARTICIPANTS;
-  const player_champion_wr = await playerWR(DB, control, order.toUpperCase());
+  const player_wr = await playerWR(DB, control, order.toUpperCase());
 
   const response = {
     stats: {
-      player_wr: player_champion_wr.results,
+      player_wr: player_wr.results,
     },
     status_code: 200,
     status: `${order === "desc" ? "Highest" : "Lowest"} Player Winrates`,

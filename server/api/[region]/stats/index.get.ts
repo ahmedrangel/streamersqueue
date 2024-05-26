@@ -18,17 +18,22 @@ export default defineEventHandler(async (event) => {
   const shortest_matches = await matchDuration(DB, control, "ASC");
   const longest_matches = await matchDuration(DB, control, "DESC");
 
+  const player_wr_best = await playerWR(DB, control, "DESC");
+  const player_wr_worst = await playerWR(DB, control, "ASC");
+
   const response = {
     stats: {
       best: {
         kda: kda_best.results,
         player_champion_wr: champion_winrates_best.results,
         match_duration: shortest_matches.results,
+        player_wr: player_wr_best.results,
       },
       worst: {
         kda: kda_worst.results,
         player_champion_wr: champion_winrates_worst.results,
         match_duration: longest_matches.results,
+        player_wr: player_wr_worst.results,
       }
     },
     status_code: 200,
