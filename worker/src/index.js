@@ -5,7 +5,7 @@ import twitchApi from "./apis/twitchApi";
 import riotApi from "./apis/riotApi";
 import { resetPositionChange } from "./crons/reset-position-change";
 import { controls, renewalHandler, worker } from "./utils/helpers";
-import { kda, matchDuration, playerChampionWR } from "./utils/queries";
+import { kda, matchDuration, playerChampionWR, playerWR } from "./utils/queries";
 
 const router = IttyRouter();
 
@@ -166,17 +166,22 @@ router.get("/:region/stats", async (req, env) => {
   const shortest_matches = await matchDuration(DB, control, "ASC");
   const longest_matches = await matchDuration(DB, control, "DESC");
 
+  const player_wr_best = await playerWR(DB, control, "DESC");
+  const player_wr_worst = await playerWR(DB, control, "ASC");
+
   const response = {
     stats: {
       best: {
         kda: kda_best.results,
         player_champion_wr: champion_winrates_best.results,
         match_duration: shortest_matches.results,
+        player_wr: player_wr_best.results,
       },
       worst: {
         kda: kda_worst.results,
         player_champion_wr: champion_winrates_worst.results,
         match_duration: longest_matches.results,
+        player_wr: player_wr_worst.results,
       }
     },
     status_code: 200,
@@ -241,6 +246,26 @@ router.get("/:region/stats/player-champion-winrate", async (req, env) => {
   };
   return new JsonResponse(response);
 });
+
+router.get("/:region/stats/player-winrate", async (req, env) => {
+  const region = req.params.region.toLowerCase();
+  const order = req.query.order;
+  if (!order || order !== "desc" && order !== "asc") return new JsonResponse({ status: "Bad Request", status_code: 400 });
+
+  const control = region === "all" ? "all" : controls[region];
+  const DB = env.PARTICIPANTS;
+  const player_champion_wr = await playerWR(DB, control, order.toUpperCase());
+
+  const response = {
+    stats: {
+      player_wr: player_champion_wr.results,
+    },
+    status_code: 200,
+    status: `${order === "desc" ? "Highest" : "Lowest"} Player Winrates`,
+  };
+  return new JsonResponse(response);
+});
+
 /*
 router.get("/sync-history", async (req, env) => {
   const DB = env.PARTICIPANTS;

@@ -66,3 +66,18 @@ export const matchDuration = async (DB: any, control: string | number, order: st
     ORDER BY m.duration ${o} LIMIT 10
   `).all();
 };
+
+export const playerWR = async (DB: any, control: string | number, order: string) => {
+  const o = order.toUpperCase() === "ASC" ? "ASC" : "DESC";
+  const games = 10;
+  return await DB.prepare(`
+    SELECT
+      p.riot_name, p.riot_tag, p.lol_picture, p.lol_region, p.wins, p.losses, p.elo, p.tier, p.lp,
+      s.twitch_login, s.twitch_display, s.twitch_picture, s.country_flag,
+      ROUND((CAST(p.wins AS FLOAT) / (p.wins + p.losses) * 100), 1) AS winrate
+    FROM participants AS p
+    INNER JOIN socials AS s ON p.puuid = s.puuid
+    WHERE (p.wins + p.losses) >= ${games} ${control === "all" ? "" : `AND p.control = ${control}`}
+    ORDER BY winrate ${o} LIMIT 10
+  `).all();
+};

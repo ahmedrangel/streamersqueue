@@ -36,7 +36,7 @@ const updateTable = async (region: string) => {
     <span v-if="props.positive" class="text-positive">{{ t("highest") }}</span>
     <span v-else class="text-negative">{{ t("lowest") }}</span>
     <br>
-    <span class="text-muted">({{ t("at_least") }} 10 {{ t("games_played") }})</span>
+    <span class="text-muted small">({{ t("at_least") }} 10 {{ t("games_played") }})</span>
   </h5>
   <div class="input-group mb-2 justify-content-start mb-2">
     <label class="input-group-text bg-primary">{{ t("region") }}</label>
@@ -62,7 +62,7 @@ const updateTable = async (region: string) => {
               <img class="rounded img-profile mx-1" :src="`https://static-cdn.jtvnw.net/${p.twitch_picture.replace('300x300', '70x70')}`">
               <div>
                 <div class="d-flex align-items-center gap-2 px-1">
-                  <span v-if="p.country_flag" :title="getCountryName(p.country_flag)">
+                  <span v-if="p.country_flag" data-bs-toggle="tooltip" :data-bs-original-title="getCountryName(p.country_flag)">
                     <Twemoji :emoji="p.country_flag" size="1.2em" />
                   </span>
                   <a target="_blank" class="small" :href="`https://twitch.tv/${p.twitch_login}`">{{ p.twitch_display }}</a>
@@ -85,7 +85,7 @@ const updateTable = async (region: string) => {
             </NuxtLink>
           </td>
           <td style="width: 40px;">
-            <div :title="getChampionName(props.championsSummary, p.champion)" class="mx-1">
+            <div class="mx-1" data-bs-toggle="tooltip" :data-bs-original-title="getChampionName(props.championsSummary, p.champion)">
               <img class="rounded img-profile" :src="`https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champion-icons/${p.champion}.png`">
             </div>
           </td>

@@ -1,36 +1,37 @@
 <script setup lang="ts">
 const props = defineProps({
   body: { type: Object, required: true },
-  positive: { type: Boolean, required: true}
+  positive: { type: Boolean, required: true},
 });
 
 const head = [
   { id: "player" },
   { id: "region" },
-  { id: "KDA" }
+  { id: "elo" },
+  { id: "winrate" }
 ];
 
 const body = ref(props.body);
 const current_region = ref("all");
 const loading = ref(false);
 
-const table_name = `${props.positive ? "positive" : "negative"}-kda-table`;
+const table_name = `${props.positive ? "positive" : "negative"}-pwr-table`;
 
 const updateTable = async (region: string) => {
   const table = document.querySelector("." + table_name) as HTMLElement;
   table.style.opacity = "0";
   loading.value = true;
-  const { stats } = await $fetch(`/api/${region}/stats/kda-avg?order=${props.positive ? "desc" : "asc"}`).catch(() => null) as Record<string, any>;;
+  const { stats } = await $fetch(`/api/${region}/stats/player-winrate?order=${props.positive ? "desc" : "asc"}`).catch(() => null) as Record<string, any>;;
   await sleep(100);
   loading.value = false;
-  body.value = stats?.kda;
+  body.value = stats?.player_wr;
   table.style.opacity = "1";
 };
 </script>
 
 <template>
   <h5 class="mb-2 fw-bold">
-    {{ t("kda_averages") }}:
+    {{ t("player_winrates") }}:
     <span v-if="props.positive" class="text-positive">{{ t("highest") }}</span>
     <span v-else class="text-negative">{{ t("lowest") }}</span>
     <br>
@@ -83,15 +84,32 @@ const updateTable = async (region: string) => {
             </NuxtLink>
           </td>
           <td>
-            <div class="text-center">
-              <h5 class="mb-0">
-                <strong class="text-nowrap small d-block">
-                  {{ p.kda }} <span class="text-muted fw-normal">({{ p.total_games }})</span>
-                </strong>
-              </h5>
-              <strong class="text-uppercase text-nowrap small d-block text-muted">
-                <span class="text-positive fw-bold">{{ p.avg_kills }}</span> / <span class="text-negative fw-bold">{{ p.avg_deaths }}</span> / <span class="text-warning fw-bold">{{ p.avg_assists }}</span>
-              </strong>
+            <div v-if="p.elo" class="py-1">
+              <small class="text-nowrap" data-bs-toggle="tooltip" :data-bs-original-title="`${capitalizeFirst(p.elo)} ${p.tier} · ${p.lp} LP`"><img :src="`/images/lol/${p.elo}.png`" height="30px"> {{ p.tier }}</small>
+              <small class="d-block text-nowrap">
+                <strong>{{ p.lp }} LP</strong>
+              </small>
+            </div>
+            <div v-else>
+              <small class="text-nowrap" data-bs-toggle="tooltip" data-bs-original-title="Unranked"><img :src="`/images/lol/unranked.png`" height="30px"></small>
+            </div>
+          </td>
+          <td class="text-start">
+            <div class="d-flex justify-content-center align-items-center gap-2">
+              <div class="d-flex flex-column justify-content-center align-items-center">
+                <h5 class="mb-0">
+                  <strong class="text-nowrap small d-block">
+                    {{ p.winrate }}%
+                  </strong>
+                </h5>
+                <small class="text-nowrap fw-bold h6 mb-0">
+                  <span class="text-positive">{{ p.wins }}</span>
+                  <span class="text-muted">&nbsp;{{ t("w") }}</span>
+                  <span class="text-muted">&nbsp;-&nbsp;</span>
+                  <span class="text-negative">{{ p.losses }}</span>
+                  <span class="text-muted">&nbsp;{{ t("l") }}</span>
+                </small>
+              </div>
             </div>
           </td>
         </tr>

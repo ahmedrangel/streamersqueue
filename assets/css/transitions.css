@@ -47,7 +47,8 @@
 
 .positive-kda-table, .negative-kda-table,
 .positive-match-duration-table, .negative-match-duration-table,
-.positive-pcwr-table, .negative-pcwr-table {
+.positive-pcwr-table, .negative-pcwr-table,
+.positive-pwr-table, .negative-pwr-table {
   transition: opacity 0.3s ease-in-out;
   opacity: 1;
 }

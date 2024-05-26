@@ -37,7 +37,7 @@ const updateTable = async (region: string) => {
     <span v-if="props.positive" class="text-positive">{{ t("shortest") }}</span>
     <span v-else class="text-negative">{{ t("longest") }}</span>
     <br>
-    <span class="text-muted">({{ t("excluding_surrenders") }})</span>
+    <span class="text-muted small">({{ t("excluding_surrenders") }})</span>
   </h5>
   <div class="input-group mb-2 justify-content-start mb-2">
     <label class="input-group-text bg-primary">{{ t("region") }}</label>
@@ -63,7 +63,7 @@ const updateTable = async (region: string) => {
               <img class="rounded img-profile mx-1" :src="`https://static-cdn.jtvnw.net/${p.twitch_picture.replace('300x300', '70x70')}`">
               <div>
                 <div class="d-flex align-items-center gap-2 px-1">
-                  <span v-if="p.country_flag" :title="getCountryName(p.country_flag)">
+                  <span v-if="p.country_flag" data-bs-toggle="tooltip" :data-bs-original-title="getCountryName(p.country_flag)">
                     <Twemoji :emoji="p.country_flag" size="1.2em" />
                   </span>
                   <a target="_blank" class="small" :href="`https://twitch.tv/${p.twitch_login}`">{{ p.twitch_display }}</a>
@@ -73,7 +73,8 @@ const updateTable = async (region: string) => {
                   <a target="_blank" class="small" :href="`https://op.gg/summoners/${p.lol_region}/${p.riot_name}-${p.riot_tag}`">
                     <strong>
                       <span class="text-nowrap">{{ p.riot_name }}</span>&nbsp;
-                      <span class="text-muted">#{{ p.riot_tag }}</span></strong>
+                      <span class="text-muted">#{{ p.riot_tag }}</span>
+                    </strong>
                   </a>
                 </div>
               </div>
@@ -85,7 +86,7 @@ const updateTable = async (region: string) => {
             </NuxtLink>
           </td>
           <td :class="p.result ? 'table-bg-win' : 'table-bg-loss'">
-            <div :title="getChampionName(props.championsSummary, p.champion)" class="mx-1">
+            <div class="mx-1" data-bs-toggle="tooltip" :data-bs-original-title="getChampionName(props.championsSummary, p.champion)">
               <img class="rounded img-profile" :src="`https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champion-icons/${p.champion}.png`">
             </div>
           </td>

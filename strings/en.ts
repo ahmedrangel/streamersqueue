@@ -48,6 +48,7 @@ export default {
   highest: "Highest",
   lowest: "Lowest",
   champion_winrates: "Champion Winrates",
+  player_winrates: "Player Winrates",
   duration: "Duration",
   games: "Games",
   longest: "Longest",

@@ -48,6 +48,7 @@ export default {
   highest: "Más Altos",
   lowest: "Más Bajos",
   champion_winrates: "Winrates de Campeón",
+  player_winrates: "Winrates de Jugador",
   duration: "Duración",
   games: "Partidas",
   longest: "Más Largas",
