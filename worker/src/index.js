@@ -52,9 +52,23 @@ router.post("/add", async (req, env) => {
       status: "Added",
       status_code: 200
     });
-  } catch (err) {
-    console.info(err);
-    return new JsonResponse({ status: "Bad Request", status_code: 400 });
+  } catch (e) {
+    console.info(e);
+    return new JsonResponse({ error: e.message, status: "An error ocurred", status_code: 400 });
+  }
+});
+
+// This will only remove from socials table
+router.post("/delete", async (req, env) => {
+  try {
+    const { key, riot_name, riot_tag } = await req.json();
+    if (key !== env.POST_KEY) return new JsonResponse({ status: "Forbidden", status_code: 403 });
+    if (!riot_name || !riot_tag) return new JsonResponse({ status: "Bad Request", status_code: 400 });
+    await env.PARTICIPANTS.prepare("DELETE FROM socials WHERE puuid IN (SELECT puuid FROM participants WHERE riot_name = ? AND riot_tag = ?)").bind(riot_name, riot_tag).run();
+    return new JsonResponse({ status: "Deleted", status_code: 200 });
+  } catch (e) {
+    console.info(e);
+    return new JsonResponse({ error: e.message, status: "An error ocurred", status_code: 400 });
   }
 });
 
