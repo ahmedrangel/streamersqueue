@@ -18,7 +18,9 @@ const updateRankedData = async(env, p) => {
     if (p.wins !== soloq.wins || p.losses !== soloq.losses || p.lp !== soloq.leaguePoints) {
       updater_participants = { puuid: p.puuid, wins: soloq.wins, losses: soloq.losses, lp: soloq.leaguePoints, elo: soloq.tier.toLowerCase(), tier: fixRank(soloq.tier, soloq.rank) };
     }
-    const matches = await _riot.getMatchesByPuuid(p.puuid, cluster, 100, 420, p.lol_region);
+    const matches = await _riot.getMatchesByPuuid(p.puuid, cluster, 100, 420, p.lol_region, 0);
+    const more_matches = matches.length === 100 ? await _riot.getMatchesByPuuid(p.puuid, cluster, 100, 420, p.lol_region, 100) : null;
+    if (more_matches) matches.push(...more_matches);
     const db_matches = await env.PARTICIPANTS.prepare("SELECT match_id FROM history WHERE puuid = ?")
       .bind(p.puuid).all();
     const db_matches_ids = db_matches.results?.map(item => item.match_id);
@@ -41,7 +43,11 @@ const updateRankedData = async(env, p) => {
             date: match_data?.info?.gameCreation,
             duration: match_data?.info?.gameDuration,
           });
-          await new Promise(resolve => setTimeout(resolve, 50));
+          if (!more_matches) {
+            await new Promise(resolve => setTimeout(resolve, 50));
+          } else {
+            await new Promise(resolve => setTimeout(resolve, 600));
+          }
         }
       }
     }
