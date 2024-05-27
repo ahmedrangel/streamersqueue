@@ -277,7 +277,7 @@ router.get("/sync-history", async (req, env) => {
     const participant_data = match_data?.info?.participants?.filter(item => item?.puuid === h?.puuid)[0];
     const game_surrendered = participant_data.gameEndedInSurrender || participant_data.gameEndedInEarlySurrender ? 1 : 0;
     await DB.prepare("UPDATE history SET game_surrendered = ? WHERE puuid = ? AND match_id = ?").bind(game_surrendered, h.puuid, h.match_id).run();
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await sleep(100);
   }
   return new JsonResponse(results);
 });

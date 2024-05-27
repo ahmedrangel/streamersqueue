@@ -1,6 +1,6 @@
 import twitchApi from "../apis/twitchApi";
 import riotApi, { eloValues } from "../apis/riotApi";
-import { fixRank } from "../utils/helpers";
+import { fixRank, sleep } from "../utils/helpers";
 
 // Iterated fetch
 const updateRankedData = async(env, p) => {
@@ -18,37 +18,42 @@ const updateRankedData = async(env, p) => {
     if (p.wins !== soloq.wins || p.losses !== soloq.losses || p.lp !== soloq.leaguePoints) {
       updater_participants = { puuid: p.puuid, wins: soloq.wins, losses: soloq.losses, lp: soloq.leaguePoints, elo: soloq.tier.toLowerCase(), tier: fixRank(soloq.tier, soloq.rank) };
     }
+
     const matches = await _riot.getMatchesByPuuid(p.puuid, cluster, 100, 420, p.lol_region, 0);
-    const more_matches = matches.length === 100 ? await _riot.getMatchesByPuuid(p.puuid, cluster, 100, 420, p.lol_region, 100) : null;
-    if (more_matches) matches.push(...more_matches);
     const db_matches = await env.PARTICIPANTS.prepare("SELECT match_id FROM history WHERE puuid = ?")
       .bind(p.puuid).all();
     const db_matches_ids = db_matches.results?.map(item => item.match_id);
-    if (matches.length) {
-      for (const m of matches) {
-        if (!db_matches_ids.includes(m)) {
-          console.info("fetching new match: " + m + ` by ${p.riot_name}#${p.riot_tag}`);
-          const match_data = await _riot.getMatchById(m, cluster);
-          const participant_data = match_data?.info?.participants?.filter(item => item?.puuid === p?.puuid)[0] || null;
-          updater_history.push({
-            puuid: p.puuid,
-            match_id: m,
-            kills: participant_data?.kills,
-            deaths: participant_data?.deaths,
-            assists: participant_data?.assists,
-            result: participant_data?.win,
-            is_remake: participant_data?.gameEndedInEarlySurrender,
-            champion: participant_data?.championId,
-            game_surrendered: participant_data?.gameEndedInSurrender || participant_data?.gameEndedInEarlySurrender ? 1 : 0,
-            date: match_data?.info?.gameCreation,
-            duration: match_data?.info?.gameDuration,
-          });
-          if (!more_matches) {
-            await new Promise(resolve => setTimeout(resolve, 50));
-          } else {
-            await new Promise(resolve => setTimeout(resolve, 600));
-          }
-        }
+    const new_matches = matches.filter(match_id => !db_matches_ids.includes(match_id));
+
+    if (new_matches.length === 100) {
+      const more_matches = await _riot.getMatchesByPuuid(p.puuid, cluster, 100, 420, p.lol_region, 100);
+      const additional_new_matches = more_matches.filter(match_id => !db_matches_ids.includes(match_id));
+      new_matches.push(...additional_new_matches);
+    }
+
+    if (new_matches.length) console.info("Total matches to fetch: " + new_matches.length + ` by ${p.riot_name}#${p.riot_tag}`);
+
+    if (new_matches.length) {
+      for (const m of new_matches) {
+        console.info("fetching new match: " + m + ` by ${p.riot_name}#${p.riot_tag}`);
+        const match_data = await _riot.getMatchById(m, cluster);
+        const participant_data = match_data?.info?.participants?.filter(item => item?.puuid === p?.puuid)[0] || null;
+        updater_history.push({
+          puuid: p.puuid,
+          match_id: m,
+          kills: participant_data?.kills,
+          deaths: participant_data?.deaths,
+          assists: participant_data?.assists,
+          result: participant_data?.win,
+          is_remake: participant_data?.gameEndedInEarlySurrender,
+          champion: participant_data?.championId,
+          game_surrendered: participant_data?.gameEndedInSurrender || participant_data?.gameEndedInEarlySurrender ? 1 : 0,
+          date: match_data?.info?.gameCreation,
+          duration: match_data?.info?.gameDuration,
+        });
+        const sleepDuration = new_matches.length > 100 ? 600 : 50;
+        console.info("Sleep applied: " + sleepDuration);
+        await sleep(sleepDuration);
       }
     }
     return { participants, updater_participants, updater_history, updated_data: true };
@@ -256,7 +261,7 @@ export const updateGeneralData = async(env, control, type) => {
   // Update ranked data
   for (const p of results) {
     if (index === 166) {
-      await new Promise(resolve => setTimeout(resolve, 11000));
+      await sleep(11000);
       index = 0;
     }
     twitch_ids.push(p.twitch_id);
@@ -272,7 +277,7 @@ export const updateGeneralData = async(env, control, type) => {
 
     twitch_data.push({ twitch_id: p.twitch_id, twitch_login: p.twitch_login, twitch_display: p.twitch_display, twitch_picture: p.twitch_picture, twitch_is_live: p.twitch_is_live });
     index++;
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await sleep(50);
   }
 
   const sorted_data = sortRankedData(participants);

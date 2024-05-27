@@ -42,3 +42,7 @@ export const renewalHandler = async (env, region, type) => {
     return { status: String(err), status_code: 400, control };
   }
 };
+
+export const sleep = async (ms) => {
+  return await new Promise(resolve => setTimeout(resolve, ms));
+};
