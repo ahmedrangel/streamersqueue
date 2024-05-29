@@ -22,18 +22,18 @@
   --loss: #31142c;
 }
 
-nav .router-link-exact-active {
+nav li .router-link-exact-active {
   --bs-bg-opacity: 1;
 
   background-color: rgba(var(--bs-tertiary-rgb),var(--bs-bg-opacity))!important;
   color: var(--bs-dark);
 }
 
-nav .router-link-exact-active:hover, nav .router-link-exact-active:focus {
+nav li .router-link-exact-active:hover, nav .router-link-exact-active:focus {
   color: var(--bs-dark);
 }
 
-nav .router-link-exact-active:hover {
+nav li .router-link-exact-active:hover {
   background-color: rgba(212, 255, 144, var(--bs-bg-opacity))!important; 
 }
 
