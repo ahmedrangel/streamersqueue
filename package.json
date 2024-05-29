@@ -1,16 +1,16 @@
 {
-  "name": "streamers-ladder",
+  "name": "streamersqueue",
   "version": "1.0.0",
-  "description": "streamers-ladder",
+  "description": "streamersqueue",
   "author": "Ahmed Rangel",
   "type": "module",
-  "homepage": "https://github.com/ahmedrangel/streamers-ladder",
+  "homepage": "https://github.com/ahmedrangel/streamersqueue",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ahmedrangel/streamers-ladder"
+    "url": "https://github.com/ahmedrangel/streamersqueue"
   },
   "bugs": {
-    "url": "https://github.com/ahmedrangel/streamers-ladder/issues"
+    "url": "https://github.com/ahmedrangel/streamersqueue/issues"
   },
   "scripts": {
     "build": "nuxt build",

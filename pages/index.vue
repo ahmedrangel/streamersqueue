@@ -45,6 +45,9 @@ onMounted(() => {
 <template>
   <main>
     <div id="stats">
+      <div class="text-center my-2">
+        <h3 class="mb-0 fw-bold">{{ t("stats") }}</h3>
+      </div>
       <div class="row gx-4">
         <div class="col-12 col-xl-6 text-center my-3">
           <TableMatchDuration :body="shortest_matches" :champions-summary="champions_summary" :positive="true" />

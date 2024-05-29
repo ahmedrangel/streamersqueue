@@ -56,5 +56,6 @@ export default {
   excluding_surrenders: "excluyendo partidas terminadas en surrender",
   player: "Jugador",
   matches_duration: "Duración de Partidas",
-  there_is_not_enough_data_to_show_in_this_section: "No hay suficientes datos para mostrar en esta sección."
+  there_is_not_enough_data_to_show_in_this_section: "No hay suficientes datos para mostrar en esta sección.",
+  stats: "Estadísticas"
 };
