@@ -167,7 +167,7 @@ onBeforeUnmount(() => {
   <!-- Pages: keep single root, everything goes inside 'main' -->
   <main>
     <div class="text-center my-2">
-      <h3 class="text-uppercase mb-0 fw-bold">{{ region }}</h3>
+      <h3 class="text-uppercase mb-0 fw-bold">{{ region }} Ranking</h3>
     </div>
     <div class="d-flex justify-content-end align-items-center mb-2">
       <button class="btn bg-tertiary text-dark fw-bold d-flex align-items-center gap-1" :disabled="is_renewing || cooldown" @click="renew()">

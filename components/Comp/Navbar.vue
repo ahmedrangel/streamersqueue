@@ -8,18 +8,6 @@ const tabs: Record<string, any> = [
     icon: "ph:house-bold"
   },
   {
-    id: "lan",
-    name: "LAN",
-    type: "link",
-    route: "/lan",
-  },
-  {
-    id: "las",
-    name: "LAS",
-    type: "link",
-    route: "/las",
-  },
-  {
     id: "na",
     name: "NA",
     type: "link",
@@ -30,6 +18,18 @@ const tabs: Record<string, any> = [
     name: "EUW",
     type: "link",
     route: "/euw",
+  },
+  {
+    id: "lan",
+    name: "LAN",
+    type: "link",
+    route: "/lan",
+  },
+  {
+    id: "las",
+    name: "LAS",
+    type: "link",
+    route: "/las",
   },
   {
     id: "lang",
