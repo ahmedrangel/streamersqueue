@@ -81,7 +81,7 @@ const setLang = (code: string) => {
       </button>
       <div class="navbar-brand ms-2 ms-lg-0 me-auto d-flex align-items-center gap-1 text-decoration-none">
         <NuxtLink to="/" class="text-decoration-none text-white">
-          <img :src="`/${SITE.icon}`" width="40" class="me-1"><strong>{{ SITE.name }}</strong>
+          <img :src="`/${SITE.icon}`" width="40" class="me-2"><strong>{{ SITE.name }}</strong>
         </NuxtLink>
       </div>
       <div id="offcanvasNavbar" class="offcanvas offcanvas-start bg-secondary" tabindex="-1" aria-labelledby="offcanvasNavbarLabel">
