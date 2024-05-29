@@ -8,6 +8,7 @@ export const SITE = {
     { user: "ahmedrangel", github: "ahmedrangel", color: "00ff7f"},
   ],
   banner: "",
+  card: "/images/og-card.png",
   icon: "streamersqueue.svg",
   worker: "https://api-streamers-ladder.ahmedrangel.com",
   lang: "en"

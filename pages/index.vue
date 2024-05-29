@@ -23,7 +23,7 @@ useSeoMeta({
   ogSiteName: SITE.name,
   ogDescription: SITE.description,
   ogUrl: SITE.host,
-  ogImage: SITE.host + "/" + SITE.banner,
+  ogImage: SITE.host + SITE.card,
   // Twitter
   twitterCard: "summary_large_image",
   twitterTitle: `${SITE.title}`,
