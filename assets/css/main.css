@@ -24,10 +24,12 @@ table a:hover, table a:hover span {
 
 .img-profile {
   height: 46px;
+  width: 46px;
 }
 
 #stats .img-profile {
   height: 36px;
+  width: 36px;
 }
 
 img {
@@ -38,6 +40,7 @@ img {
 @media only screen and (width <= 767px) {
   .img-profile {
     height: 36px;
+    width: 36px;
   }
 
   .small, small {
