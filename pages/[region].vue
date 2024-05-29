@@ -164,7 +164,6 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <!-- Pages: keep single root, everything goes inside 'main' -->
   <main>
     <div class="text-center my-2">
       <h3 class="text-uppercase mb-0 fw-bold">{{ region }} Ranking</h3>
