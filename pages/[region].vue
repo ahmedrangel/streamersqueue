@@ -25,19 +25,19 @@ let tooltipInstances = [] as Tooltip[];
 const controller = ref(new AbortController()) as Ref<AbortController>;
 
 useSeoMeta({
-  title: `${SITE.title} (${region.toUpperCase()})`,
+  title: `${region.toUpperCase()} | ${SITE.name}`,
   description: SITE.description,
   keywords: SITE.keywords,
   // Open Graph
   ogType: "website",
-  ogTitle: `${SITE.title} (${region.toUpperCase()})`,
+  ogTitle: `${region.toUpperCase()} | ${SITE.name}`,
   ogSiteName: SITE.name,
   ogDescription: SITE.description,
   ogUrl: SITE.host,
   ogImage: SITE.host + SITE.card,
   // Twitter
   twitterCard: "summary_large_image",
-  twitterTitle: `${SITE.title} (${region.toUpperCase()})`,
+  twitterTitle: `${region.toUpperCase()} | ${SITE.name}`,
   twitterDescription: SITE.description
 });
 

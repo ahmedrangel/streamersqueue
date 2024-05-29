@@ -14,19 +14,19 @@ const best_pwr = best.player_wr;
 const worst_pwr = worst.player_wr;
 
 useSeoMeta({
-  title: `${SITE.title}`,
+  title: SITE.name,
   description: SITE.description,
   keywords: SITE.keywords,
   // Open Graph
   ogType: "website",
-  ogTitle: `${SITE.title}`,
+  ogTitle: SITE.name,
   ogSiteName: SITE.name,
   ogDescription: SITE.description,
   ogUrl: SITE.host,
   ogImage: SITE.host + SITE.card,
   // Twitter
   twitterCard: "summary_large_image",
-  twitterTitle: `${SITE.title}`,
+  twitterTitle: SITE.name,
   twitterDescription: SITE.description
 });
 
