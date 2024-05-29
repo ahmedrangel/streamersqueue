@@ -1,7 +1,7 @@
 import "dotenv/config";
-
 const response = await fetch(process.env.WORKER + "/add", {
   method: "POST",
+  // body example
   body: JSON.stringify({
     riot_name: "Fallen IV",
     riot_tag: "LAN",
