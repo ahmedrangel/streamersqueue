@@ -1,5 +1,5 @@
 <template>
-  <footer class="text-center py-4 border-top bg-footer text-muted">
+  <footer class="text-center py-4 border-top bg-secondary text-muted">
     <img :src="`/${SITE.icon}`" width="70" class="my-3">
     <h5 class="d-block mb-2 text-white">© {{ new Date().getFullYear() }} {{ SITE.name }}</h5>
     <h6 class="mb-2 small fw-light">
