@@ -12,10 +12,10 @@ database_id = "f9bc299b-450d-437f-aa57-ea8934841989"
 [triggers]
 crons = [
   "0 6 * * *", # reset position change (1 AM | GMT-5)
-  "0 5 * * *", #las (12 AM | GMT-5)
-  "0 4 * * *", #na (11 PM | GMT-5)
-  "0 3 * * *", #euw (10 PM | GMT-5)
-  "0 2 * * *", #lan (9 PM | GMT-5)
+  "0 5/12 * * *", #las every 12 hours starting at 12 AM (GMT-5)
+  "0 4/12 * * *", #na every 12 hours starting at 11 PM (GMT-5)
+  "0 3/12 * * *", #euw every 12 hours starting at 10 PM (GMT-5)
+  "0 2/12 * * *", #lan every 12 hours starting at 9 PM (GMT-5)
 ]
 
 [placement]

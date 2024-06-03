@@ -294,16 +294,16 @@ export default {
       case "0 6 * * *":
         await resetPositionChange(env);
         break;
-      case "0 5 * * *":
+      case "0 5/12 * * *":
         await renewalHandler(env, "las", "cron");
         break;
-      case "0 4 * * *":
+      case "0 4/12 * * *":
         await renewalHandler(env, "na", "cron");
         break;
-      case "0 3 * * *":
+      case "0 3/12 * * *":
         await renewalHandler(env, "euw", "cron");
         break;
-      case "0 2 * * *":
+      case "0 2/12 * * *":
         await renewalHandler(env, "lan", "cron");
         break;
     }
