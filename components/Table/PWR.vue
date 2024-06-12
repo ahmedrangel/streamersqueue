@@ -57,7 +57,7 @@ const updateTable = async (region: string) => {
         </tr>
       </thead>
       <tbody class="border" :class="table_name">
-        <tr v-for="(p, i) of body[current_region]" :key="i" class="text-center align-middle">
+        <tr v-for="(p, i) of body[current_region] || body.all" :key="i" class="text-center align-middle">
           <td class="text-start">
             <div class="d-flex align-items-center">
               <img class="rounded img-profile mx-1" :src="`https://static-cdn.jtvnw.net/${p.twitch_picture.replace('300x300', '70x70')}`">
@@ -119,7 +119,7 @@ const updateTable = async (region: string) => {
       <CompLoadingSpinner v-if="loading" class="position-absolute top-50 start-50 translate-middle" size="3rem" />
     </table>
   </div>
-  <div v-if="!body[current_region].length" class="text-start text-negative">
+  <div v-if="!body[current_region]?.length && !loading" class="text-start text-negative">
     {{ t("there_is_not_enough_data_to_show_in_this_section") }}
   </div>
 </template>
