@@ -1,8 +1,4 @@
 export default defineEventHandler(async (event) => {
-  if (import.meta.dev) {
-    return await $fetch<Record<string, any>>("https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champion-summary.json").catch(() => null);
-  }
-
   const { cloudflare } = event.context;
   const { href: reqURL } = getRequestURL(event);
   let cacheManager = {
@@ -38,4 +34,6 @@ export default defineEventHandler(async (event) => {
     console.info("Stored in cache!");
     cloudflare.context.waitUntil(cacheManager.cache.put(cacheManager.cacheKey, response.clone()));
   }
+
+  return response;
 });
