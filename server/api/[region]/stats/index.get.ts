@@ -27,17 +27,17 @@ export default defineEventHandler(async (event) => {
         kda: kda_best.results,
         player_champion_wr: champion_winrates_best.results,
         match_duration: shortest_matches.results,
-        player_wr: player_wr_best.results,
+        player_wr: player_wr_best.results
       },
       worst: {
         kda: kda_worst.results,
         player_champion_wr: champion_winrates_worst.results,
         match_duration: longest_matches.results,
-        player_wr: player_wr_worst.results,
+        player_wr: player_wr_worst.results
       }
     },
     status_code: 200,
-    status: "Stats",
+    status: "Stats"
   };
   return response;
 });

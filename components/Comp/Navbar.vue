@@ -11,25 +11,25 @@ const tabs: Record<string, any> = [
     id: "na",
     name: "NA",
     type: "link",
-    route: "/na",
+    route: "/na"
   },
   {
     id: "euw",
     name: "EUW",
     type: "link",
-    route: "/euw",
+    route: "/euw"
   },
   {
     id: "lan",
     name: "LAN",
     type: "link",
-    route: "/lan",
+    route: "/lan"
   },
   {
     id: "las",
     name: "LAS",
     type: "link",
-    route: "/las",
+    route: "/las"
   },
   {
     id: "lang",
@@ -37,7 +37,7 @@ const tabs: Record<string, any> = [
     type: "dropdown",
     icon: "ph:globe-simple-duotone",
     subtabs: available_languages
-  },
+  }
   /*
   {
     id: "premios",
@@ -45,11 +45,11 @@ const tabs: Record<string, any> = [
     type: "link",
     route: "/premios",
     icon: "fa6-solid:award"
-  }*/
+  } */
 ];
 
 const { currentRoute, beforeEach } = useRouter();
-const canonical = computed(() => SITE.host + currentRoute.value.path. replace(/\/+$/, ""));
+const canonical = computed(() => SITE.host + currentRoute.value.path.replace(/\/+$/, ""));
 
 useHead({
   link: [
@@ -93,7 +93,7 @@ const setLang = (code: string) => {
           <ul class="navbar-nav justify-content-end flex-grow-1 gap-1 fw-bold">
             <template v-for="(tab, i) of tabs" :key="i">
               <li v-if="tab.type === 'link'" class="nav-item px-1" data-bs-dismiss="offcanvas">
-                <NuxtLink  class="nav-link d-flex align-items-center gap-1 position-relative overflow-hidden rounded px-3" aria-current="page" :to="tab.route">
+                <NuxtLink class="nav-link d-flex align-items-center gap-1 position-relative overflow-hidden rounded px-3" aria-current="page" :to="tab.route">
                   <Icon v-if="tab.icon" :name="tab.icon" />
                   <span class="text-uppercase">{{ t(tab.id) }}</span>
                 </NuxtLink>

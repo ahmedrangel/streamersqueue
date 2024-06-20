@@ -3,7 +3,7 @@ import { sqliteTable, text, integer, primaryKey } from "drizzle-orm/sqlite-core"
 export const control = sqliteTable("control", {
   id: integer("id").primaryKey(),
   last_updated: text("last_updated"),
-  renewing: integer("renewing").default(0),
+  renewing: integer("renewing").default(0)
 });
 
 export const participants = sqliteTable("participants", {
@@ -21,7 +21,7 @@ export const participants = sqliteTable("participants", {
   lol_region: text("lol_region"),
   position: integer("position"),
   position_change: integer("position_change").default(0),
-  control: integer("control").references(() => control.id),
+  control: integer("control").references(() => control.id)
 });
 
 export const socials = sqliteTable("socials", {
@@ -33,7 +33,7 @@ export const socials = sqliteTable("socials", {
   twitch_picture: text("twitch_picture"),
   instagram: text("instagram"),
   twitter: text("twitter"),
-  country_flag: text("country_flag"),
+  country_flag: text("country_flag")
 });
 
 export const matches = sqliteTable("matches", {

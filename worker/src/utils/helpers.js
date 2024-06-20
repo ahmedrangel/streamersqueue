@@ -12,7 +12,7 @@ export const controls = {
   lan: 1,
   las: 2,
   na: 3,
-  euw: 4,
+  euw: 4
 };
 
 export const worker = "https://api-streamers-ladder.ahmedrangel.com";
@@ -32,12 +32,13 @@ export const renewalHandler = async (env, region, type) => {
     if (now - date < (defined_cooldown * 1000)) {
       await env.PARTICIPANTS.prepare("UPDATE control SET renewing = ? WHERE id = ? AND renewing = ?").bind(0, control, 1).run();
       return { status: `Try again in ${remaining} seconds.`, status_code: 429, control };
-    };
+    }
     await updateGeneralData(env, control, type);
     // End renewing
     await env.PARTICIPANTS.prepare("UPDATE control SET renewing = ? WHERE id = ? AND renewing = ?").bind(0, control, 1).run();
     return { status: "Renewed", status_code: 200, control };
-  } catch (err) {
+  }
+  catch (err) {
     await env.PARTICIPANTS.prepare("UPDATE control SET renewing = ? WHERE id = ? AND renewing = ?").bind(0, control, 1).run();
     return { status: String(err), status_code: 400, control };
   }

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const props = defineProps({
   body: { type: Object, required: true },
-  positive: { type: Boolean, required: true}
+  positive: { type: Boolean, required: true }
 });
 
 const head = [

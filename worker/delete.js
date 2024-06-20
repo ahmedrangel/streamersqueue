@@ -6,7 +6,7 @@ const response = await fetch(process.env.WORKER + "/delete", {
     riot_name: "RIOT_NAME",
     riot_tag: "RIOT_TAG",
     key: process.env.POST_KEY
-  }),
+  })
 });
 
 const data = await response.json();

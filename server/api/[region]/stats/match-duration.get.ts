@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
     return await $fetch<Record<string, any>>(`${process.env.WORKER}/${region}/stats/match-duration?order=${order}`).catch(() => null);
   }
 
-  if (!order || order !== "asc" && order !== "desc") return { status_code: 400, status: "Bad Request" };
+  if (!order || (order !== "asc" && order !== "desc")) return { status_code: 400, status: "Bad Request" };
 
   const DB = process.env.PARTICIPANTS as any;
   const control = region === "all" ? "all" : controls[region] as string | number;
@@ -16,10 +16,10 @@ export default defineEventHandler(async (event) => {
 
   const response = {
     stats: {
-      match_duration:  match_duration.results,
+      match_duration: match_duration.results
     },
     status_code: 200,
-    status: `Match Duration: ${order === "asc" ? "Shortest" : "Longest"}`,
+    status: `Match Duration: ${order === "asc" ? "Shortest" : "Longest"}`
   };
   return response;
 });

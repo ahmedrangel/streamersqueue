@@ -22,7 +22,7 @@ const sort = (type: string, order: string) => {
     elo: (a, b) => order === "desc" ? a.position - b.position : b.position - a.position,
     matches: (a, b) => order === "desc" ? (b.wins + b.losses) - (a.wins + a.losses) : (a.wins + a.losses) - (b.wins + b.losses),
     v_d: (a, b) => order === "desc" ? b.wins - a.wins : a.wins - b.wins,
-    winrate: (a, b) => order === "desc" ? (b.wins / (b.wins + b.losses) * 100) - (a.wins / (a.wins + a.losses) * 100) : (a.wins / (a.wins + a.losses) * 100) - (b.wins / (b.wins + b.losses) * 100),
+    winrate: (a, b) => order === "desc" ? (b.wins / (b.wins + b.losses) * 100) - (a.wins / (a.wins + a.losses) * 100) : (a.wins / (a.wins + a.losses) * 100) - (b.wins / (b.wins + b.losses) * 100)
   };
   if (!type && order === "init") {
     participants.value.sort((a: Record<string, number>, b: Record<string, number>) => {
@@ -33,7 +33,8 @@ const sort = (type: string, order: string) => {
       }
       return a.position - b.position;
     });
-  } else if (sorters[type]) {
+  }
+  else if (sorters[type]) {
     participants.value.sort(sorters[type]).sort((a: Record<string, number>, b: Record<string, number>) => {
       if (!a.position || !b.position) {
         if (!a.position) return 1;
@@ -44,10 +45,10 @@ const sort = (type: string, order: string) => {
 };
 
 const removeSort = (currentId: string) => {
-  document.querySelectorAll(".desc").forEach(el => {
+  document.querySelectorAll(".desc").forEach((el) => {
     if (el.id !== currentId) el.classList.remove("desc");
   });
-  document.querySelectorAll(".asc").forEach(el => {
+  document.querySelectorAll(".asc").forEach((el) => {
     if (el.id !== currentId) el.classList.remove("asc");
   });
 };
@@ -55,10 +56,12 @@ const removeSort = (currentId: string) => {
 const toggleClass = (head: HTMLElement) => {
   if (!head.classList.contains("desc") && !head.classList.contains("asc")) {
     head.classList.add("desc");
-  } else if (head.classList.contains("desc")) {
+  }
+  else if (head.classList.contains("desc")) {
     head.classList.remove("desc");
     head.classList.add("asc");
-  } else if (head.classList.contains("asc")) {
+  }
+  else if (head.classList.contains("asc")) {
     head.classList.remove("asc");
   }
 };
@@ -74,15 +77,16 @@ const sorterHandler = (type: string) => {
     const head = document.querySelector("#" + el.id) as HTMLElement;
     if (head) {
       if (type === "add") {
-        head.addEventListener("click", () => { clickHandler(head); });
-      } else {
-        head.removeEventListener("click", () => { clickHandler(head); });
+        head.addEventListener("click", () => clickHandler(head));
+      }
+      else {
+        head.removeEventListener("click", () => clickHandler(head));
       }
     }
   }
 };
 
-onMounted(async() => {
+onMounted(async () => {
   sorterHandler("add");
 });
 
@@ -143,7 +147,7 @@ const remainMatchesToday = (total: number) => {
             </div>
           </th>
           <th scope="row" style="width: 30px;">
-            <span class="d-flex align-items-center justify-content-center" :class="`${ p.twitch_is_live ? 'live' : 'not-live'}`" data-bs-toggle="tooltip" :data-bs-original-title="p.twitch_is_live ? t('live_em') : ''">
+            <span class="d-flex align-items-center justify-content-center" :class="`${p.twitch_is_live ? 'live' : 'not-live'}`" data-bs-toggle="tooltip" :data-bs-original-title="p.twitch_is_live ? t('live_em') : ''">
               <Icon name="ph:circle-fill" />
             </span>
           </th>
@@ -211,8 +215,8 @@ const remainMatchesToday = (total: number) => {
                 <span class="text-muted">&nbsp;{{ t("l") }}</span>
               </small>
               <div class="progress mt-2 rounded-1 winrate-progress">
-                <div class="progress-bar bg-positive" role="progressbar" :style="{'width':  (p.wins || p.losses ? p.wins/(p.wins + p.losses) * 100 : 0) + '%' }" />
-                <div class="progress-bar bg-negative" role="progressbar" :style="{'width':  (p.wins || p.losses ? p.losses/(p.wins + p.losses) * 100 : 0) + '%' }" />
+                <div class="progress-bar bg-positive" role="progressbar" :style="{ width: (p.wins || p.losses ? p.wins/(p.wins + p.losses) * 100 : 0) + '%' }" />
+                <div class="progress-bar bg-negative" role="progressbar" :style="{ width: (p.wins || p.losses ? p.losses/(p.wins + p.losses) * 100 : 0) + '%' }" />
               </div>
             </div>
           </td>

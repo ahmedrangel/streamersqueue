@@ -3,7 +3,7 @@ import riotApi, { eloValues } from "../apis/riotApi";
 import { fixRank, sleep } from "../utils/helpers";
 
 // Iterated fetch
-const updateRankedData = async(env, p) => {
+const updateRankedData = async (env, p) => {
   let participants;
   let updater_participants;
   let updater_history = [];
@@ -50,7 +50,7 @@ const updateRankedData = async(env, p) => {
           champion: participant_data?.championId,
           game_surrendered: participant_data?.gameEndedInSurrender || participant_data?.gameEndedInEarlySurrender ? 1 : 0,
           date: match_data?.info?.gameCreation,
-          duration: match_data?.info?.gameDuration,
+          duration: match_data?.info?.gameDuration
         });
         const sleepDuration = new_matches.length > 100 ? 600 : 50;
         console.info("Sleep applied: " + sleepDuration);
@@ -58,7 +58,8 @@ const updateRankedData = async(env, p) => {
       }
     }
     return { participants, updater_participants, updater_history, updated_data: true };
-  } else {
+  }
+  else {
     console.info(`looking for ${p.riot_name}#${p.riot_tag} placement matches`);
     const matches = await _riot.getMatchesByPuuid(p.puuid, cluster, 20, 420, p.lol_region);
     const db_matches = await env.PARTICIPANTS.prepare("SELECT match_id FROM history WHERE puuid = ?")
@@ -87,7 +88,7 @@ const updateRankedData = async(env, p) => {
             champion: participant_data?.championId,
             game_surrendered: participant_data?.gameEndedInSurrender || participant_data?.gameEndedInEarlySurrender ? 1 : 0,
             date: match_data?.info?.gameCreation,
-            duration: match_data?.info?.gameDuration,
+            duration: match_data?.info?.gameDuration
           });
         }
       }
@@ -102,7 +103,8 @@ const updateRankedData = async(env, p) => {
       participants = { puuid: p.puuid, summoner_id: p.summoner_id, wins, losses, lp: p.lp, elo: null, tier: null, position: p.position, position_change: p.position_change };
       updater_participants = { puuid: p.puuid, wins, losses, lp: null, elo: null, tier: null };
       return { participants, updater_participants, updater_history, updated_data: true };
-    } else {
+    }
+    else {
       console.info(`no placements found for ${p.riot_name}#${p.riot_tag}`);
       participants = { puuid: p.puuid, summoner_id: p.summoner_id, wins: 0, losses: 0, lp: null, elo: null, tier: null, position: p.position, position_change: p.position_change };
       updater_participants = { puuid: p.puuid, wins: 0, losses: 0, lp: null, elo: null, tier: null };
@@ -112,7 +114,7 @@ const updateRankedData = async(env, p) => {
 };
 
 // Iterated fetch
-const updateLolIngameStatus = async(env, p) => {
+const updateLolIngameStatus = async (env, p) => {
   let updater_ingame;
   let updated_data;
   const _riot = new riotApi(env.RIOT_KEY);
@@ -145,7 +147,8 @@ const updateLolIngameStatus = async(env, p) => {
       updater_ingame = { puuid: p.puuid, is_ingame: 1 };
     }
     updated_data = true;
-  } else {
+  }
+  else {
     if (p.is_ingame !== 0) {
       updater_ingame = { puuid: p.puuid, is_ingame: 0 };
     }
@@ -163,7 +166,8 @@ const sortRankedData = (participants) => {
   const sorted = participants.sort((a, b) => {
     if (b.wins !== a.wins) {
       return b.wins - a.wins;
-    } else {
+    }
+    else {
       return a.losses - b.losses;
     }
   }).sort((a, b) => {
@@ -173,13 +177,14 @@ const sortRankedData = (participants) => {
         return eloComparison;
       }
       return b.lp - a.lp;
-    } else if (a.elo) {
+    }
+    else if (a.elo) {
       return -1;
-    } else if (b.elo) {
+    }
+    else if (b.elo) {
       return 1;
     }
   });
-
 
   // Update participants position and position_change
   let index = 0;
@@ -196,7 +201,7 @@ const sortRankedData = (participants) => {
 };
 
 // Single fetch
-const updateTwitchLiveStatus = async(env, twitch_ids, twitch_data) => {
+const updateTwitchLiveStatus = async (env, twitch_ids, twitch_data) => {
   const _twitch = new twitchApi(env.TWITCH_CLIENT_ID, env.TWITCH_CLIENT_SECRET);
   // Update participants live status
   const data = [];
@@ -209,7 +214,8 @@ const updateTwitchLiveStatus = async(env, twitch_ids, twitch_data) => {
         await env.PARTICIPANTS.prepare("UPDATE OR IGNORE socials SET twitch_is_live = ? WHERE twitch_id = ?")
           .bind(1, p.twitch_id).run();
       }
-    } else {
+    }
+    else {
       if (p.twitch_is_live !== 0) {
         data.push({ twitch_id: p.twitch_id, twitch_is_live: 0 });
         await env.PARTICIPANTS.prepare("UPDATE OR IGNORE socials SET twitch_is_live = ? WHERE twitch_id = ?")
@@ -221,23 +227,23 @@ const updateTwitchLiveStatus = async(env, twitch_ids, twitch_data) => {
 };
 
 // Single fetch
-const updateTwitchData = async(env, twitch_ids, twitch_data) => {
+const updateTwitchData = async (env, twitch_ids, twitch_data) => {
   const _twitch = new twitchApi(env.TWITCH_CLIENT_ID, env.TWITCH_CLIENT_SECRET);
   const data = [];
   const users_data = await _twitch.getUsersById(twitch_ids);
   for (const u of users_data) {
     const match_participant = twitch_data.filter(p => p.twitch_id == u.id)[0];
-    if (u.login !== match_participant.twitch_login || u.display_name !== match_participant.twitch_display || u.profile_image_url.replace("https://static-cdn.jtvnw.net/","") !== match_participant.twitch_picture) {
+    if (u.login !== match_participant.twitch_login || u.display_name !== match_participant.twitch_display || u.profile_image_url.replace("https://static-cdn.jtvnw.net/", "") !== match_participant.twitch_picture) {
       data.push(u);
       await env.PARTICIPANTS.prepare("UPDATE OR IGNORE socials SET twitch_login = ?, twitch_display = ?, twitch_picture = ? WHERE twitch_id = ?")
-        .bind(u.login, u.display_name, u.profile_image_url.replace("https://static-cdn.jtvnw.net/",""), u.id).run();
+        .bind(u.login, u.display_name, u.profile_image_url.replace("https://static-cdn.jtvnw.net/", ""), u.id).run();
     }
   }
   return data;
 };
 
 // Export
-export const updateGeneralData = async(env, control, type) => {
+export const updateGeneralData = async (env, control, type) => {
   const { results, meta } = await env.PARTICIPANTS.prepare(`
     SELECT
       p.puuid, p.summoner_id, p.riot_name, p.riot_tag, p.position, p.position_change, p.wins, p.losses, p.lp, p.is_ingame, p.lol_region, p.lol_picture,

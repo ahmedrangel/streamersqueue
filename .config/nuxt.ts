@@ -14,14 +14,14 @@ export default defineNuxtConfig({
       meta: [
         { name: "robots", content: "index, follow" }
       ],
-      link : [
+      link: [
         { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png" },
         { rel: "icon", type: "image/png", sizes: "512x512", href: "/android-chrome-512x512.png" },
         { rel: "icon", type: "image/png", sizes: "192x192", href: "/android-chrome-192x192.png" },
         { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-32x32.png" },
         { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16x16.png" },
         { rel: "manifest", href: "/site.webmanifest" },
-        { rel: "mask-icon", href: "/safari-pinned-tab.svg", color: "#091428" },
+        { rel: "mask-icon", href: "/safari-pinned-tab.svg", color: "#091428" }
       ]
     }
   },
@@ -50,7 +50,7 @@ export default defineNuxtConfig({
   },
   nitro: {
     prerender: {
-      routes: ["/sitemap.xml"],
+      routes: ["/sitemap.xml"]
     }
   },
   eslint: {
@@ -75,7 +75,7 @@ export default defineNuxtConfig({
     display: "swap",
     download: true,
     families: {
-      "Mukta": [300, 400, 500, 600, 700],
-    },
+      Mukta: [300, 400, 500, 600, 700]
+    }
   }
 });

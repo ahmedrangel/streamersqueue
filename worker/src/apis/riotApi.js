@@ -1,7 +1,7 @@
 import { ofetch } from "ofetch";
 
 class riotApi {
-  constructor(RIOT_KEY) {
+  constructor (RIOT_KEY) {
     this.RIOT_KEY = RIOT_KEY;
     this.domain = "api.riotgames.com";
   }
@@ -14,9 +14,9 @@ class riotApi {
       method,
       headers: { "X-Riot-Token": apiKey }
     }).catch((error) => { return { error }; });
-  };
+  }
 
-  route(region) {
+  route (region) {
     region = region.toLowerCase();
     switch (region) {
       case "lan":
@@ -38,32 +38,33 @@ class riotApi {
     return region;
   }
 
-  cluster(region) {
-    if (region === "na" || region === "las" || region ==="lan") {
+  cluster (region) {
+    if (region === "na" || region === "las" || region === "lan") {
       return "americas";
-    } else if (region === "euw") {
+    }
+    else if (region === "euw") {
       return "europe";
     }
     return false;
   }
 
-  async getSummonerByPuuid(puuid, route) {
+  async getSummonerByPuuid (puuid, route) {
     return this.callRiotApi({ endpoint: `https://${route}.${this.domain}/lol/summoner/v4/summoners/by-puuid/${puuid}` });
   }
 
-  async getAccountByRiotID(name, tag, cluster) {
+  async getAccountByRiotID (name, tag, cluster) {
     return this.callRiotApi({ endpoint: `https://${cluster}.${this.domain}/riot/account/v1/accounts/by-riot-id/${name}/${tag}` });
   }
 
-  async getSpectatorByPuuid(puuid, route) {
+  async getSpectatorByPuuid (puuid, route) {
     return this.callRiotApi({ endpoint: `https://${route}.${this.domain}/lol/spectator/v5/active-games/by-summoner/${puuid}` });
   }
 
-  async getRankedDataBySummonerId(summoner_id, route) {
+  async getRankedDataBySummonerId (summoner_id, route) {
     return this.callRiotApi({ endpoint: `https://${route}.${this.domain}/lol/league/v4/entries/by-summoner/${summoner_id}` });
   }
 
-  async getMatchesByPuuid(puuid, cluster, count, queueId, region, start) {
+  async getMatchesByPuuid (puuid, cluster, count, queueId, region, start) {
     let split2_2024_time;
     start = start ? start : 0;
     if (region === "lan") split2_2024_time = 1715792400;
@@ -74,7 +75,7 @@ class riotApi {
     return this.callRiotApi({ endpoint: `https://${cluster}.${this.domain}/lol/match/v5/matches/by-puuid/${puuid}/ids?start=${start}&count=${count}&queue=${queueId ? queueId : ""}&startTime=${split2_2024_time}` });
   }
 
-  async getMatchById(matchId, cluster) {
+  async getMatchById (matchId, cluster) {
     return this.callRiotApi({ endpoint: `https://${cluster}.${this.domain}/lol/match/v5/matches/${matchId}` });
   }
 }

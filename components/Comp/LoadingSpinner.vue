@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const props = defineProps({
-  size: { type: String, required: true },
+  size: { type: String, required: true }
 });
 
 const spinner_size = ref({

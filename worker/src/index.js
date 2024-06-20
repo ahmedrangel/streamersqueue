@@ -30,7 +30,7 @@ router.post("/add", async (req, env) => {
     const twitch_id = twitch_data.id;
     const twitch_login = twitch_data.login;
     const twitch_display = twitch_data.display_name;
-    const twitch_picture = twitch_data.profile_image_url.replace("https://static-cdn.jtvnw.net/","");
+    const twitch_picture = twitch_data.profile_image_url.replace("https://static-cdn.jtvnw.net/", "");
     const account = { puuid, summoner_id, riot_name, riot_tag, lol_picture, control };
     const socials = { twitch_login, twitch_display, twitch_picture, twitter, instagram, twitch_id, country_flag };
     const { count } = await env.PARTICIPANTS.prepare("SELECT COUNT(*) as count FROM participants WHERE control = ? ").bind(control).first();
@@ -52,7 +52,8 @@ router.post("/add", async (req, env) => {
       status: "Added",
       status_code: 200
     });
-  } catch (e) {
+  }
+  catch (e) {
     console.info(e);
     return new JsonResponse({ error: e.message, status: "An error ocurred", status_code: 400 });
   }
@@ -66,7 +67,8 @@ router.post("/delete", async (req, env) => {
     if (!riot_name || !riot_tag) return new JsonResponse({ status: "Bad Request", status_code: 400 });
     await env.PARTICIPANTS.prepare("DELETE FROM socials WHERE puuid IN (SELECT puuid FROM participants WHERE riot_name = ? AND riot_tag = ?)").bind(riot_name, riot_tag).run();
     return new JsonResponse({ status: "Deleted", status_code: 200 });
-  } catch (e) {
+  }
+  catch (e) {
     console.info(e);
     return new JsonResponse({ error: e.message, status: "An error ocurred", status_code: 400 });
   }
@@ -83,7 +85,8 @@ router.post("/reset-position-change", async (req, env) => {
     if (key !== env.POST_KEY) return new JsonResponse({ status: "Forbidden", status_code: 403 });
     await env.PARTICIPANTS.prepare("UPDATE participants SET position_change = 0 WHERE position_change IS NOT 0").run();
     return new JsResponse("Reseted");
-  } catch (err) {
+  }
+  catch (err) {
     console.info(err);
     return new JsonResponse({ status: "Bad Request", status_code: 400 });
   }
@@ -130,7 +133,8 @@ router.post("/reset-position-change", async (req, env) => {
     if (key !== env.POST_KEY) return new JsonResponse({ status: "Forbidden", status_code: 403 });
     await resetPositionChange(env);
     return new JsResponse("Reseted");
-  } catch (err) {
+  }
+  catch (err) {
     console.info(err);
     return new JsonResponse({ status: "Bad Request", status_code: 400 });
   }
@@ -147,7 +151,8 @@ router.post("/tails/revert-renewal", async (req, env) => {
       await env.PARTICIPANTS.prepare("UPDATE control SET renewing = ? WHERE id = ? AND renewing = ?").bind(0, control, 1).run();
     }
     return new JsonResponse(data);
-  } catch (err) {
+  }
+  catch (err) {
     return new JsResponse(err);
   }
 });
@@ -175,17 +180,17 @@ router.get("/:region/stats", async (req, env) => {
         kda: kda_best.results,
         player_champion_wr: champion_winrates_best.results,
         match_duration: shortest_matches.results,
-        player_wr: player_wr_best.results,
+        player_wr: player_wr_best.results
       },
       worst: {
         kda: kda_worst.results,
         player_champion_wr: champion_winrates_worst.results,
         match_duration: longest_matches.results,
-        player_wr: player_wr_worst.results,
+        player_wr: player_wr_worst.results
       }
     },
     status_code: 200,
-    status: "Stats",
+    status: "Stats"
   };
   return new JsonResponse(response);
 });
@@ -193,7 +198,7 @@ router.get("/:region/stats", async (req, env) => {
 router.get("/:region/stats/kda-avg", async (req, env) => {
   const region = req.params.region.toLowerCase();
   const order = req.query.order;
-  if (!order || order !== "desc" && order !== "asc") return new JsonResponse({ status: "Bad Request", status_code: 400 });
+  if (!order || (order !== "desc" && order !== "asc")) return new JsonResponse({ status: "Bad Request", status_code: 400 });
 
   const control = region === "all" ? "all" : controls[region];
   const DB = env.PARTICIPANTS;
@@ -201,10 +206,10 @@ router.get("/:region/stats/kda-avg", async (req, env) => {
 
   const response = {
     stats: {
-      kda: kda_result.results,
+      kda: kda_result.results
     },
     status_code: 200,
-    status: `${order === "desc" ? "Highest" : "Lowest"} KDA Averages`,
+    status: `${order === "desc" ? "Highest" : "Lowest"} KDA Averages`
   };
   return new JsonResponse(response);
 });
@@ -212,7 +217,7 @@ router.get("/:region/stats/kda-avg", async (req, env) => {
 router.get("/:region/stats/match-duration", async (req, env) => {
   const region = req.params.region.toLowerCase();
   const order = req.query.order;
-  if (!order || order !== "desc" && order !== "asc") return new JsonResponse({ status: "Bad Request", status_code: 400 });
+  if (!order || (order !== "desc" && order !== "asc")) return new JsonResponse({ status: "Bad Request", status_code: 400 });
 
   const control = region === "all" ? "all" : controls[region];
   const DB = env.PARTICIPANTS;
@@ -220,10 +225,10 @@ router.get("/:region/stats/match-duration", async (req, env) => {
 
   const response = {
     stats: {
-      match_duration: match_duration.results,
+      match_duration: match_duration.results
     },
     status_code: 200,
-    status: `Match Duration: ${order === "asc" ? "Shortest" : "Longest"}`,
+    status: `Match Duration: ${order === "asc" ? "Shortest" : "Longest"}`
   };
   return new JsonResponse(response);
 });
@@ -231,7 +236,7 @@ router.get("/:region/stats/match-duration", async (req, env) => {
 router.get("/:region/stats/player-champion-winrate", async (req, env) => {
   const region = req.params.region.toLowerCase();
   const order = req.query.order;
-  if (!order || order !== "desc" && order !== "asc") return new JsonResponse({ status: "Bad Request", status_code: 400 });
+  if (!order || (order !== "desc" && order !== "asc")) return new JsonResponse({ status: "Bad Request", status_code: 400 });
 
   const control = region === "all" ? "all" : controls[region];
   const DB = env.PARTICIPANTS;
@@ -239,10 +244,10 @@ router.get("/:region/stats/player-champion-winrate", async (req, env) => {
 
   const response = {
     stats: {
-      player_champion_wr: player_champion_wr.results,
+      player_champion_wr: player_champion_wr.results
     },
     status_code: 200,
-    status: `${order === "desc" ? "Highest" : "Lowest"} Champion Winrates`,
+    status: `${order === "desc" ? "Highest" : "Lowest"} Champion Winrates`
   };
   return new JsonResponse(response);
 });
@@ -250,7 +255,7 @@ router.get("/:region/stats/player-champion-winrate", async (req, env) => {
 router.get("/:region/stats/player-winrate", async (req, env) => {
   const region = req.params.region.toLowerCase();
   const order = req.query.order;
-  if (!order || order !== "desc" && order !== "asc") return new JsonResponse({ status: "Bad Request", status_code: 400 });
+  if (!order || (order !== "desc" && order !== "asc")) return new JsonResponse({ status: "Bad Request", status_code: 400 });
 
   const control = region === "all" ? "all" : controls[region];
   const DB = env.PARTICIPANTS;
@@ -258,10 +263,10 @@ router.get("/:region/stats/player-winrate", async (req, env) => {
 
   const response = {
     stats: {
-      player_wr: player_wr.results,
+      player_wr: player_wr.results
     },
     status_code: 200,
-    status: `${order === "desc" ? "Highest" : "Lowest"} Player Winrates`,
+    status: `${order === "desc" ? "Highest" : "Lowest"} Player Winrates`
   };
   return new JsonResponse(response);
 });
@@ -286,10 +291,10 @@ router.get("/sync-history", async (req, env) => {
 router.all("*", () => new JsResponse("Not Found.", { status: 404 }));
 
 export default {
-  async fetch(req, env, ctx) {
+  async fetch (req, env, ctx) {
     return router.fetch(req, env, ctx);
   },
-  async scheduled(event, env) {
+  async scheduled (event, env) {
     switch (event.cron) {
       case "0 6 * * *":
         await resetPositionChange(env);
@@ -308,16 +313,15 @@ export default {
         break;
     }
   },
-  async tail(events, env, ctx) {
+  async tail (events, env, ctx) {
     const url = events[0].event.request.url;
     const parts = new URL(url).pathname.split("/");
     const lastPart = parts[parts.length - 1];
     if (lastPart === "renewal" && events[0].outcome === "canceled") {
       ctx.waitUntil(fetch(worker + "/tails/revert-renewal", {
         method: "POST",
-        body: JSON.stringify(events[0]),
+        body: JSON.stringify(events[0])
       }));
     }
   }
 };
-

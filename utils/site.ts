@@ -5,7 +5,7 @@ export const SITE = {
   description: "League of Legends Streamers Solo Queue Ladder",
   keywords: "ladder, challenge, soloq, league of legends, riot, lol, elo, twitch, streamers",
   developers: [
-    { user: "ahmedrangel", github: "ahmedrangel", color: "00ff7f"},
+    { user: "ahmedrangel", github: "ahmedrangel", color: "00ff7f" }
   ],
   banner: "",
   card: "/images/og-card.png",

@@ -1,5 +1,5 @@
-import countries_json from "../content/countries.json";
 import { format } from "date-fns";
+import countries_json from "../content/countries.json";
 
 export const getPercentage = (wins: number, losses: number) => {
   if (!wins && !losses) return 0;
@@ -130,7 +130,7 @@ export const controls = {
   lan: 1,
   las: 2,
   na: 3,
-  euw: 4,
+  euw: 4
 } as Record<string, number>;
 
 export const getCountryName = (emoji: string) => {
@@ -180,8 +180,8 @@ export const getChampionName = (summary: Record<string, any>, id: number) => {
 };
 
 export const available_regions = [
-  { name: "GLOBAL", value: "all"},
-  { name: "LAN", value: "lan"},
+  { name: "GLOBAL", value: "all" },
+  { name: "LAN", value: "lan" },
   { name: "LAS", value: "las" },
   { name: "NA", value: "na" },
   { name: "EUW", value: "euw" }

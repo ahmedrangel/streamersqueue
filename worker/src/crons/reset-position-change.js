@@ -1,4 +1,4 @@
-export const resetPositionChange = async(env) => {
+export const resetPositionChange = async (env) => {
   const timeZone = "America/Mexico_City";
   const now = new Date();
   const nowInCDMX = new Date(now.toLocaleString("en-US", { timeZone }));

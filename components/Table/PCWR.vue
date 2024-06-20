@@ -1,8 +1,8 @@
 <script setup lang="ts">
 const props = defineProps({
   body: { type: Object, required: true },
-  positive: { type: Boolean, required: true},
-  championsSummary: { type: Object, required: true },
+  positive: { type: Boolean, required: true },
+  championsSummary: { type: Object, required: true }
 });
 
 const head = [
@@ -23,7 +23,7 @@ const updateTable = async (region: string) => {
     const table = document.querySelector("." + table_name) as HTMLElement;
     table.style.opacity = "0";
     loading.value = true;
-    const { stats } = await $fetch(`/api/${region}/stats/player-champion-winrate?order=${props.positive ? "desc" : "asc"}`).catch(() => null) as Record<string, any>;;
+    const { stats } = await $fetch(`/api/${region}/stats/player-champion-winrate?order=${props.positive ? "desc" : "asc"}`).catch(() => null) as Record<string, any>;
     await sleep(100);
     loading.value = false;
     body.value[region] = stats?.player_champion_wr;

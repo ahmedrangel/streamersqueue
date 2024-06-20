@@ -86,7 +86,7 @@ tbody.updating::after {
   left: 0;
   width: 50%;
   height: 100%;
-  background-color: #ffffff;
+  background-color: #fff;
   animation: progress 1.6s ease-in-out infinite;
   opacity: 0.1;
   pointer-events: none;

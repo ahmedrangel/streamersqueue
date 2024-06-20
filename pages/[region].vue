@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Tooltip } from "bootstrap";
+
 const { params } = useRoute();
 const region = String(params.region).toLowerCase();
 
@@ -62,7 +63,7 @@ const reinitializeTooltips = () => {
   for (const i of tooltipInstances) i?.dispose();
   tooltipInstances = [];
   const new_elements = document.querySelectorAll("[data-bs-toggle=\"tooltip\"]") as NodeListOf<HTMLElement>;
-  [...new_elements].map(e => {
+  [...new_elements].map((e) => {
     const instance = new $Tooltip(e, { trigger: "hover", placement: "top" });
     tooltipInstances.push(instance);
   });
@@ -88,14 +89,13 @@ const checkAndFetch = async (updatingToast: HTMLElement, updatingTable: HTMLElem
 const checkRenewal = async (updatingToast: HTMLElement, updatingTable: HTMLElement) => {
   const checked = await checkAndFetch(updatingToast, updatingTable);
   if (!checked) {
-    interval2.value = setInterval(async() => {
+    interval2.value = setInterval(async () => {
       await checkAndFetch(updatingToast, updatingTable);
     }, 6000);
   }
 };
 
-
-const renew = async() => {
+const renew = async () => {
   api_error.value = false;
   const updatingTable = document.querySelector("#participants-table tbody") as HTMLElement;
   const first_last_updated = Number(new Date(participants_last_updated.value) as Date);
@@ -121,21 +121,24 @@ const renew = async() => {
       $bootstrap.hideToast(updatingToast);
       updatingTable.classList.remove("updating");
       reinitializeTooltips();
-    } else if (update?.status_code === 429) {
+    }
+    else if (update?.status_code === 429) {
       is_renewing.value = false;
       $bootstrap.hideToast(updatingToast);
       updatingTable.classList.remove("updating");
-    } else if (update?.status_code === 400) {
+    }
+    else if (update?.status_code === 400) {
       api_error.value = true;
       is_renewing.value = false;
       $bootstrap.hideToast(updatingToast);
       updatingTable.classList.remove("updating");
     }
-  } else {
+  }
+  else {
     is_renewing.value = false;
   }
 
-  if (remaining.value < 0 && dif > 0 || renewing) {
+  if ((remaining.value < 0 && dif > 0) || renewing) {
     console.info("checking latest renewal");
     is_renewing.value = true;
     $bootstrap.showToast(updatingToast);
@@ -144,7 +147,7 @@ const renew = async() => {
   }
 };
 
-onMounted(async() => {
+onMounted(async () => {
   $bootstrap.initializeTooltip();
   remainingForRenew();
   await renew();
@@ -152,7 +155,8 @@ onMounted(async() => {
     if (remaining.value >= 0) {
       cooldown.value = true;
       remainingForRenew();
-    } else {
+    }
+    else {
       cooldown.value = false;
     }
   }, 200);
@@ -176,7 +180,7 @@ onBeforeUnmount(() => {
       </button>
     </div>
     <span v-if="api_error" class="d-flex justify-content-end align-items-center text-negative"><b>{{ t("api_error_message") }}</b></span>
-    <span v-if="cooldown && remaining >= 0" class="d-flex justify-content-end align-items-center text-muted"><i>{{ t("available_in") }}: {{ remaining }} {{ t("seconds")}}</i></span>
+    <span v-if="cooldown && remaining >= 0" class="d-flex justify-content-end align-items-center text-muted"><i>{{ t("available_in") }}: {{ remaining }} {{ t("seconds") }}</i></span>
     <!-- Cantidad de participantes -->
     <CompParticipantsCounter :data="participants" :last-updated="participants_last_updated" />
     <!-- Tabla de clasificación -->
