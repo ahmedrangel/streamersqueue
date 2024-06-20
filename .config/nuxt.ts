@@ -1,4 +1,4 @@
-import { SITE } from "./utils/site";
+import { SITE } from "../utils/site";
 
 export default defineNuxtConfig({
   app: {
@@ -51,6 +51,12 @@ export default defineNuxtConfig({
   nitro: {
     prerender: {
       routes: ["/sitemap.xml"],
+    }
+  },
+  eslint: {
+    config: {
+      autoInit: false,
+      stylistic: true
     }
   },
   sitemap: {
