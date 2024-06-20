@@ -37,6 +37,7 @@ const updateRankedData = async(env, p) => {
       for (const m of new_matches) {
         console.info("fetching new match: " + m + ` by ${p.riot_name}#${p.riot_tag}`);
         const match_data = await _riot.getMatchById(m, cluster);
+        if (match_data?.info?.endOfGameResult === "Abort_TooFewPlayers") continue;
         const participant_data = match_data?.info?.participants?.filter(item => item?.puuid === p?.puuid)[0] || null;
         updater_history.push({
           puuid: p.puuid,
@@ -292,7 +293,6 @@ export const updateGeneralData = async(env, control, type) => {
   console.info(updater_ingame);
   console.info(updater_twitch_data);
   console.info(updater_twitch_live);
-
 
   // Ranked update
   for (const p of updater_participants) {
