@@ -1,6 +1,7 @@
 import { SITE } from "../utils/site";
 
 export default defineNuxtConfig({
+  compatibilityDate: "2024-07-07",
   app: {
     pageTransition: { name: "fade", mode: "out-in" },
     layoutTransition: { name: "fade", mode: "out-in" },
