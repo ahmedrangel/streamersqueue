@@ -1,7 +1,7 @@
 import { SITE } from "../utils/site";
 
 export default defineNuxtConfig({
-  compatibilityDate: "2024-07-07",
+  compatibilityDate: "2024-08-09",
   app: {
     pageTransition: { name: "fade", mode: "out-in" },
     layoutTransition: { name: "fade", mode: "out-in" },
@@ -36,7 +36,7 @@ export default defineNuxtConfig({
     "~/assets/css/chart.css"
   ],
   modules: [
-    "nuxt-icon",
+    "@nuxt/icon",
     "@nuxtjs/sitemap",
     "@nuxtjs/google-fonts",
     "@nuxt/eslint",
@@ -61,7 +61,6 @@ export default defineNuxtConfig({
     }
   },
   sitemap: {
-    dynamicUrlsApiEndpoint: "/__sitemap",
     xslColumns: [
       { label: "URL", width: "65%" },
       { label: "Priority", select: "sitemap:priority", width: "12.5%" },
@@ -70,7 +69,8 @@ export default defineNuxtConfig({
   },
   routeRules: {
     "/": { sitemap: { priority: 1 } },
-    "/*/**": { sitemap: { priority: 0.8, lastmod: new Date().toISOString() } }
+    "/*/**": { sitemap: { priority: 0.8, lastmod: new Date().toISOString() } },
+    "/api/_nuxt_icon/**": { cache: { maxAge: 1.577e+7 } }
   },
   googleFonts: {
     display: "swap",
