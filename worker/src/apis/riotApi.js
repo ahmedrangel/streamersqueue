@@ -1,4 +1,4 @@
-import { ofetch } from "ofetch";
+import { $fetch } from "ofetch";
 
 class riotApi {
   constructor (RIOT_KEY) {
@@ -10,10 +10,11 @@ class riotApi {
     const endpoint = options?.endpoint;
     const method = options?.method ? options.method : "GET";
     const apiKey = options?.apiKey ? options.apiKey : this.RIOT_KEY;
-    return await ofetch(endpoint, {
+    const response = await $fetch.raw(endpoint, {
       method,
       headers: { "X-Riot-Token": apiKey }
-    }).catch((error) => { return { error }; });
+    }).catch(() => null);
+    return response?.ok ? response._data : null;
   }
 
   route (region) {

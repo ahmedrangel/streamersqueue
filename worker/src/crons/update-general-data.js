@@ -22,23 +22,22 @@ const updateRankedData = async (env, p) => {
     const matches = await _riot.getMatchesByPuuid(p.puuid, cluster, 100, 420, p.lol_region, 0);
     const db_matches = await env.PARTICIPANTS.prepare("SELECT match_id FROM history WHERE puuid = ?")
       .bind(p.puuid).all();
-    const db_matches_ids = db_matches.results?.map(item => item.match_id);
-    const new_matches = matches.filter(match_id => !db_matches_ids.includes(match_id));
+    const db_matches_ids = Array.isArray(db_matches.results) ? db_matches.results?.map(item => item.match_id) : null;
+    const new_matches = db_matches_ids ? matches.filter(match_id => !db_matches_ids.includes(match_id)) : null;
 
-    if (new_matches.length === 100) {
+    if (new_matches?.length === 100) {
       const more_matches = await _riot.getMatchesByPuuid(p.puuid, cluster, 100, 420, p.lol_region, 100);
       const additional_new_matches = more_matches.filter(match_id => !db_matches_ids.includes(match_id));
       new_matches.push(...additional_new_matches);
     }
 
-    if (new_matches.length) console.info("Total matches to fetch: " + new_matches.length + ` by ${p.riot_name}#${p.riot_tag}`);
-
-    if (new_matches.length) {
+    if (Array.isArray(new_matches) && new_matches.length) {
+      console.info("Total matches to fetch: " + new_matches.length + ` by ${p.riot_name}#${p.riot_tag}`);
       for (const m of new_matches) {
         console.info("fetching new match: " + m + ` by ${p.riot_name}#${p.riot_tag}`);
         const match_data = await _riot.getMatchById(m, cluster);
-        if (match_data?.info?.endOfGameResult === "Abort_TooFewPlayers") continue;
         const participant_data = match_data?.info?.participants?.filter(item => item?.puuid === p?.puuid)[0] || null;
+        if (!match_data || match_data?.info?.endOfGameResult === "Abort_TooFewPlayers") continue;
         updater_history.push({
           puuid: p.puuid,
           match_id: m,
@@ -48,7 +47,7 @@ const updateRankedData = async (env, p) => {
           result: participant_data?.win,
           is_remake: participant_data?.gameEndedInEarlySurrender,
           champion: participant_data?.championId,
-          game_surrendered: participant_data?.gameEndedInSurrender || participant_data?.gameEndedInEarlySurrender ? 1 : 0,
+          game_surrendered: participant_data?.gameEndedInSurrender || participant_data?.gameEndedInEarlySurrender ? true : false,
           date: match_data?.info?.gameCreation,
           duration: match_data?.info?.gameDuration
         });
@@ -64,12 +63,12 @@ const updateRankedData = async (env, p) => {
     const matches = await _riot.getMatchesByPuuid(p.puuid, cluster, 20, 420, p.lol_region);
     const db_matches = await env.PARTICIPANTS.prepare("SELECT match_id FROM history WHERE puuid = ?")
       .bind(p.puuid).all();
-    const db_matches_ids = db_matches.results?.map(item => item.match_id);
+    const db_matches_ids = Array.isArray(db_matches.results) ? db_matches.results?.map(item => item.match_id) : null;
     let wins = 0;
     let losses = 0;
-    if (matches.length) {
+    if (Array.isArray(matches) && matches.length) {
       for (const m of matches) {
-        if (!db_matches_ids.includes(m)) {
+        if (db_matches_ids && !db_matches_ids.includes(m)) {
           console.info("fetching new placement match: " + m);
           const match_data = await _riot.getMatchById(m, cluster);
           const participant_data = match_data?.info?.participants?.filter(item => item?.puuid === p?.puuid)[0] || null;
@@ -318,7 +317,7 @@ export const updateGeneralData = async (env, control, type) => {
       .bind(p.is_ingame, p.puuid, control).run();
   }
 
-  const matches = Array.from(new Set(updater_history.map(match => match.match_id))).map(matchId => updater_history.find(match => match.match_id === matchId));
+  const matches = Array.from(new Set(updater_history?.map(match => match.match_id)))?.map(matchId => updater_history.find(match => match.match_id === matchId));
 
   // Matches Insert
   for (const m of matches) {
@@ -338,7 +337,6 @@ export const updateGeneralData = async (env, control, type) => {
     await env.PARTICIPANTS.prepare("UPDATE OR IGNORE control SET last_updated = ? WHERE id = ?")
       .bind(new Date().toISOString(), control).run();
   }
-
   return { sorted: sorted_data.sorted };
 };
 
