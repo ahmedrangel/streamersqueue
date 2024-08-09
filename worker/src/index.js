@@ -317,7 +317,7 @@ export default {
     const url = events[0].event.request.url;
     const parts = new URL(url).pathname.split("/");
     const lastPart = parts[parts.length - 1];
-    if (lastPart === "renewal" && events[0].outcome === "canceled") {
+    if (lastPart === "renewal" && ["canceled", "exception"].includes(events[0].outcome)) {
       ctx.waitUntil(fetch(worker + "/tails/revert-renewal", {
         method: "POST",
         body: JSON.stringify(events[0])
