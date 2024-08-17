@@ -55,7 +55,7 @@ const remainingForRenew = () => {
   remaining.value = Math.ceil(((defined_cooldown * 1000) - (now - date)) / 1000);
 };
 
-const { $Tooltip, $bootstrap } = useNuxtApp();
+const { $Tooltip, $bootstrap } = useNuxtApp() as Record<string, any>;
 
 const reinitializeTooltips = () => {
   const showingTooltips = document.querySelectorAll(".tooltip.bs-tooltip-auto.show") as NodeListOf<HTMLElement>;
@@ -108,7 +108,7 @@ const renew = async () => {
   if (!renewing && remaining.value < 0 && dif === 0) {
     $bootstrap.showToast(updatingToast);
     updatingTable.classList.add("updating");
-    remaining.value >= 0 ? is_renewing.value = false : is_renewing.value = true;
+    is_renewing.value = remaining.value >= 0 ? false : true;
     const signal = controller.value.signal;
     const update = await $fetch(`${SITE.worker}/${region}/renewal`, { signal }).catch(() => null) as Record<string, any>;
     if (update?.status_code === 200) {

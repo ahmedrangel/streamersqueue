@@ -27,7 +27,7 @@ const sort = (type: string, order: string) => {
   if (!type && order === "init") {
     participants.value.sort((a: Record<string, number>, b: Record<string, number>) => {
       if (!a.position || !b.position) {
-        if (!a.position && !b.position) return a.raw_position - b.raw_position;
+        if (!a.position && !b.position) return Number(a.raw_position) - Number(b.raw_position);
         if (!a.position) return 1;
         if (!b.position) return -1;
       }
@@ -69,6 +69,7 @@ const toggleClass = (head: HTMLElement) => {
 const clickHandler = (head: HTMLElement) => {
   removeSort(head.id);
   toggleClass(head);
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
   head.classList.contains("desc") ? sort(head.id, "desc") : head.classList.contains("asc") ? sort(head.id, "asc") : sort("", "init");
 };
 
