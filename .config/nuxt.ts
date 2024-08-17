@@ -1,7 +1,8 @@
-import { SITE } from "../utils/site";
+import { SITE } from "../app/utils/site";
 
 export default defineNuxtConfig({
-  compatibilityDate: "2024-08-09",
+  future: { compatibilityVersion: 4 },
+  compatibilityDate: "2024-08-16",
   app: {
     pageTransition: { name: "fade", mode: "out-in" },
     layoutTransition: { name: "fade", mode: "out-in" },
@@ -42,6 +43,7 @@ export default defineNuxtConfig({
     "@nuxt/eslint",
     "nuxt-twemoji"
   ],
+  icon: { mode: "svg", serverBundle: "remote" },
   runtimeConfig: {},
   features: {
     inlineStyles: false

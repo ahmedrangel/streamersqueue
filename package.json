@@ -30,7 +30,7 @@
     "@types/bootstrap": "^5.2.10",
     "drizzle-kit": "^0.24.0",
     "drizzle-orm": "^0.33.0",
-    "eslint": "^9.8.0",
+    "eslint": "^9.9.0",
     "nuxt": "^3.12.4",
     "@nuxt/icon": "^1.4.5",
     "nuxt-twemoji": "^3.6.1",

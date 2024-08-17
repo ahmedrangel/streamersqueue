@@ -1,7 +1,7 @@
 /* main.css */
 
 .logo-background {
-  background: linear-gradient(rgb(9 20 40 / 99.4%),rgb(9 20 40 / 99%),rgb(9 20 40 / 99.4%)), url("/public/streamersqueue-w.svg");
+  background: linear-gradient(rgb(9 20 40 / 99.4%),rgb(9 20 40 / 99%),rgb(9 20 40 / 99.4%)), url("/streamersqueue-w.svg");
   background-position: 50%;
   background-repeat: repeat;
   background-size: 14%;
