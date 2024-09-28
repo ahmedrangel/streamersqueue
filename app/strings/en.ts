@@ -26,7 +26,7 @@ export default {
   v_d: "W - L",
   winrate: "Winrate",
   live_em: "Live!",
-  ingame_em: "Ingame!",
+  ingame_em: "In game!",
   minute: "minute",
   second: "second",
   day: "day",
