@@ -2,6 +2,23 @@ import twitchApi from "../apis/twitchApi";
 import riotApi, { eloValues } from "../apis/riotApi";
 import { fixRank, sleep } from "../utils/helpers";
 
+const updateLolProfileInfo = async (env, p, lol_picture, riot_name, riot_tag) => {
+  if (lol_picture && lol_picture !== p.lol_picture) {
+    console.info("LoL Icon Updated:" + lol_picture);
+    await env.PARTICIPANTS.prepare("UPDATE OR IGNORE participants SET lol_picture = ? WHERE puuid = ?").bind(lol_picture, p.puuid).run();
+  }
+
+  if (riot_name && riot_name !== p.riot_name) {
+    console.info("Riot Name Updated: " + riot_name);
+    await env.PARTICIPANTS.prepare("UPDATE OR IGNORE participants SET riot_name = ? WHERE puuid = ?").bind(riot_name, p.puuid).run();
+  }
+
+  if (riot_tag && riot_tag !== p.riot_tag) {
+    console.info("Riot Tag Updated: " + riot_tag);
+    await env.PARTICIPANTS.prepare("UPDATE OR IGNORE participants SET riot_tag = ? WHERE puuid = ?").bind(riot_tag, p.puuid).run();
+  }
+};
+
 // Iterated fetch
 const updateRankedData = async (env, p) => {
   let participants;
@@ -37,6 +54,7 @@ const updateRankedData = async (env, p) => {
         console.info("fetching new match: " + m + ` by ${p.riot_name}#${p.riot_tag}`);
         const match_data = await _riot.getMatchById(m, cluster);
         const participant_data = match_data?.info?.participants?.filter(item => item?.puuid === p?.puuid)[0] || null;
+        await updateLolProfileInfo(env, p, participant_data?.profileIcon, participant_data?.riotIdName, participant_data?.riotIdTagLine);
         if (!match_data || match_data?.info?.endOfGameResult === "Abort_TooFewPlayers") continue;
         updater_history.push({
           puuid: p.puuid,
@@ -72,6 +90,7 @@ const updateRankedData = async (env, p) => {
           console.info("fetching new placement match: " + m);
           const match_data = await _riot.getMatchById(m, cluster);
           const participant_data = match_data?.info?.participants?.filter(item => item?.puuid === p?.puuid)[0] || null;
+          await updateLolProfileInfo(env, p, participant_data?.profileIcon, participant_data?.riotIdName, participant_data?.riotIdTagLine);
           if (participant_data?.win && !participant_data?.gameEndedInEarlySurrender)
             wins = wins + 1;
           if (!participant_data?.win && !participant_data?.gameEndedInEarlySurrender)
@@ -126,21 +145,7 @@ const updateLolIngameStatus = async (env, p) => {
     const riotIdSplitted = riotId.split("#");
     const riot_name = riotIdSplitted[0];
     const riot_tag = riotIdSplitted[1];
-
-    if (lol_picture && lol_picture !== p.lol_picture) {
-      console.info("LoL Icon Updated:" + lol_picture);
-      await env.PARTICIPANTS.prepare("UPDATE OR IGNORE participants SET lol_picture = ? WHERE puuid = ?").bind(lol_picture, p.puuid).run();
-    }
-
-    if (riot_name && riot_name !== p.riot_name) {
-      console.info("Riot Name Updated: " + riot_name);
-      await env.PARTICIPANTS.prepare("UPDATE OR IGNORE participants SET riot_name = ? WHERE puuid = ?").bind(riot_name, p.puuid).run();
-    }
-
-    if (riot_tag && riot_tag !== p.riot_tag) {
-      console.info("Riot Tag Updated: " + riot_tag);
-      await env.PARTICIPANTS.prepare("UPDATE OR IGNORE participants SET riot_tag = ? WHERE puuid = ?").bind(riot_tag, p.puuid).run();
-    }
+    await updateLolProfileInfo(env, p, lol_picture, riot_name, riot_tag);
 
     if (p.is_ingame !== 1) {
       updater_ingame = { puuid: p.puuid, is_ingame: 1 };
