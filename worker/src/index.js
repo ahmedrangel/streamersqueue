@@ -4,7 +4,7 @@ import JsonResponse from "./jsonResponse";
 import twitchApi from "./apis/twitchApi";
 import riotApi from "./apis/riotApi";
 import { resetPositionChange } from "./crons/reset-position-change";
-import { controls, renewalHandler, worker } from "./utils/helpers";
+import { controls, renewalHandler } from "./utils/helpers";
 import { kda, matchDuration, playerChampionWR, playerWR } from "./utils/queries";
 
 const router = IttyRouter();
@@ -311,17 +311,6 @@ export default {
       case "0 2/12 * * *":
         await renewalHandler(env, "lan", "cron");
         break;
-    }
-  },
-  async tail (events, env, ctx) {
-    const url = events[0].event.request.url;
-    const parts = new URL(url).pathname.split("/");
-    const lastPart = parts[parts.length - 1];
-    if (lastPart === "renewal" && ["canceled", "exception"].includes(events[0].outcome)) {
-      ctx.waitUntil(fetch(worker + "/tails/revert-renewal", {
-        method: "POST",
-        body: JSON.stringify(events[0])
-      }));
     }
   }
 };

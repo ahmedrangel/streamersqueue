@@ -2,7 +2,10 @@ name = "streamers-ladder"
 main = "src/index.js"
 compatibility_date = "2024-04-24"
 
-tail_consumers = [{service = "streamers-ladder"}]
+tail_consumers = [{service = "tail-worker"}]
+
+[observability]
+enabled = true
 
 [[d1_databases]]
 binding = "PARTICIPANTS"
