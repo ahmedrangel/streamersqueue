@@ -2,8 +2,6 @@ name = "streamers-ladder"
 main = "src/index.js"
 compatibility_date = "2024-04-24"
 
-tail_consumers = [{service = "tail-worker"}]
-
 [observability]
 enabled = true
 
@@ -20,6 +18,3 @@ crons = [
   "0 3/12 * * *", #euw every 12 hours starting at 10 PM (GMT-5)
   "0 2/12 * * *", #lan every 12 hours starting at 9 PM (GMT-5)
 ]
-
-[placement]
-mode = "smart"

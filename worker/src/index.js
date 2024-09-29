@@ -312,5 +312,17 @@ export default {
         await renewalHandler(env, "lan", "cron");
         break;
     }
+  },
+  async trace (events, _env, ctx) {
+    const tailEvent = events[0]?.event;
+    const url = tailEvent.request.url;
+    const parts = new URL(url).pathname.split("/");
+    const lastPart = parts[parts.length - 1];
+    if (lastPart === "renewal" && ["canceled", "exception"].includes(events[0].outcome)) {
+      ctx.waitUntil(fetch("https://api-streamers-ladder.ahmedrangel.com/tails/revert-renewal", {
+        method: "POST",
+        body: JSON.stringify(events[0])
+      }));
+    }
   }
 };
