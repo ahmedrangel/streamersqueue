@@ -4,21 +4,24 @@ export const kda = async (DB, control, order) => {
   return await DB.prepare(`
     SELECT
       p.riot_name, p.riot_tag, p.lol_picture, p.lol_region,
-      s.twitch_login, s.twitch_display, s.twitch_picture, s.country_flag,
-      (p.wins + p.losses) AS total_games,
-      ROUND(AVG(h.kills), 2) AS avg_kills,
-      ROUND(AVG(h.deaths), 2) AS avg_deaths,
-      ROUND(AVG(h.assists), 2) AS avg_assists,
-      CASE 
-        WHEN AVG(h.deaths) = 0 THEN 'perfect'
-        ELSE ROUND((AVG(h.kills) + AVG(h.assists)) / AVG(h.deaths), 2)
-      END AS kda
-    FROM participants AS p
-    INNER JOIN history AS h ON p.puuid = h.puuid
-    INNER JOIN socials AS s ON p.puuid = s.puuid
-    WHERE h.is_remake = 0 ${control === "all" ? `AND total_games >= ${games}` : `AND p.control = ${control} AND total_games >= ${games}`}
-    GROUP BY h.puuid
-    ORDER BY kda ${o} LIMIT 10
+      h.avg_kills, h.avg_deaths, h.avg_assists, h.kda,
+      s.twitch_login, s.twitch_display, s.twitch_picture, s.country_flag
+    FROM (
+      SELECT
+        h.puuid,
+        ROUND(AVG(h.kills), 2) AS avg_kills,
+        ROUND(AVG(h.deaths), 2) AS avg_deaths,
+        ROUND(AVG(h.assists), 2) AS avg_assists,
+        ROUND((AVG(h.kills) + AVG(h.assists)) / NULLIF(AVG(h.deaths), 0), 2) AS kda
+      FROM history AS h
+      WHERE h.is_remake = 0
+      GROUP BY h.puuid
+    ) AS h
+    INNER JOIN participants AS p ON h.puuid = p.puuid
+    INNER JOIN socials AS s ON h.puuid = s.puuid
+    WHERE (p.wins + p.losses) >= ${games} ${control === "all" ? "" : `AND p.control = ${control}`}
+    ORDER BY kda ${o}
+    LIMIT 10
   `).all();
 };
 
