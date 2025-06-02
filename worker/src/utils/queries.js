@@ -27,25 +27,26 @@ export const playerChampionWR = async (DB, control, order) => {
   const o = order.toUpperCase() === "ASC" ? "ASC" : "DESC";
   return await DB.prepare(`
     SELECT
-      sq.riot_name, sq.riot_tag, sq.lol_region, sq.champion, sq.wins, sq.losses, sq.lol_picture,
-      sq.twitch_login, sq.twitch_display, sq.twitch_picture, sq.country_flag,
-      ROUND((CAST(sq.wins AS FLOAT) / (sq.wins + sq.losses) * 100), 1) AS winrate
+      p.riot_name, p.riot_tag, p.lol_region, p.lol_picture,
+      s.twitch_login, s.twitch_display, s.twitch_picture, s.country_flag,
+      h.champion, h.wins, h.losses, h.winrate
     FROM (
       SELECT
-        p.riot_name, p.riot_tag, p.lol_region, p.lol_picture,
-        h.champion,
-        s.twitch_login, s.twitch_display, s.twitch_picture, s.country_flag,
-        SUM(CASE WHEN h.is_remake = 0 AND h.result = 1 THEN 1 ELSE 0 END) AS wins,
-        SUM(CASE WHEN h.is_remake = 0 AND h.result = 0 THEN 1 ELSE 0 END) AS losses
-      FROM history AS h
-      INNER JOIN participants AS p ON h.puuid = p.puuid
-      INNER JOIN socials AS s ON h.puuid = s.puuid
-      ${control === "all" ? "" : `WHERE p.control = ${control}`}
-      GROUP BY h.puuid, h.champion
-    ) AS sq
-    WHERE (sq.wins + sq.losses) >= ${games}
-    ORDER BY winrate ${o}
-    LIMIT 10
+        puuid,
+        champion,
+        SUM(CASE WHEN result = 1 THEN 1 ELSE 0 END) AS wins,
+        SUM(CASE WHEN result = 0 THEN 1 ELSE 0 END) AS losses,
+        ROUND((CAST(SUM(CASE WHEN result = 1 THEN 1 ELSE 0 END) AS FLOAT) / (SUM(CASE WHEN result = 1 THEN 1 ELSE 0 END) + SUM(CASE WHEN result = 0 THEN 1 ELSE 0 END))) * 100, 1) AS winrate
+      FROM history
+      WHERE is_remake = 0
+      GROUP BY puuid, champion
+      HAVING (wins + losses) >= ${games}
+      ORDER BY winrate ${o}
+      LIMIT 10
+    ) AS h
+    INNER JOIN participants AS p ON h.puuid = p.puuid
+    INNER JOIN socials AS s ON h.puuid = s.puuid
+    ${control === "all" ? "" : `WHERE p.control = ${control}`}
   `).all();
 };
 
