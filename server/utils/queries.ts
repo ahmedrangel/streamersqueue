@@ -58,13 +58,18 @@ export const matchDuration = async (DB: any, control: string | number, order: st
       s.twitch_login, s.twitch_display, s.twitch_picture, s.country_flag,
       h.match_id, h.kills, h.deaths, h.assists, h.champion, h.result,
       m.date, m.duration
-    FROM history as h
+    FROM (
+      SELECT h.match_id, h.puuid, h.kills, h.deaths, h.assists, h.champion, h.result
+      FROM history AS h
+      INNER JOIN matches AS m ON h.match_id = m.match_id
+      WHERE h.is_remake = 0 AND h.game_surrendered = 0
+      ORDER BY m.duration ${o}
+      LIMIT 10
+    ) AS h
     INNER JOIN participants AS p ON h.puuid = p.puuid
     INNER JOIN matches AS m ON h.match_id = m.match_id
     INNER JOIN socials AS s ON h.puuid = s.puuid
-    WHERE h.is_remake = 0 AND h.game_surrendered = 0 ${control === "all" ? "" : `AND p.control = ${control}`}
-    GROUP BY h.puuid, h.match_id
-    ORDER BY m.duration ${o} LIMIT 10
+    ${control === "all" ? "" : `WHERE p.control = ${control}`}
   `).all();
 };
 
