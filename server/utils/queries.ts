@@ -5,7 +5,8 @@ export const kda = async (DB: any, control: string | number, order: string) => {
     SELECT
       p.riot_name, p.riot_tag, p.lol_picture, p.lol_region,
       h.avg_kills, h.avg_deaths, h.avg_assists, h.kda,
-      s.twitch_login, s.twitch_display, s.twitch_picture, s.country_flag
+      s.twitch_login, s.twitch_display, s.twitch_picture, s.country_flag,
+      (p.wins + p.losses) AS total_games
     FROM (
       SELECT
         h.puuid,
@@ -19,7 +20,7 @@ export const kda = async (DB: any, control: string | number, order: string) => {
     ) AS h
     INNER JOIN participants AS p ON h.puuid = p.puuid
     INNER JOIN socials AS s ON h.puuid = s.puuid
-    WHERE (p.wins + p.losses) >= ${games} ${control === "all" ? "" : `AND p.control = ${control}`}
+    WHERE total_games >= ${games} ${control === "all" ? "" : `AND p.control = ${control}`}
     ORDER BY kda ${o}
     LIMIT 10
   `).all();
